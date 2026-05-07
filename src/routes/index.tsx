@@ -20,9 +20,9 @@ function Index() {
       <Header />
       <HeroSection />
       <StatsBar />
+      <WhyUsSection />
       <ProductsSection />
       <SegmentsSection />
-      <WhyUsSection />
       <TestimonialsSection />
       <CTASection />
       <Footer />
