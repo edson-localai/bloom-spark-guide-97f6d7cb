@@ -3,7 +3,7 @@ import { MessageCircle, Phone, MapPin } from 'lucide-react';
 
 const CTASection = () => {
   return (
-    <section id="contatosection" className="relative bg-gradient-to-br from-[#0D1B2A] via-[#0A0A0A] to-[#060D18] py-32 px-[max(24px,5vw)] text-center overflow-hidden">
+    <section id="contatosection" className="relative bg-gradient-to-br from-[#0D1B2A] via-[#0A0A0A] to-[#060D18] py-20 sm:py-32 px-[max(24px,5vw)] text-center overflow-hidden">
       {/* Background decoration elements */}
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full border border-[#0066CC]/5" />
