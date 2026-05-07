@@ -20,7 +20,7 @@ const StatsBar = () => {
   ];
 
   return (
-    <section id="estatisticas" className="relative z-20 -mt-10 sm:-mt-16 px-[max(24px,5vw)]">
+    <section id="estatisticas" className="relative z-20 -mt-10 sm:-mt-20 px-[max(24px,5vw)]">
       <div className="max-w-7xl mx-auto relative overflow-hidden bg-[#16191F]/90 backdrop-blur-xl border border-[#0066CC]/20 rounded-2xl sm:rounded-[32px] p-8 sm:p-12 shadow-[0_20px_50px_rgba(0,0,0,0.6)]">
         {/* Background Image Overlay with Blue Tech Lighting */}
         <div className="absolute inset-0 z-0 opacity-15">
