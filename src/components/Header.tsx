@@ -9,12 +9,40 @@ const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
+  const [activeSection, setActiveSection] = useState('');
+
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 20);
     };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  useEffect(() => {
+    const observerOptions = {
+      root: null,
+      rootMargin: '-20% 0px -70% 0px',
+      threshold: 0
+    };
+
+    const observerCallback = (entries: IntersectionObserverEntry[]) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          setActiveSection(entry.target.id);
+        }
+      });
+    };
+
+    const observer = new IntersectionObserver(observerCallback, observerOptions);
+    
+    navLinks.forEach(link => {
+      const id = link.href.replace('#', '');
+      const element = document.getElementById(id);
+      if (element) observer.observe(element);
+    });
+
+    return () => observer.disconnect();
   }, []);
 
   const navLinks = [
@@ -71,18 +99,23 @@ const Header = () => {
 
       {/* Desktop Nav */}
       <nav className="hidden md:flex items-center gap-1">
-        {navLinks.map((link) => (
-          <a
-            key={link.name}
-            href={link.href}
-            onClick={(e) => handleScrollTo(e, link.href)}
-            className="px-4 py-2 font-['Rajdhani'] text-[15px] font-semibold text-[#8A9BB5] hover:text-[#F5F8FF] transition-all relative group"
-          >
-            <span className="relative z-10">{link.name}</span>
-            <span className="absolute inset-0 bg-[#0066CC]/0 group-hover:bg-[#0066CC]/5 rounded-lg transition-colors" />
-            <span className="absolute -bottom-1 left-4 right-4 h-[2px] bg-[#0066CC] scale-x-0 transition-transform duration-300 origin-center group-hover:scale-x-100" />
-          </a>
-        ))}
+        {navLinks.map((link) => {
+          const isActive = activeSection === link.href.replace('#', '');
+          return (
+            <a
+              key={link.name}
+              href={link.href}
+              onClick={(e) => handleScrollTo(e, link.href)}
+              className={`px-4 py-2 font-['Rajdhani'] text-[15px] font-semibold transition-all relative group ${
+                isActive ? 'text-[#F5F8FF]' : 'text-[#8A9BB5] hover:text-[#F5F8FF]'
+              }`}
+            >
+              <span className="relative z-10">{link.name}</span>
+              <span className={`absolute inset-0 bg-[#0066CC]/5 rounded-lg transition-colors ${isActive ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`} />
+              <span className={`absolute -bottom-1 left-4 right-4 h-[2px] bg-[#0066CC] transition-transform duration-300 origin-center ${isActive ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'}`} />
+            </a>
+          );
+        })}
       </nav>
 
       {/* CTA Button */}
@@ -121,19 +154,24 @@ const Header = () => {
             transition={{ duration: 0.3, ease: "easeOut" }}
             className="fixed inset-0 z-40 bg-[#0A0A0A]/95 backdrop-blur-xl md:hidden flex flex-col items-center justify-center p-8 gap-8"
           >
-            {navLinks.map((link, i) => (
-              <motion.a
-                key={link.name}
-                href={link.href}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.1 }}
-                onClick={(e) => handleScrollTo(e, link.href)}
-                className="font-['Bebas_Neue'] text-4xl tracking-wider text-[#F5F8FF] hover:text-[#0066CC] transition-colors"
-              >
-                {link.name}
-              </motion.a>
-            ))}
+            {navLinks.map((link, i) => {
+              const isActive = activeSection === link.href.replace('#', '');
+              return (
+                <motion.a
+                  key={link.name}
+                  href={link.href}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.1 }}
+                  onClick={(e) => handleScrollTo(e, link.href)}
+                  className={`font-['Bebas_Neue'] text-4xl tracking-wider transition-colors ${
+                    isActive ? 'text-[#0066CC]' : 'text-[#F5F8FF] hover:text-[#0066CC]'
+                  }`}
+                >
+                  {link.name}
+                </motion.a>
+              );
+            })}
             <motion.a
               href="https://wa.me/5591985161991"
               target="_blank"
