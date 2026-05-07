@@ -1,5 +1,6 @@
-import { Snowflake, Truck, Shield, Zap, Award } from 'lucide-react';
+import { Snowflake, Truck, Shield, Zap } from 'lucide-react';
 import { motion } from 'framer-motion';
+import Logo from './Logo';
 
 const StatsBar = () => {
   const stats = [
@@ -7,7 +8,7 @@ const StatsBar = () => {
     { icon: Truck, value: 'Linha Pesada', label: 'Caminhões & Ônibus' },
     { icon: Shield, value: '8 Meses', label: 'Garantia Máxima' },
     { icon: Zap, value: 'Entrega', label: 'Rápida para Oficinas' },
-    { icon: Award, value: 'Denso®', label: 'Revendedor Oficial' },
+    { icon: null as any, value: 'HCB', label: 'Ar Condicionado Automotivo', isLogo: true },
   ];
 
   return (
