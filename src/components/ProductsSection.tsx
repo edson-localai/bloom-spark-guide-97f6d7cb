@@ -11,28 +11,33 @@ interface ProductCardProps {
 const ProductCard = ({ icon: Icon, title, description, tag }: ProductCardProps) => (
   <motion.div
     variants={{
-      hidden: { opacity: 0, y: 30 },
-      visible: { opacity: 1, y: 0, transition: { duration: 0.5 } }
+      hidden: { opacity: 0, scale: 0.95, y: 20 },
+      visible: { opacity: 1, scale: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } }
     }}
-    className="bg-[#16191F] border border-[#1E2330] rounded-[16px] p-8 transition-all duration-300 hover:border-[#0066CC]/50 hover:bg-[#1A1F28] hover:shadow-[0_8px_32px_rgba(0,102,204,0.2)] hover:-translate-y-1 group"
+    className="bg-[#16191F]/40 backdrop-blur-sm border border-[#1E2330] rounded-[24px] p-8 transition-all duration-500 hover:border-[#0066CC]/60 hover:bg-[#1A1F28]/60 hover:shadow-[0_20px_40px_rgba(0,102,204,0.15)] group relative overflow-hidden"
   >
-    <div className="w-[52px] h-[52px] rounded-[12px] bg-[#0066CC]/10 flex items-center justify-center mb-5 group-hover:bg-[#0066CC]/20 transition-colors">
-      <Icon className="w-6 h-6 text-[#0066CC]" />
+    {/* Background Glow */}
+    <div className="absolute -right-4 -top-4 w-24 h-24 bg-[#0066CC]/10 rounded-full blur-2xl group-hover:bg-[#0066CC]/20 transition-colors duration-500" />
+    
+    <div className="relative z-10">
+      <div className="w-[56px] h-[56px] rounded-[16px] bg-[#0066CC]/10 flex items-center justify-center mb-6 group-hover:bg-[#0066CC]/20 transition-all duration-300 group-hover:scale-110 group-hover:rotate-3 shadow-sm">
+        <Icon className="w-7 h-7 text-[#0066CC]" />
+      </div>
+      
+      <div className="inline-block px-3 py-1 rounded-full bg-[#0066CC]/10 border border-[#0066CC]/20 mb-4">
+        <span className="font-['Rajdhani'] text-[11px] font-bold tracking-[0.12em] text-[#60C0FF] uppercase">
+          {tag}
+        </span>
+      </div>
+      
+      <h3 className="font-['Rajdhani'] text-[24px] font-bold text-[#F5F8FF] mb-3 uppercase tracking-tight group-hover:text-[#60C0FF] transition-colors">
+        {title}
+      </h3>
+      
+      <p className="font-['Inter'] text-[15px] font-light text-[#B8C8DC] leading-[1.6]">
+        {description}
+      </p>
     </div>
-    
-    <div className="inline-block px-3 py-1 rounded-full bg-[#0066CC]/10 border border-[#0066CC]/10 mb-3">
-      <span className="font-['Rajdhani'] text-[11px] font-bold tracking-[0.12em] text-[#0066CC] uppercase">
-        {tag}
-      </span>
-    </div>
-    
-    <h3 className="font-['Rajdhani'] text-[22px] font-bold text-[#F5F8FF] mb-2 uppercase">
-      {title}
-    </h3>
-    
-    <p className="font-['Inter'] text-[15px] font-light text-[#8A9BB5] leading-[1.6]">
-      {description}
-    </p>
   </motion.div>
 );
 

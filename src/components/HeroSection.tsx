@@ -61,15 +61,42 @@ const HeroSection = () => {
 
           {/* H1 */}
           <h1 className="font-['Bebas_Neue'] text-[clamp(60px,9vw,110px)] leading-[0.95] text-[#F5F8FF] mb-6 uppercase tracking-wider">
-            Ar Condicionado <span className="bg-gradient-to-r from-[#60C0FF] via-[#0066CC] to-[#F5F8FF] bg-clip-text text-transparent">Automotivo</span><br />
-            em Castanhal
+            <motion.span 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2, duration: 0.6 }}
+              className="block"
+            >
+              Ar Condicionado
+            </motion.span>
+            <motion.span 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4, duration: 0.6 }}
+              className="bg-gradient-to-r from-[#60C0FF] via-[#0066CC] to-[#F5F8FF] bg-clip-text text-transparent"
+            >
+              Automotivo
+            </motion.span>
+            <motion.span 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.6, duration: 0.6 }}
+              className="block"
+            >
+              em Castanhal
+            </motion.span>
           </h1>
 
           {/* Subtitle */}
-          <p className="font-['Inter'] text-lg font-light text-[#8A9BB5] leading-[1.7] max-w-[520px] mb-10">
+          <motion.p 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.8, duration: 0.8 }}
+            className="font-['Inter'] text-lg font-light text-[#B8C8DC] leading-[1.7] max-w-[520px] mb-10"
+          >
             Peças de ar-condicionado automotivo linha leve, pesada e fora de estrada. 
             Revendedor oficial Denso. Atendemos varejo e oficinas com agilidade e qualidade.
-          </p>
+          </motion.p>
 
           {/* CTAs */}
           <div className="flex flex-wrap gap-4 mb-14">
