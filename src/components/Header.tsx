@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MessageCircle, Menu, X, Snowflake } from 'lucide-react';
+import { MessageCircle, Menu, X } from 'lucide-react';
+import hcbLogo from '@/assets/hcb-logo.png';
 
 const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -50,16 +51,13 @@ const Header = () => {
       }`}
     >
       {/* Logo */}
-      <a href="/" className="flex items-center gap-2 group">
-        <Snowflake className="text-[#0066CC] w-5 h-5" />
-        <div className="flex flex-col">
-          <div className="flex items-center gap-2">
-            <span className="font-['Bebas_Neue'] text-[32px] leading-none text-[#F5F8FF]">HCB</span>
-            <span className="font-['Rajdhani'] text-[11px] font-semibold tracking-[0.15em] text-[#8A9BB5] self-center mt-1 uppercase">
-              Ar Condicionado
-            </span>
-          </div>
-          <div className="h-[2px] w-full bg-gradient-to-r from-[#0066CC] to-[#60C0FF] origin-left scale-x-100 transition-transform duration-300" />
+      <a href="/" className="flex items-center gap-3 group">
+        <img src={hcbLogo} alt="HCB Ar Condicionado Automotivo" className="w-12 h-12 object-contain drop-shadow-[0_0_12px_rgba(0,102,204,0.4)]" />
+        <div className="hidden sm:flex flex-col">
+          <span className="font-['Bebas_Neue'] text-[26px] leading-none text-[#F5F8FF] tracking-wide">HCB</span>
+          <span className="font-['Rajdhani'] text-[10px] font-semibold tracking-[0.15em] text-[#8A9BB5] uppercase">
+            Ar Condicionado
+          </span>
         </div>
       </a>
 
