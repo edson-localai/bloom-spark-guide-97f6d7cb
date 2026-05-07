@@ -3,12 +3,13 @@ import { ChevronRight, MessageCircle, Snowflake } from 'lucide-react';
 import hcbLogo from '@/assets/hcb-logo.png';
 import heroBg from '@/assets/hero-bg.jpg';
 import Logo from './Logo';
+import { SCROLL_OFFSET } from '@/constants/scroll';
 
 const HeroSection = () => {
   const handleScrollTo = (id: string) => {
     const element = document.getElementById(id);
     if (element) {
-      const offset = 72;
+      const offset = SCROLL_OFFSET;
       const bodyRect = document.body.getBoundingClientRect().top;
       const elementRect = element.getBoundingClientRect().top;
       const elementPosition = elementRect - bodyRect;

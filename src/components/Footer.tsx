@@ -1,6 +1,7 @@
 import { MapPin, Phone, Camera } from 'lucide-react';
 import hcbLogo from '@/assets/hcb-logo.png';
 import Logo from './Logo';
+import { SCROLL_OFFSET } from '@/constants/scroll';
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
@@ -9,7 +10,7 @@ const Footer = () => {
     e.preventDefault();
     const element = document.getElementById(id);
     if (element) {
-      const offset = 100;
+      const offset = SCROLL_OFFSET;
       const bodyRect = document.body.getBoundingClientRect().top;
       const elementRect = element.getBoundingClientRect().top;
       const elementPosition = elementRect - bodyRect;
