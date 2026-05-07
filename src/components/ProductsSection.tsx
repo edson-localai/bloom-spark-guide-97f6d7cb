@@ -14,23 +14,23 @@ const ProductCard = ({ icon: Icon, title, description, tag }: ProductCardProps) 
       hidden: { opacity: 0, y: 30 },
       visible: { opacity: 1, y: 0, transition: { duration: 0.5 } }
     }}
-    className="bg-hcb-card border border-hcb-border rounded-[16px] p-8 transition-all duration-300 hover:border-hcb-blue/50 hover:bg-[#1A1F28] hover:shadow-[0_8px_32px_rgba(0,102,204,0.2)] hover:-translate-y-1 group"
+    className="bg-[#16191F] border border-[#1E2330] rounded-[16px] p-8 transition-all duration-300 hover:border-[#0066CC]/50 hover:bg-[#1A1F28] hover:shadow-[0_8px_32px_rgba(0,102,204,0.2)] hover:-translate-y-1 group"
   >
-    <div className="w-[52px] h-[52px] rounded-[12px] bg-hcb-blue/10 flex items-center justify-center mb-5 group-hover:bg-hcb-blue/20 transition-colors">
-      <Icon className="w-6 h-6 text-hcb-blue" />
+    <div className="w-[52px] h-[52px] rounded-[12px] bg-[#0066CC]/10 flex items-center justify-center mb-5 group-hover:bg-[#0066CC]/20 transition-colors">
+      <Icon className="w-6 h-6 text-[#0066CC]" />
     </div>
     
-    <div className="inline-block px-3 py-1 rounded-full bg-hcb-blue/10 border border-hcb-blue/10 mb-3">
-      <span className="font-['Rajdhani'] text-[11px] font-bold tracking-[0.12em] text-hcb-blue uppercase">
+    <div className="inline-block px-3 py-1 rounded-full bg-[#0066CC]/10 border border-[#0066CC]/10 mb-3">
+      <span className="font-['Rajdhani'] text-[11px] font-bold tracking-[0.12em] text-[#0066CC] uppercase">
         {tag}
       </span>
     </div>
     
-    <h3 className="font-['Rajdhani'] text-[22px] font-bold text-hcb-white mb-2 uppercase">
+    <h3 className="font-['Rajdhani'] text-[22px] font-bold text-[#F5F8FF] mb-2 uppercase">
       {title}
     </h3>
     
-    <p className="font-['Inter'] text-[15px] font-light text-hcb-gray leading-[1.6]">
+    <p className="font-['Inter'] text-[15px] font-light text-[#8A9BB5] leading-[1.6]">
       {description}
     </p>
   </motion.div>
@@ -77,18 +77,18 @@ const ProductsSection = () => {
   ];
 
   return (
-    <section id="produtos" className="bg-hcb-black pt-24 pb-24 px-[max(24px,5vw)]">
+    <section id="produtos" className="bg-[#0A0A0A] pt-24 pb-24 px-[max(24px,5vw)]">
       {/* Header */}
       <div className="max-w-4xl mx-auto text-center mb-16">
-        <div className="inline-flex items-center gap-2 px-4 py-[6px] rounded-full bg-hcb-blue/10 border border-hcb-blue/30 mb-4">
-          <span className="font-['Rajdhani'] text-xs font-semibold tracking-[0.12em] text-hcb-blue-light uppercase">
+        <div className="inline-flex items-center gap-2 px-4 py-[6px] rounded-full bg-[#0066CC]/10 border border-[#0066CC]/30 mb-4">
+          <span className="font-['Rajdhani'] text-xs font-semibold tracking-[0.12em] text-[#60C0FF] uppercase">
             Catálogo
           </span>
         </div>
-        <h2 className="font-['Bebas_Neue'] text-[clamp(48px,6vw,80px)] text-hcb-white leading-tight uppercase mb-4">
+        <h2 className="font-['Bebas_Neue'] text-[clamp(48px,6vw,80px)] text-[#F5F8FF] leading-tight uppercase mb-4">
           Nossas Peças
         </h2>
-        <p className="font-['Inter'] text-lg text-hcb-gray max-w-2xl mx-auto">
+        <p className="font-['Inter'] text-lg text-[#8A9BB5] max-w-2xl mx-auto">
           Tudo que seu sistema de ar-condicionado precisa, em um só lugar.
         </p>
         <div className="hcb-divider w-[160px] mx-auto mt-8" />
