@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { ChevronRight, MessageCircle, Snowflake } from 'lucide-react';
 import hcbLogo from '@/assets/hcb-logo.png';
+import heroBg from '@/assets/hero-bg.jpg';
 import Logo from './Logo';
 
 const HeroSection = () => {
@@ -22,14 +23,24 @@ const HeroSection = () => {
 
   return (
     <section className="relative min-h-screen pt-[72px] bg-[#0A0A0A] overflow-hidden flex items-center">
-      {/* Background Elements */}
+      {/* Background Image */}
       <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-0 left-0 w-1/2 h-full bg-[radial-gradient(ellipse_at_10%_40%,rgba(0,102,204,0.12)_0%,transparent_60%)]" />
-        <div className="absolute top-0 right-0 w-[60%] h-full bg-[radial-gradient(ellipse_at_90%_60%,rgba(0,102,204,0.08)_0%,transparent_50%)]" />
+        <img 
+          src={heroBg} 
+          alt="" 
+          aria-hidden="true"
+          width={1920}
+          height={1080}
+          className="absolute inset-0 w-full h-full object-cover opacity-40"
+        />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#0A0A0A] via-[#0A0A0A]/85 to-[#0A0A0A]/40" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0A0A0A] via-transparent to-[#0A0A0A]/60" />
+        <div className="absolute top-0 left-0 w-1/2 h-full bg-[radial-gradient(ellipse_at_10%_40%,rgba(0,102,204,0.18)_0%,transparent_60%)]" />
+        <div className="absolute top-0 right-0 w-[60%] h-full bg-[radial-gradient(ellipse_at_90%_60%,rgba(0,102,204,0.12)_0%,transparent_50%)]" />
         
         {/* Grid lines */}
         <div 
-          className="absolute inset-0 opacity-[0.15]" 
+          className="absolute inset-0 opacity-[0.1]" 
           style={{ 
             backgroundImage: 'linear-gradient(rgba(30,35,48,0.8) 1px, transparent 1px), linear-gradient(90deg, rgba(30,35,48,0.8) 1px, transparent 1px)',
             backgroundSize: '60px 60px'

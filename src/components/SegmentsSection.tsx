@@ -1,15 +1,22 @@
 import { Car, Truck, Tractor, ChevronRight } from 'lucide-react';
 import { motion } from 'framer-motion';
+import segLight from '@/assets/segment-light.jpg';
+import segHeavy from '@/assets/segment-heavy.jpg';
+import segOffroad from '@/assets/segment-offroad.jpg';
 
 const SegmentCard = ({ 
   icon: Icon, 
   title, 
   items, 
+  image,
+  imageAlt,
   highlight = false 
 }: { 
   icon: any, 
   title: string, 
   items: string[], 
+  image: string,
+  imageAlt: string,
   highlight?: boolean 
 }) => (
   <motion.div
@@ -17,31 +24,46 @@ const SegmentCard = ({
       hidden: { opacity: 0, y: 30 },
       visible: { opacity: 1, y: 0, transition: { duration: 0.5 } }
     }}
-    className={`bg-[#16191F]/60 backdrop-blur-md rounded-[32px] p-10 border transition-all duration-500 group hover:shadow-2xl ${
+    className={`bg-[#16191F]/60 backdrop-blur-md rounded-[32px] border transition-all duration-500 group hover:shadow-2xl overflow-hidden ${
       highlight 
-        ? 'border-[#0066CC]/40 shadow-[0_0_50px_rgba(0,102,204,0.2)] relative scale-105 z-10' 
+        ? 'border-[#0066CC]/40 shadow-[0_0_50px_rgba(0,102,204,0.2)] relative lg:scale-105 z-10' 
         : 'border-[#1E2330] hover:border-[#0066CC]/20'
     }`}
   >
-    <div className="w-16 h-16 rounded-2xl bg-[#0066CC]/10 flex items-center justify-center mb-6 group-hover:scale-110 group-hover:rotate-6 transition-all duration-500">
-      <Icon className="w-8 h-8 text-[#0066CC]" />
+    {/* Image */}
+    <div className="relative h-48 overflow-hidden">
+      <img 
+        src={image} 
+        alt={imageAlt}
+        loading="lazy"
+        width={1024}
+        height={1024}
+        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+      />
+      <div className="absolute inset-0 bg-gradient-to-t from-[#16191F] via-[#16191F]/40 to-transparent" />
+      <div className="absolute bottom-4 left-4 w-14 h-14 rounded-2xl bg-[#0066CC]/90 backdrop-blur-sm flex items-center justify-center shadow-lg group-hover:scale-110 group-hover:rotate-6 transition-all duration-500">
+        <Icon className="w-7 h-7 text-white" />
+      </div>
     </div>
-    <h3 className="font-['Bebas_Neue'] text-[36px] text-[#F5F8FF] mb-6 uppercase tracking-wider group-hover:text-[#60C0FF] transition-colors">
-      {title}
-    </h3>
-    <ul className="space-y-3">
-      {items.map((item, idx) => (
-        <li 
-          key={idx} 
-          className={`flex items-center gap-3 py-2 ${idx < items.length - 1 ? 'border-b border-[#1E2330]/50' : ''}`}
-        >
-          <ChevronRight className="w-4 h-4 text-[#0066CC] group-hover:translate-x-1 transition-transform" />
-          <span className="font-['Rajdhani'] text-lg text-[#B8C8DC] font-medium group-hover:text-white transition-colors">
-            {item}
-          </span>
-        </li>
-      ))}
-    </ul>
+
+    <div className="p-10 pt-6">
+      <h3 className="font-['Bebas_Neue'] text-[36px] text-[#F5F8FF] mb-6 uppercase tracking-wider group-hover:text-[#60C0FF] transition-colors">
+        {title}
+      </h3>
+      <ul className="space-y-3">
+        {items.map((item, idx) => (
+          <li 
+            key={idx} 
+            className={`flex items-center gap-3 py-2 ${idx < items.length - 1 ? 'border-b border-[#1E2330]/50' : ''}`}
+          >
+            <ChevronRight className="w-4 h-4 text-[#0066CC] group-hover:translate-x-1 transition-transform" />
+            <span className="font-['Rajdhani'] text-lg text-[#B8C8DC] font-medium group-hover:text-white transition-colors">
+              {item}
+            </span>
+          </li>
+        ))}
+      </ul>
+    </div>
   </motion.div>
 );
 
@@ -81,6 +103,8 @@ const SegmentsSection = () => {
           <SegmentCard 
             icon={Car}
             title="Linha Leve"
+            image={segLight}
+            imageAlt="Carro SUV moderno representando linha leve"
             items={[
               "Automóveis de passeio",
               "SUVs e crossovers",
@@ -92,6 +116,8 @@ const SegmentsSection = () => {
             icon={Truck}
             title="Linha Pesada"
             highlight={true}
+            image={segHeavy}
+            imageAlt="Caminhão pesado representando linha pesada"
             items={[
               "Caminhões e carretas",
               "Ônibus urbanos e rodoviários",
@@ -102,6 +128,8 @@ const SegmentsSection = () => {
           <SegmentCard 
             icon={Tractor}
             title="Fora de Estrada"
+            image={segOffroad}
+            imageAlt="Escavadeira em obra representando linha fora de estrada"
             items={[
               "Máquinas de construção",
               "Escavadeiras e guindastes",
