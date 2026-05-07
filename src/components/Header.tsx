@@ -99,18 +99,23 @@ const Header = () => {
 
       {/* Desktop Nav */}
       <nav className="hidden md:flex items-center gap-1">
-        {navLinks.map((link) => (
-          <a
-            key={link.name}
-            href={link.href}
-            onClick={(e) => handleScrollTo(e, link.href)}
-            className="px-4 py-2 font-['Rajdhani'] text-[15px] font-semibold text-[#8A9BB5] hover:text-[#F5F8FF] transition-all relative group"
-          >
-            <span className="relative z-10">{link.name}</span>
-            <span className="absolute inset-0 bg-[#0066CC]/0 group-hover:bg-[#0066CC]/5 rounded-lg transition-colors" />
-            <span className="absolute -bottom-1 left-4 right-4 h-[2px] bg-[#0066CC] scale-x-0 transition-transform duration-300 origin-center group-hover:scale-x-100" />
-          </a>
-        ))}
+        {navLinks.map((link) => {
+          const isActive = activeSection === link.href.replace('#', '');
+          return (
+            <a
+              key={link.name}
+              href={link.href}
+              onClick={(e) => handleScrollTo(e, link.href)}
+              className={`px-4 py-2 font-['Rajdhani'] text-[15px] font-semibold transition-all relative group ${
+                isActive ? 'text-[#F5F8FF]' : 'text-[#8A9BB5] hover:text-[#F5F8FF]'
+              }`}
+            >
+              <span className="relative z-10">{link.name}</span>
+              <span className={`absolute inset-0 bg-[#0066CC]/5 rounded-lg transition-colors ${isActive ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`} />
+              <span className={`absolute -bottom-1 left-4 right-4 h-[2px] bg-[#0066CC] transition-transform duration-300 origin-center ${isActive ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'}`} />
+            </a>
+          );
+        })}
       </nav>
 
       {/* CTA Button */}
