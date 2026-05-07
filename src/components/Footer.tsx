@@ -1,4 +1,5 @@
-import { MapPin, Phone, Snowflake, Camera } from 'lucide-react';
+import { MapPin, Phone, Camera } from 'lucide-react';
+import hcbLogo from '@/assets/hcb-logo.png';
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
@@ -26,15 +27,13 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 mb-16">
           {/* Column 1 - Brand */}
           <div className="space-y-6">
-            <div className="flex items-center gap-2">
-              <Snowflake className="text-hcb-blue w-5 h-5" />
+            <div className="flex items-center gap-3">
+              <img src={hcbLogo} alt="HCB Ar Condicionado Automotivo" className="w-14 h-14 object-contain drop-shadow-[0_0_12px_rgba(0,102,204,0.4)]" />
               <div className="flex flex-col">
-                <div className="flex items-center gap-2">
-                  <span className="font-['Bebas_Neue'] text-[24px] leading-none text-hcb-white">HCB</span>
-                  <span className="font-['Rajdhani'] text-[10px] font-semibold tracking-[0.1em] text-hcb-gray self-center mt-0.5 uppercase">
-                    Ar Condicionado
-                  </span>
-                </div>
+                <span className="font-['Bebas_Neue'] text-[26px] leading-none text-hcb-white tracking-wide">HCB</span>
+                <span className="font-['Rajdhani'] text-[10px] font-semibold tracking-[0.1em] text-hcb-gray uppercase">
+                  Ar Condicionado Automotivo
+                </span>
               </div>
             </div>
             <p className="font-['Inter'] text-sm text-hcb-gray leading-relaxed max-w-sm">
