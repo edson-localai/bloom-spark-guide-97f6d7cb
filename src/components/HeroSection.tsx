@@ -42,7 +42,7 @@ const HeroSection = () => {
         </svg>
       </div>
 
-      <div className="w-full px-[max(24px,5vw)] grid grid-cols-1 lg:grid-cols-[55%_45%] gap-12 items-center relative z-10 py-20">
+      <div className="container mx-auto px-[max(24px,5vw)] grid grid-cols-1 lg:grid-cols-[55%_45%] gap-12 items-center relative z-10 py-20">
         {/* Left Column */}
         <motion.div
           initial={{ opacity: 0, x: -50 }}
