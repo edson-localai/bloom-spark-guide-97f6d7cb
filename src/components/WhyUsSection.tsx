@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import { MapPin, Phone, Clock, Star } from 'lucide-react';
+import storefrontImg from '../assets/storefront.jpg';
 
 const WhyUsSection = () => {
   const differentials = [
@@ -86,7 +87,16 @@ const WhyUsSection = () => {
             className="lg:sticky lg:top-32 bg-gradient-to-br from-[#111318] to-[#0D1B2A] border border-[#0066CC]/25 rounded-[24px] p-10 lg:p-12 shadow-[0_0_40px_rgba(0,102,204,0.1)] relative overflow-hidden"
           >
             {/* Background elements */}
-            <div className="absolute top-0 right-0 w-32 h-32 bg-[#0066CC]/5 rounded-full blur-3xl -mr-10 -mt-10" />
+            <div className="absolute inset-0 z-0 opacity-20">
+              <img 
+                src={storefrontImg} 
+                alt="HCB Storefront" 
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-br from-[#111318] via-[#0D1B2A]/80 to-[#0D1B2A]" />
+            </div>
+            
+            <div className="absolute top-0 right-0 w-32 h-32 bg-[#0066CC]/5 rounded-full blur-3xl -mr-10 -mt-10 z-0" />
             
             <div className="relative z-10">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#C8A84B]/10 border border-[#C8A84B]/30 mb-8">

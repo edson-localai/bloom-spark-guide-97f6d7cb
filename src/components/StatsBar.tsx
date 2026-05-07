@@ -1,7 +1,7 @@
 import { Snowflake, Truck, Shield, Zap } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useState, useEffect } from 'react';
-import Logo from './Logo';
+import techPattern from '../assets/tech-pattern.jpg';
 
 const StatsBar = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -21,8 +21,18 @@ const StatsBar = () => {
 
   return (
     <section className="relative z-20 -mt-10 sm:-mt-16 px-[max(24px,5vw)]">
-      <div className="max-w-7xl mx-auto bg-[#16191F]/90 backdrop-blur-xl border border-[#0066CC]/20 rounded-2xl sm:rounded-[32px] p-8 sm:p-12 shadow-[0_20px_50px_rgba(0,0,0,0.6)]">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-4 items-center">
+      <div className="max-w-7xl mx-auto relative overflow-hidden bg-[#16191F]/90 backdrop-blur-xl border border-[#0066CC]/20 rounded-2xl sm:rounded-[32px] p-8 sm:p-12 shadow-[0_20px_50px_rgba(0,0,0,0.6)]">
+        {/* Background Image Overlay */}
+        <div className="absolute inset-0 z-0 opacity-10">
+          <img 
+            src={techPattern} 
+            alt="Technical pattern" 
+            className="w-full h-full object-cover mix-blend-overlay"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#16191F] via-transparent to-[#16191F]" />
+        </div>
+
+        <div className="relative z-10 grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-4 items-center">
           {isLoading ? (
             Array(4).fill(0).map((_, i) => (
               <div key={i} className="flex flex-col items-center space-y-4 animate-pulse">
