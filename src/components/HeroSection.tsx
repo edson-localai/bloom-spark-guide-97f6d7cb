@@ -19,7 +19,7 @@ const HeroSection = () => {
   };
 
   return (
-    <section className="relative min-h-screen pt-[72px] bg-hcb-black overflow-hidden flex items-center">
+    <section className="relative min-h-screen pt-[72px] bg-[#0A0A0A] overflow-hidden flex items-center">
       {/* Background Elements */}
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute top-0 left-0 w-1/2 h-full bg-[radial-gradient(ellipse_at_10%_40%,rgba(0,102,204,0.12)_0%,transparent_60%)]" />
@@ -50,21 +50,21 @@ const HeroSection = () => {
           transition={{ duration: 0.8, ease: 'easeOut' }}
         >
           {/* Badge */}
-          <div className="inline-flex items-center gap-2 px-4 py-[6px] rounded-full bg-hcb-blue/10 border border-hcb-blue/30 mb-6">
-            <Snowflake className="w-[14px] h-[14px] text-hcb-blue" />
-            <span className="font-['Rajdhani'] text-xs font-semibold tracking-[0.12em] text-hcb-blue-light uppercase">
+          <div className="inline-flex items-center gap-2 px-4 py-[6px] rounded-full bg-[#0066CC]/10 border border-[#0066CC]/30 mb-6">
+            <Snowflake className="w-[14px] h-[14px] text-[#0066CC]" />
+            <span className="font-['Rajdhani'] text-xs font-semibold tracking-[0.12em] text-[#60C0FF] uppercase">
               Especialistas em Refrigeração Automotiva
             </span>
           </div>
 
           {/* H1 */}
-          <h1 className="font-['Bebas_Neue'] text-[clamp(60px,9vw,110px)] leading-[0.95] text-hcb-white mb-6 uppercase tracking-wider">
-            Frio de <span className="bg-gradient-to-r from-hcb-blue-light via-hcb-blue to-hcb-white bg-clip-text text-transparent">Verdade</span><br />
+          <h1 className="font-['Bebas_Neue'] text-[clamp(60px,9vw,110px)] leading-[0.95] text-[#F5F8FF] mb-6 uppercase tracking-wider">
+            Frio de <span className="bg-gradient-to-r from-[#60C0FF] via-[#0066CC] to-[#F5F8FF] bg-clip-text text-transparent">Verdade</span><br />
             Para seu Veículo
           </h1>
 
           {/* Subtitle */}
-          <p className="font-['Inter'] text-lg font-light text-hcb-gray leading-[1.7] max-w-[520px] mb-10">
+          <p className="font-['Inter'] text-lg font-light text-[#8A9BB5] leading-[1.7] max-w-[520px] mb-10">
             Peças de ar-condicionado automotivo linha leve, pesada e fora de estrada. 
             Revendedor oficial Denso. Atendemos varejo e oficinas com agilidade e qualidade.
           </p>
@@ -73,7 +73,7 @@ const HeroSection = () => {
           <div className="flex flex-wrap gap-4 mb-14">
             <button 
               onClick={() => handleScrollTo('produtos')}
-              className="group flex items-center gap-2 px-8 py-4 bg-gradient-to-br from-hcb-blue to-hcb-blue-mid rounded-[8px] font-['Rajdhani'] text-base font-bold text-white transition-all duration-300 hover:-translate-y-[2px] hover:brightness-115 hover:shadow-[0_0_30px_rgba(0,102,204,0.4)]"
+              className="group flex items-center gap-2 px-8 py-4 bg-gradient-to-br from-[#0066CC] to-[#0080FF] rounded-[8px] font-['Rajdhani'] text-base font-bold text-white transition-all duration-300 hover:-translate-y-[2px] hover:brightness-115 hover:shadow-[0_0_30px_rgba(0,102,204,0.4)]"
             >
               Ver Peças Disponíveis
               <ChevronRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
@@ -82,7 +82,7 @@ const HeroSection = () => {
               href="https://wa.me/5591985161991"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-2 px-8 py-4 bg-transparent border border-hcb-blue/40 rounded-[8px] font-['Rajdhani'] text-base font-semibold text-hcb-blue-light transition-all duration-300 hover:bg-hcb-blue/10 hover:border-hcb-blue"
+              className="flex items-center gap-2 px-8 py-4 bg-transparent border border-[#0066CC]/40 rounded-[8px] font-['Rajdhani'] text-base font-semibold text-[#60C0FF] transition-all duration-300 hover:bg-[#0066CC]/10 hover:border-[#0066CC]"
             >
               <MessageCircle className="w-5 h-5" />
               Falar com Especialista
@@ -91,17 +91,17 @@ const HeroSection = () => {
 
           {/* Stats */}
           <div className="flex flex-wrap items-center gap-x-10 gap-y-6">
-            <div className="pr-10 border-r border-hcb-border last:border-0 last:pr-0">
-              <div className="font-['Bebas_Neue'] text-[28px] text-hcb-white leading-none mb-1">Linha Leve</div>
-              <div className="font-['Rajdhani'] text-xs font-bold tracking-[0.1em] text-hcb-gray uppercase">Passeio & SUVs</div>
+            <div className="pr-10 border-r border-[#1E2330] last:border-0 last:pr-0">
+              <div className="font-['Bebas_Neue'] text-[28px] text-[#F5F8FF] leading-none mb-1">Linha Leve</div>
+              <div className="font-['Rajdhani'] text-xs font-bold tracking-[0.1em] text-[#8A9BB5] uppercase">Passeio & SUVs</div>
             </div>
-            <div className="pr-10 border-r border-hcb-border last:border-0 last:pr-0">
-              <div className="font-['Bebas_Neue'] text-[28px] text-hcb-white leading-none mb-1">Linha Pesada</div>
-              <div className="font-['Rajdhani'] text-xs font-bold tracking-[0.1em] text-hcb-gray uppercase">Caminhões & Ônibus</div>
+            <div className="pr-10 border-r border-[#1E2330] last:border-0 last:pr-0">
+              <div className="font-['Bebas_Neue'] text-[28px] text-[#F5F8FF] leading-none mb-1">Linha Pesada</div>
+              <div className="font-['Rajdhani'] text-xs font-bold tracking-[0.1em] text-[#8A9BB5] uppercase">Caminhões & Ônibus</div>
             </div>
             <div className="">
-              <div className="font-['Bebas_Neue'] text-[28px] text-hcb-white leading-none mb-1">Denso®</div>
-              <div className="font-['Rajdhani'] text-xs font-bold tracking-[0.1em] text-hcb-gray uppercase">Revendedor Oficial</div>
+              <div className="font-['Bebas_Neue'] text-[28px] text-[#F5F8FF] leading-none mb-1">Denso®</div>
+              <div className="font-['Rajdhani'] text-xs font-bold tracking-[0.1em] text-[#8A9BB5] uppercase">Revendedor Oficial</div>
             </div>
           </div>
         </motion.div>
@@ -115,47 +115,47 @@ const HeroSection = () => {
         >
           {/* Main Circle */}
           <div 
-            className="w-[300px] h-[300px] sm:w-[400px] sm:h-[400px] rounded-full bg-[radial-gradient(circle_at_40%_35%,#16191F_0%,#0D1B2A_60%,#0A0A0A_100%)] border border-hcb-blue/20 flex items-center justify-center relative shadow-[0_0_80px_rgba(0,102,204,0.15),inset_0_0_60px_rgba(0,102,204,0.05)] animate-[floatHero_3s_ease-in-out_infinite_alternate]"
+            className="w-[300px] h-[300px] sm:w-[400px] sm:h-[400px] rounded-full bg-[radial-gradient(circle_at_40%_35%,#16191F_0%,#0D1B2A_60%,#0A0A0A_100%)] border border-[#0066CC]/20 flex items-center justify-center relative shadow-[0_0_80px_rgba(0,102,204,0.15),inset_0_0_60px_rgba(0,102,204,0.05)] animate-[floatHero_3s_ease-in-out_infinite_alternate]"
           >
-             <span className="text-[100px] sm:text-[160px] opacity-[0.15] text-hcb-blue pointer-events-none">❄</span>
+             <span className="text-[100px] sm:text-[160px] opacity-[0.15] text-[#0066CC] pointer-events-none">❄</span>
           </div>
 
           {/* Rotating Ring */}
-          <div className="absolute w-[350px] h-[350px] sm:w-[460px] sm:h-[460px] border border-dashed border-hcb-blue/20 rounded-full animate-[rotateSlow_20s_linear_infinite]" />
+          <div className="absolute w-[350px] h-[350px] sm:w-[460px] sm:h-[460px] border border-dashed border-[#0066CC]/20 rounded-full animate-[rotateSlow_20s_linear_infinite]" />
 
           {/* Floating Cards */}
           <motion.div 
             animate={{ y: [0, -10, 0] }}
             transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
-            className="absolute top-0 left-[-20px] sm:left-[-40px] bg-hcb-card border border-hcb-border rounded-[12px] px-5 py-3 flex items-center gap-2 shadow-xl z-20"
+            className="absolute top-0 left-[-20px] sm:left-[-40px] bg-[#16191F] border border-[#1E2330] rounded-[12px] px-5 py-3 flex items-center gap-2 shadow-xl z-20"
           >
-            <span className="text-hcb-blue">✓</span>
-            <span className="font-['Rajdhani'] text-sm text-hcb-white font-medium">Garantia de até 8 meses</span>
+            <span className="text-[#0066CC]">✓</span>
+            <span className="font-['Rajdhani'] text-sm text-[#F5F8FF] font-medium">Garantia de até 8 meses</span>
           </motion.div>
 
           <motion.div 
             animate={{ y: [0, 10, 0] }}
             transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-            className="absolute bottom-10 right-[-30px] sm:right-[-50px] bg-hcb-card border border-hcb-border rounded-[12px] px-5 py-3 flex items-center gap-2 shadow-xl z-20"
+            className="absolute bottom-10 right-[-30px] sm:right-[-50px] bg-[#16191F] border border-[#1E2330] rounded-[12px] px-5 py-3 flex items-center gap-2 shadow-xl z-20"
           >
-            <span className="text-hcb-blue">⚡</span>
-            <span className="font-['Rajdhani'] text-sm text-hcb-white font-medium">Entrega Rápida para Oficinas</span>
+            <span className="text-[#0066CC]">⚡</span>
+            <span className="font-['Rajdhani'] text-sm text-[#F5F8FF] font-medium">Entrega Rápida para Oficinas</span>
           </motion.div>
 
           <motion.div 
             animate={{ x: [0, -5, 0] }}
             transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 1.5 }}
-            className="absolute bottom-40 left-[-40px] sm:left-[-60px] bg-hcb-card border border-hcb-border rounded-[12px] px-5 py-3 flex items-center gap-2 shadow-xl z-20"
+            className="absolute bottom-40 left-[-40px] sm:left-[-60px] bg-[#16191F] border border-[#1E2330] rounded-[12px] px-5 py-3 flex items-center gap-2 shadow-xl z-20"
           >
-            <span className="text-hcb-blue">📍</span>
-            <span className="font-['Rajdhani'] text-sm text-hcb-white font-medium">Castanhal, Pará — Centro</span>
+            <span className="text-[#0066CC]">📍</span>
+            <span className="font-['Rajdhani'] text-sm text-[#F5F8FF] font-medium">Castanhal, Pará — Centro</span>
           </motion.div>
 
           {/* Particles */}
           {[...Array(8)].map((_, i) => (
             <span 
               key={i}
-              className="absolute text-hcb-blue-light/30 animate-[drift_4s_infinite]"
+              className="absolute text-[#60C0FF]/30 animate-[drift_4s_infinite]"
               style={{
                 top: `${Math.random() * 100}%`,
                 left: `${Math.random() * 100}%`,
