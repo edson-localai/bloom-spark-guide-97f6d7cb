@@ -30,7 +30,7 @@ const reviews = [
 
 const TestimonialsSection = () => {
   return (
-    <section id="depoimentos" className="py-24 relative overflow-hidden bg-[#0A0A0A]">
+    <section id="depoimentos" className="py-32 relative overflow-hidden bg-[#0A0A0A] px-[max(24px,5vw)]">
       {/* Background Glow */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-[#0066CC]/5 rounded-full blur-[120px] pointer-events-none" />
       

@@ -31,7 +31,7 @@ const WhyUsSection = () => {
   ];
 
   return (
-    <section id="diferenciais" className="bg-[#0A0A0A] pt-32 pb-24 px-[max(24px,5vw)] overflow-hidden">
+    <section id="diferenciais" className="bg-[#0A0A0A] py-32 px-[max(24px,5vw)] overflow-hidden">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="text-center mb-20">
