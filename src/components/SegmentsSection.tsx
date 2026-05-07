@@ -1,5 +1,8 @@
 import { Car, Truck, Tractor, ChevronRight } from 'lucide-react';
 import { motion } from 'framer-motion';
+import segLight from '@/assets/segment-light.jpg';
+import segHeavy from '@/assets/segment-heavy.jpg';
+import segOffroad from '@/assets/segment-offroad.jpg';
 
 const SegmentCard = ({ 
   icon: Icon, 
