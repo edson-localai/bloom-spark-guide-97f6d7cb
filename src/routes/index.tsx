@@ -15,7 +15,7 @@ export const Route = createFileRoute("/")({
 
 function Index() {
   return (
-    <main className="min-h-screen bg-[#0A0A0A]">
+    <div className="min-h-screen bg-[#0A0A0A] text-white selection:bg-[#0066CC]/30">
       <Header />
       <HeroSection />
       <StatsBar />
@@ -25,6 +25,6 @@ function Index() {
       <GuaranteeSection />
       <CTASection />
       <Footer />
-    </main>
+    </div>
   );
 }
