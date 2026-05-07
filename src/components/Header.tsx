@@ -154,19 +154,24 @@ const Header = () => {
             transition={{ duration: 0.3, ease: "easeOut" }}
             className="fixed inset-0 z-40 bg-[#0A0A0A]/95 backdrop-blur-xl md:hidden flex flex-col items-center justify-center p-8 gap-8"
           >
-            {navLinks.map((link, i) => (
-              <motion.a
-                key={link.name}
-                href={link.href}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.1 }}
-                onClick={(e) => handleScrollTo(e, link.href)}
-                className="font-['Bebas_Neue'] text-4xl tracking-wider text-[#F5F8FF] hover:text-[#0066CC] transition-colors"
-              >
-                {link.name}
-              </motion.a>
-            ))}
+            {navLinks.map((link, i) => {
+              const isActive = activeSection === link.href.replace('#', '');
+              return (
+                <motion.a
+                  key={link.name}
+                  href={link.href}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.1 }}
+                  onClick={(e) => handleScrollTo(e, link.href)}
+                  className={`font-['Bebas_Neue'] text-4xl tracking-wider transition-colors ${
+                    isActive ? 'text-[#0066CC]' : 'text-[#F5F8FF] hover:text-[#0066CC]'
+                  }`}
+                >
+                  {link.name}
+                </motion.a>
+              );
+            })}
             <motion.a
               href="https://wa.me/5591985161991"
               target="_blank"
