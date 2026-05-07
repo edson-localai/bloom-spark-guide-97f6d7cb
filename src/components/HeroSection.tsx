@@ -61,8 +61,8 @@ const HeroSection = () => {
 
           {/* H1 */}
           <h1 className="font-['Bebas_Neue'] text-[clamp(60px,9vw,110px)] leading-[0.95] text-[#F5F8FF] mb-6 uppercase tracking-wider">
-            Frio de <span className="bg-gradient-to-r from-[#60C0FF] via-[#0066CC] to-[#F5F8FF] bg-clip-text text-transparent">Verdade</span><br />
-            Para seu Veículo
+            Ar Condicionado <span className="bg-gradient-to-r from-[#60C0FF] via-[#0066CC] to-[#F5F8FF] bg-clip-text text-transparent">Automotivo</span><br />
+            em Castanhal
           </h1>
 
           {/* Subtitle */}

@@ -1,27 +1,40 @@
-I will implement the HCB Ar Condicionado Automotivo landing page following the provided prompt.
+Para otimizar o SEO da HCB Ar Condicionado Automotivo, focaremos em visibilidade local (Castanhal e região), autoridade da marca e performance técnica.
 
-### Design System & Setup
-- Configure `src/index.css` with the custom color palette, fonts (Bebas Neue, Rajdhani, Inter), and global styles including glassmorphism and glow effects.
-- Update `index.html` to include Google Fonts.
+### 1. Otimização On-Page (Imediato)
+*   **Melhoria de Metadados:** Atualizar títulos e descrições para incluir palavras-chave estratégicas como "Ar Condicionado Automotivo Castanhal", "Peças Denso", "Linha Pesada e Leve".
+*   **Hierarquia de Cabeçalhos (H1-H6):** Garantir que apenas um H1 exista (no Hero) e que as seções sigam uma ordem lógica para os rastreadores.
+*   **Atributos Alt em Imagens:** Adicionar descrições textuais em todas as imagens (logo e assets) para acessibilidade e indexação.
+*   **Dados Estruturados (JSON-LD):** Implementar o schema `LocalBusiness` para ajudar o Google a entender que se trata de uma empresa física em Castanhal com endereço e telefone.
 
-### Component Development (Single Page Architecture)
-- **Header**: Sticky navigation with glassmorphism, SVG logo, and WhatsApp CTA.
-- **HeroSection**: High-impact introduction with animated CSS backgrounds (radial gradients, grids, floating elements) and primary CTAs.
-- **StatsBar**: Quick credential bar highlighting key business metrics with Lucide icons.
-- **ProductsSection**: Grid of product cards (Compressors, Condensers, etc.) with hover effects.
-- **SegmentsSection**: Breakdown of served markets (Light, Heavy, Off-road) with tailored icons.
-- **WhyUsSection**: Detailed value propositions and a highlight card for the Denso partnership.
-- **GuaranteeSection**: Trust-building section focusing on the 8-month warranty and original parts.
-- **CTASection**: Final conversion point with large buttons and location details.
-- **Footer**: Brand summary, navigation links, and legal information.
+### 2. Conteúdo e Palavras-chave
+*   **Foco Regional:** Reforçar termos relacionados a Castanhal, Pará e cidades vizinhas.
+*   **Foco em Marcas:** Destacar a parceria "Denso" e a variedade de peças (compressores, condensadores, etc.).
+*   **Segmentação:** Otimizar termos para "Linha Pesada" e "Máquinas Agrícolas", que são nichos de alta busca na região.
 
-### Interactions & Polish
-- Use **Framer Motion** for scroll-reveal animations (fade-in, slide-up, stagger) on all sections.
-- Implement smooth scrolling for all internal navigation links.
-- Ensure 100% responsiveness from mobile to desktop.
-- Strictly use CSS/SVG for all visuals as requested (no external images).
+### 3. SEO Técnico e Performance
+*   **Canonical Tags:** Prevenir problemas de conteúdo duplicado.
+*   **Sitemap e Robots.txt:** Criar arquivos essenciais para orientar os robôs de busca.
+*   **Linguagem do Site:** Corrigir a tag `lang="en"` para `lang="pt-BR"` no arquivo raiz.
 
-### Technical Details
-- **Stack**: React, TypeScript, Tailwind CSS, Framer Motion, Lucide React.
-- **No External Assets**: All icons from Lucide, all graphics via CSS/SVG.
-- **Contact Integration**: All links mapped to the provided WhatsApp, Instagram, and Google Maps URLs.
+### 4. SEO Local (Fora do Código)
+*   **Google Meu Negócio:** Otimizar a ficha da empresa com fotos, horários e incentivar avaliações de clientes.
+
+---
+
+### Detalhes Técnicos para Implementação:
+
+1.  **src/routes/__root.tsx:**
+    *   Alterar `lang="en"` para `lang="pt-BR"`.
+    *   Refinar `title` e `description` no objeto `head`.
+    *   Adicionar script JSON-LD de `LocalBusiness`.
+
+2.  **src/components/HeroSection.tsx:**
+    *   Garantir que o H1 contenha as palavras-chave principais.
+    *   Adicionar `alt` descritivo na imagem da logo.
+
+3.  **src/components/Footer.tsx:**
+    *   Verificar se as informações de contato estão em formato de texto (rastreável).
+
+4.  **Criação de Arquivos:**
+    *   `public/robots.txt`
+    *   `public/sitemap.xml` (ou via script de build).

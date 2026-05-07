@@ -14,11 +14,15 @@ const Logo = ({ className = "", size = 'md' }: LogoProps) => {
   };
 
   return (
-    <img 
-      src={hcbLogo} 
-      alt="HCB Ar Condicionado Automotivo" 
-      className={`object-contain drop-shadow-[0_0_8px_rgba(0,102,204,0.3)] ${sizeClasses[size]} ${className}`}
-    />
+    <div className={`relative flex items-center justify-center ${sizeClasses[size]} ${className}`}>
+      <img
+        src={hcbLogo}
+        alt="HCB Ar Condicionado Automotivo - Peças e Serviços em Castanhal"
+        title="HCB Ar Condicionado Automotivo"
+        className="w-full h-full object-contain"
+        loading={size === 'hero' ? 'eager' : 'lazy'}
+      />
+    </div>
   );
 };
 
