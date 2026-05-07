@@ -31,7 +31,7 @@ const Header = () => {
     const id = href.replace('#', '');
     const element = document.getElementById(id);
     if (element) {
-      const offset = 100;
+      const offset = SCROLL_OFFSET;
       const bodyRect = document.body.getBoundingClientRect().top;
       const elementRect = element.getBoundingClientRect().top;
       const elementPosition = elementRect - bodyRect;
