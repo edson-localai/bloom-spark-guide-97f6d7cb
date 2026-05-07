@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { MessageCircle, Menu, X } from 'lucide-react';
 import hcbLogo from '@/assets/hcb-logo.png';
 import Logo from './Logo';
+import { SCROLL_OFFSET } from '@/constants/scroll';
 
 const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
