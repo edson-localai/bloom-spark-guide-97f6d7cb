@@ -23,7 +23,11 @@ const StatsBar = () => {
             viewport={{ once: true }}
             className="flex flex-col items-center text-center px-4 relative flex-1 min-w-[160px]"
           >
-            <stat.icon className="w-7 h-7 text-[#0066CC] mb-1" />
+            {stat.isLogo ? (
+              <Logo size="md" className="mb-1" />
+            ) : (
+              <stat.icon className="w-7 h-7 text-[#0066CC] mb-1" />
+            )}
             <div className="font-['Bebas_Neue'] text-[28px] text-[#F5F8FF] leading-tight my-1 uppercase">
               {stat.value}
             </div>
