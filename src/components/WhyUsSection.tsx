@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { MapPin, Phone, Clock, Star } from 'lucide-react';
-import storefrontImg from '../assets/storefront.jpg';
+import whyUsBg from '../assets/why-us-bg.jpg';
 
 const WhyUsSection = () => {
   const differentials = [
