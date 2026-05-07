@@ -83,9 +83,23 @@ const ProductsSection = () => {
   ];
 
   return (
-    <section id="produtos" className="bg-[#0A0A0A] pt-24 pb-24 px-[max(24px,5vw)]">
+    <section id="produtos" className="relative bg-[#0A0A0A] pt-24 pb-24 px-[max(24px,5vw)] overflow-hidden">
+      {/* Background image */}
+      <div className="absolute inset-0 pointer-events-none">
+        <img 
+          src={productsBg} 
+          alt="" 
+          aria-hidden="true"
+          loading="lazy"
+          width={1600}
+          height={900}
+          className="absolute top-0 right-0 w-full md:w-2/3 h-full object-cover opacity-15"
+        />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#0A0A0A] via-[#0A0A0A]/90 to-[#0A0A0A]/60" />
+      </div>
+
       {/* Header */}
-      <div className="max-w-4xl mx-auto text-center mb-16">
+      <div className="relative z-10 max-w-4xl mx-auto text-center mb-16">
         <div className="inline-flex items-center gap-2 px-4 py-[6px] rounded-full bg-[#0066CC]/10 border border-[#0066CC]/30 mb-4">
           <span className="font-['Rajdhani'] text-xs font-semibold tracking-[0.12em] text-[#60C0FF] uppercase">
             Catálogo
