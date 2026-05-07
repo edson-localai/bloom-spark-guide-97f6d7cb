@@ -7,6 +7,7 @@ import SegmentsSection from '../components/SegmentsSection';
 import WhyUsSection from '../components/WhyUsSection';
 import GuaranteeSection from '../components/GuaranteeSection';
 import CTASection from '../components/CTASection';
+import TestimonialsSection from '../components/TestimonialsSection';
 import Footer from '../components/Footer';
 
 export const Route = createFileRoute("/")({
@@ -23,6 +24,7 @@ function Index() {
       <SegmentsSection />
       <WhyUsSection />
       <GuaranteeSection />
+      <TestimonialsSection />
       <CTASection />
       <Footer />
     </div>
