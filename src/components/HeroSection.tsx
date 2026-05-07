@@ -42,7 +42,7 @@ const HeroSection = () => {
         </svg>
       </div>
 
-      <div className="container mx-auto px-[max(24px,5vw)] grid grid-cols-1 lg:grid-cols-[55%_45%] gap-12 items-center relative z-10 py-20">
+      <div className="w-full px-[max(24px,5vw)] grid grid-cols-1 lg:grid-cols-[55%_45%] gap-12 items-center relative z-10 py-20">
         {/* Left Column */}
         <motion.div
           initial={{ opacity: 0, x: -50 }}
@@ -127,7 +127,7 @@ const HeroSection = () => {
           <motion.div 
             animate={{ y: [0, -10, 0] }}
             transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
-            className="absolute top-0 left-[-20px] sm:left-[-40px] bg-hcb-card border border-hcb-blue/20 rounded-[12px] px-5 py-3 flex items-center gap-2 shadow-xl z-20"
+            className="absolute top-0 left-[-20px] sm:left-[-40px] bg-hcb-card border border-hcb-border rounded-[12px] px-5 py-3 flex items-center gap-2 shadow-xl z-20"
           >
             <span className="text-hcb-blue">✓</span>
             <span className="font-['Rajdhani'] text-sm text-hcb-white font-medium">Garantia de até 8 meses</span>
@@ -136,7 +136,7 @@ const HeroSection = () => {
           <motion.div 
             animate={{ y: [0, 10, 0] }}
             transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-            className="absolute bottom-10 right-[-30px] sm:right-[-50px] bg-hcb-card border border-hcb-blue/20 rounded-[12px] px-5 py-3 flex items-center gap-2 shadow-xl z-20"
+            className="absolute bottom-10 right-[-30px] sm:right-[-50px] bg-hcb-card border border-hcb-border rounded-[12px] px-5 py-3 flex items-center gap-2 shadow-xl z-20"
           >
             <span className="text-hcb-blue">⚡</span>
             <span className="font-['Rajdhani'] text-sm text-hcb-white font-medium">Entrega Rápida para Oficinas</span>
@@ -145,7 +145,7 @@ const HeroSection = () => {
           <motion.div 
             animate={{ x: [0, -5, 0] }}
             transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 1.5 }}
-            className="absolute bottom-40 left-[-40px] sm:left-[-60px] bg-hcb-card border border-hcb-blue/20 rounded-[12px] px-5 py-3 flex items-center gap-2 shadow-xl z-20"
+            className="absolute bottom-40 left-[-40px] sm:left-[-60px] bg-hcb-card border border-hcb-border rounded-[12px] px-5 py-3 flex items-center gap-2 shadow-xl z-20"
           >
             <span className="text-hcb-blue">📍</span>
             <span className="font-['Rajdhani'] text-sm text-hcb-white font-medium">Castanhal, Pará — Centro</span>
