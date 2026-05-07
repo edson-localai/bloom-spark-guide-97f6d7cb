@@ -83,7 +83,7 @@ const ProductsSection = () => {
   ];
 
   return (
-    <section id="produtos" className="relative bg-[#0A0A0A] pt-32 pb-32 px-[max(24px,5vw)] overflow-hidden">
+    <section id="produtos" className="relative bg-[#0A0A0A] py-20 sm:py-32 px-[max(24px,5vw)] overflow-hidden">
       {/* Background image */}
       <div className="absolute inset-0 pointer-events-none">
         <img 
