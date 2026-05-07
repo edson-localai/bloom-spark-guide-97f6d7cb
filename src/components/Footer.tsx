@@ -1,5 +1,6 @@
 import { MapPin, Phone, Camera } from 'lucide-react';
 import hcbLogo from '@/assets/hcb-logo.png';
+import Logo from './Logo';
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
@@ -28,7 +29,7 @@ const Footer = () => {
           {/* Column 1 - Brand */}
           <div className="space-y-6">
             <div className="flex items-center gap-2">
-              <img src={hcbLogo} alt="HCB Ar Condicionado Automotivo" className="w-10 h-10 sm:w-12 sm:h-12 object-contain drop-shadow-[0_0_8px_rgba(0,102,204,0.3)]" />
+              <Logo size="md" />
               <div className="flex flex-col">
                 <span className="font-['Bebas_Neue'] text-[26px] leading-none text-hcb-white tracking-wide">HCB</span>
                 <span className="font-['Rajdhani'] text-[10px] font-semibold tracking-[0.1em] text-hcb-gray uppercase">
