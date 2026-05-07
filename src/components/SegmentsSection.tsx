@@ -103,6 +103,8 @@ const SegmentsSection = () => {
           <SegmentCard 
             icon={Car}
             title="Linha Leve"
+            image={segLight}
+            imageAlt="Carro SUV moderno representando linha leve"
             items={[
               "Automóveis de passeio",
               "SUVs e crossovers",
@@ -114,6 +116,8 @@ const SegmentsSection = () => {
             icon={Truck}
             title="Linha Pesada"
             highlight={true}
+            image={segHeavy}
+            imageAlt="Caminhão pesado representando linha pesada"
             items={[
               "Caminhões e carretas",
               "Ônibus urbanos e rodoviários",
@@ -124,6 +128,8 @@ const SegmentsSection = () => {
           <SegmentCard 
             icon={Tractor}
             title="Fora de Estrada"
+            image={segOffroad}
+            imageAlt="Escavadeira em obra representando linha fora de estrada"
             items={[
               "Máquinas de construção",
               "Escavadeiras e guindastes",
