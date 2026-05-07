@@ -57,16 +57,19 @@ const WhyUsSection = () => {
                 whileInView={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
                 viewport={{ once: true }}
-                className="flex gap-6 py-6 border-b border-[#1E2330] group hover:bg-[#0066CC]/5 transition-colors px-4 rounded-lg"
+                className="flex gap-6 py-6 border-b border-[#1E2330] group hover:bg-[#0066CC]/5 transition-all duration-300 px-4 rounded-xl"
               >
-                <span className="font-['Bebas_Neue'] text-[48px] text-[#0066CC]/15 leading-none shrink-0">
-                  {(index + 1).toString().padStart(2, '0')}
-                </span>
+                <div className="flex flex-col items-center shrink-0">
+                  <span className="font-['Bebas_Neue'] text-[40px] text-[#0066CC]/20 leading-none group-hover:text-[#0066CC]/40 transition-colors">
+                    {(index + 1).toString().padStart(2, '0')}
+                  </span>
+                  <div className="w-px h-full bg-gradient-to-b from-[#0066CC]/40 to-transparent mt-2 hidden group-hover:block" />
+                </div>
                 <div>
-                  <h3 className="font-['Rajdhani'] text-[18px] font-bold text-[#F5F8FF] mb-2 uppercase group-hover:text-[#60C0FF] transition-colors">
+                  <h3 className="font-['Rajdhani'] text-[19px] font-bold text-[#F5F8FF] mb-2 uppercase group-hover:text-[#60C0FF] transition-colors tracking-tight">
                     {item.title}
                   </h3>
-                  <p className="font-['Inter'] text-[15px] text-[#8A9BB5] leading-relaxed">
+                  <p className="font-['Inter'] text-[15px] text-[#B8C8DC] leading-relaxed group-hover:text-white transition-colors">
                     {item.description}
                   </p>
                 </div>

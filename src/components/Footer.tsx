@@ -28,26 +28,28 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 mb-16">
           {/* Column 1 - Brand */}
           <div className="space-y-6">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 group cursor-pointer" onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); }}>
               <Logo size="md" />
               <div className="flex flex-col">
-                <span className="font-['Bebas_Neue'] text-[26px] leading-none text-hcb-white tracking-wide">HCB</span>
+                <span className="font-['Bebas_Neue'] text-[26px] leading-none text-hcb-white tracking-wide group-hover:text-hcb-blue transition-colors">HCB</span>
                 <span className="font-['Rajdhani'] text-[10px] font-semibold tracking-[0.1em] text-hcb-gray uppercase">
                   Ar Condicionado Automotivo
                 </span>
               </div>
             </div>
-            <p className="font-['Inter'] text-sm text-hcb-gray leading-relaxed max-w-sm">
-              Especialistas em refrigeração automotiva em Castanhal, Pará. Revendedor oficial Denso.
+            <p className="font-['Inter'] text-[15px] text-hcb-gray-light leading-relaxed max-w-sm">
+              Especialistas em refrigeração automotiva em Castanhal, Pará. <br className="hidden sm:block" />
+              Revendedor oficial Denso e parceiro das melhores oficinas da região.
             </p>
             <div className="flex items-center gap-4">
               <a 
                 href="https://instagram.com/hcb.automotivo" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="w-10 h-10 rounded-full bg-hcb-card border border-hcb-border flex items-center justify-center text-hcb-gray hover:text-hcb-white hover:border-hcb-blue transition-all"
+                aria-label="Siga a HCB no Instagram"
+                className="w-12 h-12 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-hcb-gray hover:text-white hover:border-hcb-blue hover:bg-hcb-blue/10 hover:scale-110 transition-all duration-300"
               >
-                <Camera size={20} />
+                <Camera size={22} />
               </a>
             </div>
           </div>
