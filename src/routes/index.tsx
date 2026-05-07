@@ -5,7 +5,7 @@ import StatsBar from '../components/StatsBar';
 import ProductsSection from '../components/ProductsSection';
 import SegmentsSection from '../components/SegmentsSection';
 import WhyUsSection from '../components/WhyUsSection';
-import GuaranteeSection from '../components/GuaranteeSection';
+
 import CTASection from '../components/CTASection';
 import TestimonialsSection from '../components/TestimonialsSection';
 import Footer from '../components/Footer';
@@ -23,7 +23,6 @@ function Index() {
       <ProductsSection />
       <SegmentsSection />
       <WhyUsSection />
-      <GuaranteeSection />
       <TestimonialsSection />
       <CTASection />
       <Footer />
