@@ -24,6 +24,7 @@ function Index() {
       <SegmentsSection />
       <WhyUsSection />
       <GuaranteeSection />
+      <TestimonialsSection />
       <CTASection />
       <Footer />
     </div>
