@@ -1,4 +1,4 @@
-import { Instagram, MapPin, Phone, Snowflake } from 'lucide-react';
+import { MapPin, Phone, Snowflake } from 'lucide-react';
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
