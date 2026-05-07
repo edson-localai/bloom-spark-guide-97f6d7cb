@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import segLight from '@/assets/segment-light.jpg';
 import segHeavy from '@/assets/segment-heavy.jpg';
 import segOffroad from '@/assets/segment-offroad.jpg';
+import segmentsBg from '@/assets/segments-bg.jpg';
 
 const SegmentCard = ({ 
   icon: Icon, 
@@ -69,9 +70,19 @@ const SegmentCard = ({
 
 const SegmentsSection = () => {
   return (
-    <section id="segmentos" className="relative bg-gradient-to-b from-[#0A0A0A] via-[#0D1520] to-[#0A0A0A] pt-24 pb-24 px-[max(24px,5vw)] overflow-hidden">
+    <section id="segmentos" className="relative bg-[#0A0A0A] pt-24 pb-24 px-[max(24px,5vw)] overflow-hidden">
+      {/* Background with Industrial Motion Lighting */}
+      <div className="absolute inset-0 z-0 opacity-10">
+        <img 
+          src={segmentsBg} 
+          alt="Segments background" 
+          className="w-full h-full object-cover grayscale"
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#0A0A0A] via-[#0D1520]/80 to-[#0A0A0A]" />
+      </div>
+      
       {/* Background decoration */}
-      <div className="absolute inset-0 frost-overlay opacity-30 pointer-events-none" />
+      <div className="absolute inset-0 frost-overlay opacity-30 pointer-events-none z-0" />
       
       <div className="relative z-10 max-w-7xl mx-auto">
         {/* Header */}
