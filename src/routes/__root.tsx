@@ -72,14 +72,18 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
+      { title: "HCB Ar Condicionado Automotivo" },
+      { name: "description", content: "HCB Automotivo is a web application for automotive air conditioning services." },
       { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { property: "og:title", content: "HCB Ar Condicionado Automotivo" },
+      { property: "og:description", content: "HCB Automotivo is a web application for automotive air conditioning services." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "twitter:site", content: "@Lovable" },
+      { name: "twitter:title", content: "HCB Ar Condicionado Automotivo" },
+      { name: "twitter:description", content: "HCB Automotivo is a web application for automotive air conditioning services." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/4df77a49-caff-494f-93e6-2863a6b91fa1/id-preview-08923826--1437f3b0-fe7f-4f6b-8c41-2858d825f265.lovable.app-1778190270102.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/4df77a49-caff-494f-93e6-2863a6b91fa1/id-preview-08923826--1437f3b0-fe7f-4f6b-8c41-2858d825f265.lovable.app-1778190270102.png" },
     ],
     links: [
       {
