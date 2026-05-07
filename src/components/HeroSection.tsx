@@ -116,12 +116,12 @@ const HeroSection = () => {
         >
           {/* Main Circle */}
           <div 
-            className="w-[300px] h-[300px] sm:w-[400px] sm:h-[400px] rounded-full bg-[radial-gradient(circle_at_40%_35%,#16191F_0%,#0D1B2A_60%,#0A0A0A_100%)] border border-[#0066CC]/20 flex items-center justify-center relative shadow-[0_0_80px_rgba(0,102,204,0.15),inset_0_0_60px_rgba(0,102,204,0.05)] animate-[floatHero_3s_ease-in-out_infinite_alternate]"
+            className="w-[280px] h-[280px] sm:w-[400px] sm:h-[400px] rounded-full bg-[radial-gradient(circle_at_40%_35%,#16191F_0%,#0D1B2A_60%,#0A0A0A_100%)] border border-[#0066CC]/20 flex items-center justify-center relative shadow-[0_0_80px_rgba(0,102,204,0.15),inset_0_0_60px_rgba(0,102,204,0.05)] animate-[floatHero_3s_ease-in-out_infinite_alternate]"
           >
             <img
               src={hcbLogo}
               alt="HCB Ar Condicionado Automotivo"
-              className="w-[80%] h-[80%] object-contain drop-shadow-[0_0_40px_rgba(0,102,204,0.5)]"
+              className="w-[75%] h-[75%] object-contain drop-shadow-[0_0_30px_rgba(0,102,204,0.4)]"
             />
           </div>
 
