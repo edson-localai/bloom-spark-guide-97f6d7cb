@@ -72,23 +72,20 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "HCB Ar Condicionado Automotivo | Peças e Serviços em Castanhal - PA" },
-      { name: "description", content: "Especialista em ar-condicionado automotivo em Castanhal. Peças Denso original para linha leve, pesada e máquinas. Compressores, condensadores e manutenção rápida." },
-      { name: "keywords", content: "ar condicionado automotivo, Castanhal, Pará, peças Denso, compressor ar condicionado, linha pesada, manutenção ar automotivo, HCB Automotivo" },
-      { name: "author", content: "HCB Ar Condicionado Automotivo" },
-      { property: "og:title", content: "HCB Ar Condicionado Automotivo | Peças e Serviços" },
-      { property: "og:description", content: "Especialista em ar-condicionado automotivo em Castanhal. Peças Denso original para linha leve e pesada." },
+      { title: "HCB Ar Condicionado Automotivo" },
+      { name: "description", content: "Peças de ar-condicionado automotivo linha leve, pesada e fora de estrada. Revendedor oficial Denso. Atendemos varejo e oficinas com agilidade e qualidade." },
+      { name: "author", content: "Lovable" },
+      { property: "og:title", content: "HCB Ar Condicionado Automotivo" },
+      { property: "og:description", content: "Peças de ar-condicionado automotivo linha leve, pesada e fora de estrada. Revendedor oficial Denso. Atendemos varejo e oficinas com agilidade e qualidade." },
       { property: "og:type", content: "website" },
-      { property: "og:locale", content: "pt_BR" },
-      { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:card", content: "summary" },
+      { name: "twitter:site", content: "@Lovable" },
       { name: "twitter:title", content: "HCB Ar Condicionado Automotivo" },
-      { name: "twitter:description", content: "Especialista em ar-condicionado automotivo em Castanhal. Peças Denso original." },
+      { name: "twitter:description", content: "Peças de ar-condicionado automotivo linha leve, pesada e fora de estrada. Revendedor oficial Denso. Atendemos varejo e oficinas com agilidade e qualidade." },
       { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/4df77a49-caff-494f-93e6-2863a6b91fa1/id-preview-08923826--1437f3b0-fe7f-4f6b-8c41-2858d825f265.lovable.app-1778190270102.png" },
       { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/4df77a49-caff-494f-93e6-2863a6b91fa1/id-preview-08923826--1437f3b0-fe7f-4f6b-8c41-2858d825f265.lovable.app-1778190270102.png" },
     ],
     links: [
-      { rel: "icon", type: "image/png", href: "/hcb-logo.png" },
-      { rel: "apple-touch-icon", href: "/hcb-logo.png" },
       {
         rel: "preconnect",
         href: "https://fonts.googleapis.com",
@@ -107,48 +104,9 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 
 function RootShell({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="pt-BR">
+    <html lang="en">
       <head>
         <HeadContent />
-        <script type="application/ld+json">
-          {JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "LocalBusiness",
-            "name": "HCB Ar Condicionado Automotivo",
-            "image": "https://hcbautomotivo.lovable.app/hcb-logo.png",
-            "@id": "https://hcbautomotivo.lovable.app",
-            "url": "https://hcbautomotivo.lovable.app",
-            "telephone": "+5591985161991",
-            "address": {
-              "@type": "PostalAddress",
-              "streetAddress": "Tv. Primeiro de Maio, 1.719",
-              "addressLocality": "Castanhal",
-              "addressRegion": "PA",
-              "postalCode": "68743-000",
-              "addressCountry": "BR"
-            },
-            "geo": {
-              "@type": "GeoCoordinates",
-              "latitude": -1.297,
-              "longitude": -47.927
-            },
-            "openingHoursSpecification": [
-              {
-                "@type": "OpeningHoursSpecification",
-                "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
-                "opens": "08:00",
-                "closes": "18:00"
-              },
-              {
-                "@type": "OpeningHoursSpecification",
-                "dayOfWeek": "Saturday",
-                "opens": "08:00",
-                "closes": "13:00"
-              }
-            ],
-            "sameAs": []
-          })}
-        </script>
       </head>
       <body>
         {children}
