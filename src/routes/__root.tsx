@@ -8,7 +8,7 @@ import {
   Scripts,
 } from "@tanstack/react-router";
 
-import appCss from "../styles.css?url";
+import "../styles.css";
 
 function NotFoundComponent() {
   return (
@@ -89,10 +89,6 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       {
         rel: "stylesheet",
         href: "https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rajdhani:wght@400;500;600;700&family=Inter:wght@300;400;500&display=swap",
-      },
-      {
-        rel: "stylesheet",
-        href: appCss,
       },
     ],
   }),
