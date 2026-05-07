@@ -1,4 +1,4 @@
-import { MapPin, Phone, Snowflake } from 'lucide-react';
+import { MapPin, Phone, Snowflake, Camera } from 'lucide-react';
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
@@ -47,7 +47,7 @@ const Footer = () => {
                 rel="noopener noreferrer"
                 className="w-10 h-10 rounded-full bg-hcb-card border border-hcb-border flex items-center justify-center text-hcb-gray hover:text-hcb-white hover:border-hcb-blue transition-all"
               >
-                <Instagram size={20} />
+                <Camera size={20} />
               </a>
             </div>
           </div>
@@ -98,7 +98,7 @@ const Footer = () => {
                 </div>
               </li>
               <li className="flex gap-3">
-                <Instagram className="w-5 h-5 text-hcb-blue shrink-0" />
+                <Camera className="w-5 h-5 text-hcb-blue shrink-0" />
                 <span className="font-['Rajdhani'] text-[15px] text-hcb-gray-light">
                   @hcb.automotivo
                 </span>
