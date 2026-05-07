@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { MapPin, Phone, Clock, Star } from 'lucide-react';
-import storefrontImg from '../assets/storefront.jpg';
+import whyUsBg from '../assets/why-us-bg.jpg';
 
 const WhyUsSection = () => {
   const differentials = [
@@ -86,14 +86,14 @@ const WhyUsSection = () => {
             viewport={{ once: true }}
             className="lg:sticky lg:top-32 bg-gradient-to-br from-[#111318] to-[#0D1B2A] border border-[#0066CC]/25 rounded-[24px] p-10 lg:p-12 shadow-[0_0_40px_rgba(0,102,204,0.1)] relative overflow-hidden"
           >
-            {/* Background elements */}
+            {/* Background elements with Sharp Corporate Lighting */}
             <div className="absolute inset-0 z-0 opacity-20">
               <img 
-                src={storefrontImg} 
-                alt="HCB Storefront" 
-                className="w-full h-full object-cover"
+                src={whyUsBg} 
+                alt="Why Us background" 
+                className="w-full h-full object-cover grayscale brightness-125"
               />
-              <div className="absolute inset-0 bg-gradient-to-br from-[#111318] via-[#0D1B2A]/80 to-[#0D1B2A]" />
+              <div className="absolute inset-0 bg-gradient-to-br from-[#111318] via-[#0D1B2A]/90 to-[#0D1B2A]" />
             </div>
             
             <div className="absolute top-0 right-0 w-32 h-32 bg-[#0066CC]/5 rounded-full blur-3xl -mr-10 -mt-10 z-0" />
