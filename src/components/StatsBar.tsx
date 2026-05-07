@@ -1,5 +1,6 @@
-import { Snowflake, Truck, Shield, Zap, Award } from 'lucide-react';
+import { Snowflake, Truck, Shield, Zap } from 'lucide-react';
 import { motion } from 'framer-motion';
+import Logo from './Logo';
 
 const StatsBar = () => {
   const stats = [
@@ -7,7 +8,7 @@ const StatsBar = () => {
     { icon: Truck, value: 'Linha Pesada', label: 'Caminhões & Ônibus' },
     { icon: Shield, value: '8 Meses', label: 'Garantia Máxima' },
     { icon: Zap, value: 'Entrega', label: 'Rápida para Oficinas' },
-    { icon: Award, value: 'Denso®', label: 'Revendedor Oficial' },
+    { icon: null as any, value: 'HCB', label: 'Ar Condicionado Automotivo', isLogo: true },
   ];
 
   return (
@@ -22,7 +23,11 @@ const StatsBar = () => {
             viewport={{ once: true }}
             className="flex flex-col items-center text-center px-4 relative flex-1 min-w-[160px]"
           >
-            <stat.icon className="w-7 h-7 text-[#0066CC] mb-1" />
+            {stat.isLogo ? (
+              <Logo size="md" className="mb-1" />
+            ) : (
+              <stat.icon className="w-7 h-7 text-[#0066CC] mb-1" />
+            )}
             <div className="font-['Bebas_Neue'] text-[28px] text-[#F5F8FF] leading-tight my-1 uppercase">
               {stat.value}
             </div>
