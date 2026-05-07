@@ -1,6 +1,7 @@
 import { MapPin, Phone, Camera } from 'lucide-react';
 import hcbLogo from '@/assets/hcb-logo.png';
 import Logo from './Logo';
+import { SCROLL_OFFSET } from '@/constants/scroll';
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
