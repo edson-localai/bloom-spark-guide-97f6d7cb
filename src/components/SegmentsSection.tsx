@@ -17,24 +17,24 @@ const SegmentCard = ({
       hidden: { opacity: 0, y: 30 },
       visible: { opacity: 1, y: 0, transition: { duration: 0.5 } }
     }}
-    className={`bg-hcb-card rounded-[20px] p-10 border ${
+    className={`bg-[#16191F] rounded-[20px] p-10 border ${
       highlight 
-        ? 'border-hcb-blue/35 shadow-[0_0_40px_rgba(0,102,204,0.15)] relative' 
-        : 'border-hcb-border'
+        ? 'border-[#0066CC]/35 shadow-[0_0_40px_rgba(0,102,204,0.15)] relative' 
+        : 'border-[#1E2330]'
     }`}
   >
-    <Icon className="w-10 h-10 text-hcb-blue mb-5" />
-    <h3 className="font-['Bebas_Neue'] text-[32px] text-hcb-white mb-6 uppercase tracking-wider">
+    <Icon className="w-10 h-10 text-[#0066CC] mb-5" />
+    <h3 className="font-['Bebas_Neue'] text-[32px] text-[#F5F8FF] mb-6 uppercase tracking-wider">
       {title}
     </h3>
     <ul className="space-y-2">
       {items.map((item, idx) => (
         <li 
           key={idx} 
-          className={`flex items-center gap-3 py-2 ${idx < items.length - 1 ? 'border-b border-hcb-border' : ''}`}
+          className={`flex items-center gap-3 py-2 ${idx < items.length - 1 ? 'border-b border-[#1E2330]' : ''}`}
         >
-          <ChevronRight className="w-3.5 h-3.5 text-hcb-blue" />
-          <span className="font-['Rajdhani'] text-base text-hcb-gray-light font-medium">
+          <ChevronRight className="w-3.5 h-3.5 text-[#0066CC]" />
+          <span className="font-['Rajdhani'] text-base text-[#B8C8DC] font-medium">
             {item}
           </span>
         </li>
@@ -45,22 +45,22 @@ const SegmentCard = ({
 
 const SegmentsSection = () => {
   return (
-    <section id="segmentos" className="relative bg-gradient-to-b from-hcb-black via-[#0D1520] to-hcb-black pt-24 pb-24 px-[max(24px,5vw)] overflow-hidden">
+    <section id="segmentos" className="relative bg-gradient-to-b from-[#0A0A0A] via-[#0D1520] to-[#0A0A0A] pt-24 pb-24 px-[max(24px,5vw)] overflow-hidden">
       {/* Background decoration */}
       <div className="absolute inset-0 frost-overlay opacity-30 pointer-events-none" />
       
       <div className="relative z-10 max-w-7xl mx-auto">
         {/* Header */}
         <div className="text-center mb-16">
-          <div className="inline-flex items-center gap-2 px-4 py-[6px] rounded-full bg-hcb-blue/10 border border-hcb-blue/30 mb-4">
-            <span className="font-['Rajdhani'] text-xs font-semibold tracking-[0.12em] text-hcb-blue-light uppercase">
+          <div className="inline-flex items-center gap-2 px-4 py-[6px] rounded-full bg-[#0066CC]/10 border border-[#0066CC]/30 mb-4">
+            <span className="font-['Rajdhani'] text-xs font-semibold tracking-[0.12em] text-[#60C0FF] uppercase">
               Segmentos
             </span>
           </div>
-          <h2 className="font-['Bebas_Neue'] text-[clamp(40px,5.5vw,72px)] text-hcb-white leading-tight uppercase mb-4">
+          <h2 className="font-['Bebas_Neue'] text-[clamp(40px,5.5vw,72px)] text-[#F5F8FF] leading-tight uppercase mb-4">
             Atendemos todos os Segmentos
           </h2>
-          <p className="font-['Inter'] text-lg text-hcb-gray max-w-2xl mx-auto">
+          <p className="font-['Inter'] text-lg text-[#8A9BB5] max-w-2xl mx-auto">
             Da picape ao caminhão fora de estrada. Se tem ar-condicionado, temos a peça.
           </p>
         </div>
