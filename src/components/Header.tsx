@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MessageCircle, Menu, X } from 'lucide-react';
 import hcbLogo from '@/assets/hcb-logo.png';
+import Logo from './Logo';
 
 const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -52,7 +53,7 @@ const Header = () => {
     >
       {/* Logo */}
       <a href="/" className="flex items-center gap-2 group">
-        <img src={hcbLogo} alt="HCB Ar Condicionado Automotivo" className="w-10 h-10 sm:w-12 sm:h-12 object-contain drop-shadow-[0_0_8px_rgba(0,102,204,0.3)]" />
+        <Logo size="md" />
         <div className="hidden sm:flex flex-col">
           <span className="font-['Bebas_Neue'] text-[26px] leading-none text-[#F5F8FF] tracking-wide">HCB</span>
           <span className="font-['Rajdhani'] text-[10px] font-semibold tracking-[0.15em] text-[#8A9BB5] uppercase">
