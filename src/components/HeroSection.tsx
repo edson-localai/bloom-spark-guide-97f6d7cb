@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { ChevronRight, MessageCircle, Snowflake } from 'lucide-react';
 import hcbLogo from '@/assets/hcb-logo.png';
+import heroBg from '@/assets/hero-bg.jpg';
 import Logo from './Logo';
 
 const HeroSection = () => {
