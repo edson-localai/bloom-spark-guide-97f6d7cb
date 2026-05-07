@@ -17,11 +17,11 @@ const Header = () => {
   }, []);
 
   const navLinks = [
-    { name: 'Produtos', href: '#produtos' },
+    { name: 'Estatísticas', href: '#estatisticas' },
     { name: 'Diferenciais', href: '#diferenciais' },
+    { name: 'Produtos', href: '#produtos' },
     { name: 'Segmentos', href: '#segmentos' },
     { name: 'Depoimentos', href: '#depoimentos' },
-    
     { name: 'Contato', href: '#contatosection' },
   ];
 

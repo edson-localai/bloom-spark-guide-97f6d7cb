@@ -61,10 +61,10 @@ const Footer = () => {
             </h3>
             <ul className="grid grid-cols-1 gap-3">
               {[
+                { name: 'Estatísticas', id: 'estatisticas' },
+                { name: 'Diferenciais', id: 'diferenciais' },
                 { name: 'Produtos', id: 'produtos' },
                 { name: 'Segmentos', id: 'segmentos' },
-                { name: 'Diferenciais', id: 'diferenciais' },
-                
                 { name: 'Contato', id: 'contatosection' }
               ].map((link) => (
                 <li key={link.id}>
