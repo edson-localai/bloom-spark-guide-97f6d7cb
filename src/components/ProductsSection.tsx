@@ -1,5 +1,6 @@
 import { Settings, Thermometer, Wind, Gauge, Filter, Cable } from 'lucide-react';
 import { motion } from 'framer-motion';
+import productsBg from '@/assets/products-bg.jpg';
 
 interface ProductCardProps {
   icon: React.ElementType;
