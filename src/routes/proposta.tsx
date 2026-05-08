@@ -85,7 +85,7 @@ function ProposalPage() {
       id: "elite",
       name: "Plano Elite Digital",
       tagline: "Máxima Conversão & Gestão",
-      price: "1.200,00",
+      price: "1.500,00",
       period: "Pagamento Único + 200,00 Mensal",
       description: "Transforme seu atendimento em uma máquina de vendas automática.",
       features: [
@@ -145,9 +145,15 @@ function ProposalPage() {
         </section>
 
         {/* Pricing Cards */}
-        <section className="py-12 relative overflow-hidden">
+        <section className="py-20 relative">
+          {/* Animated Background Gradients */}
+          <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none -z-10">
+            <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-blue-600/10 blur-[120px] rounded-full animate-pulse" />
+            <div className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-amber-600/5 blur-[120px] rounded-full animate-pulse" style={{ animationDelay: '2s' }} />
+          </div>
+
           <div className="container mx-auto px-6">
-            <div className="grid md:grid-cols-3 gap-8 items-stretch">
+            <div className="grid lg:grid-cols-3 gap-8 items-stretch">
               {plans.map((plan, index) => (
                 <motion.div
                   key={plan.id}
@@ -155,13 +161,14 @@ function ProposalPage() {
                   whileInView={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: index * 0.1 }}
                   viewport={{ once: true }}
-                  className={`relative flex flex-col p-8 rounded-3xl border-2 transition-all duration-300 hover:scale-[1.02] ${plan.color}`}
+                  className={`relative flex flex-col p-8 rounded-[2.5rem] border-2 transition-all duration-500 hover:translate-y-[-10px] group ${plan.color}`}
                 >
                   {plan.popular && (
-                    <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-blue-500 text-white text-xs font-bold uppercase tracking-widest py-1 px-4 rounded-full">
-                      Mais Recomendado
+                    <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-gradient-to-r from-blue-600 to-blue-400 text-white text-[10px] font-black uppercase tracking-[0.2em] py-2 px-6 rounded-full shadow-lg shadow-blue-500/20 z-10">
+                      Escolha Estratégica
                     </div>
                   )}
+
 
                   <div className="mb-6">
                     <div className="mb-4">{plan.icon}</div>
@@ -216,7 +223,9 @@ function ProposalPage() {
 
             <div className="space-y-12">
               {/* Essencial */}
-              <div className="bg-black/40 border border-blue-500/20 rounded-3xl p-8 md:p-12">
+              <div className="bg-black/40 backdrop-blur-sm border border-white/10 rounded-[2.5rem] p-8 md:p-12 hover:border-blue-500/30 transition-colors group overflow-hidden relative">
+                <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/5 blur-3xl rounded-full -translate-y-1/2 translate-x-1/2" />
+
                 <div className="flex flex-col md:flex-row gap-8">
                   <div className="md:w-1/3">
                     <div className="flex items-center gap-3 mb-4">
@@ -258,7 +267,7 @@ function ProposalPage() {
               </div>
 
               {/* Profissional */}
-              <div className="bg-blue-600/5 border border-blue-500 rounded-3xl p-8 md:p-12 relative overflow-hidden">
+              <div className="bg-gradient-to-br from-blue-600/10 to-transparent border border-blue-500/50 rounded-[2.5rem] p-8 md:p-12 relative overflow-hidden group">
                 <div className="absolute top-0 right-0 p-6 opacity-10">
                   <Rocket className="w-32 h-32 text-blue-500" />
                 </div>
@@ -303,7 +312,9 @@ function ProposalPage() {
               </div>
 
               {/* Elite */}
-              <div className="bg-black/40 border border-amber-500/30 rounded-3xl p-8 md:p-12">
+              <div className="bg-black/40 backdrop-blur-sm border border-amber-500/20 rounded-[2.5rem] p-8 md:p-12 hover:border-amber-500/40 transition-colors group overflow-hidden relative">
+                <div className="absolute top-0 right-0 w-64 h-64 bg-amber-500/5 blur-3xl rounded-full -translate-y-1/2 translate-x-1/2" />
+
                 <div className="flex flex-col md:flex-row gap-8">
                   <div className="md:w-1/3">
                     <div className="flex items-center gap-3 mb-4">
