@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Check, Rocket, Zap, Crown, Shield, ArrowRight, MessageCircle } from "lucide-react";
-import { motion } from "framer-motion";
+import { useState } from "react";
+import { Check, Rocket, Zap, Crown, Shield, ArrowRight, MessageCircle, X } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import Logo from "../components/Logo";
 import Footer from "../components/Footer";
 
@@ -9,7 +10,20 @@ export const Route = createFileRoute("/proposta")({
 });
 
 function ProposalPage() {
-  const plans = [
+  const [selectedPlan, setSelectedPlan] = useState<any>(null);
+  const [showConfirmation, setShowConfirmation] = useState(false);
+
+  const handlePlanSelect = (plan: any) => {
+    setSelectedPlan(plan);
+    setShowConfirmation(true);
+  };
+
+  const confirmSelection = () => {
+    const message = encodeURIComponent(`Olá! Confirmo meu interesse no ${selectedPlan.name} para a HCB Ar Condicionado. Como podemos prosseguir?`);
+    window.open(`https://wa.me/5591981267484?text=${message}`, '_blank');
+    setShowConfirmation(false);
+  };
+
     {
       id: "essencial",
       name: "Plano Essencial",
@@ -157,10 +171,7 @@ function ProposalPage() {
                   </div>
 
                   <button
-                    onClick={() => {
-                      const message = encodeURIComponent(`Olá! Tenho interesse no ${plan.name} para a HCB Ar Condicionado. Gostaria de saber mais detalhes sobre como começar.`);
-                      window.open(`https://wa.me/5591981267484?text=${message}`, '_blank');
-                    }}
+                    onClick={() => handlePlanSelect(plan)}
                     className={`w-full py-4 px-6 rounded-xl font-bold flex items-center justify-center gap-2 transition-all ${
                       plan.popular 
                         ? "bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-600/20" 
