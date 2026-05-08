@@ -384,8 +384,8 @@ function ProposalPage() {
                       <p className="text-sm text-gray-300 italic">"Nunca mais perca um cliente por demora no atendimento. Gestão profissional de leads."</p>
                     </div>
                   </div>
-                  <div className="md:w-2/3 grid sm:grid-cols-2 gap-6">
-                    <div className="space-y-4">
+                  <div className="md:w-2/3 flex flex-col md:flex-row gap-8">
+                    <div className="flex-1 space-y-4">
                       <h4 className="text-white font-bold text-sm uppercase tracking-widest border-l-2 border-amber-500 pl-3">O que inclui:</h4>
                       <ul className="space-y-3">
                         <li className="flex gap-2 text-sm text-gray-300">
@@ -401,12 +401,17 @@ function ProposalPage() {
                           <span><strong>Relatório Mensal:</strong> Quantas pessoas visitaram e quantos orçamentos foram gerados.</span>
                         </li>
                       </ul>
-                    </div>
-                    <div className="space-y-4">
-                      <h4 className="text-white font-bold text-sm uppercase tracking-widest border-l-2 border-amber-500 pl-3">Exemplo Prático:</h4>
+                      <h4 className="text-white font-bold text-sm uppercase tracking-widest border-l-2 border-amber-500 pl-3 mt-6">Exemplo Prático:</h4>
                       <div className="bg-amber-500/5 p-4 rounded-xl text-xs text-gray-400 leading-relaxed border border-amber-500/5">
                         Um cliente manda mensagem às 22h. O Bot responde: "Olá! Qual o modelo do seu carro?". Ele responde "Hilux 2022". O Bot já deixa o lead pronto no seu CRM para você fechar o agendamento no dia seguinte cedo.
                       </div>
+                    </div>
+                    <div className="flex-1 rounded-2xl overflow-hidden h-48 md:h-auto border border-white/10 group-hover:border-amber-500/40 transition-colors">
+                      <img 
+                        src="/src/assets/storefront.jpg" 
+                        alt="Automação e CRM Elite" 
+                        className="w-full h-full object-cover group-hover:rotate-2 group-hover:scale-110 transition-transform duration-700"
+                      />
                     </div>
                   </div>
                 </div>
