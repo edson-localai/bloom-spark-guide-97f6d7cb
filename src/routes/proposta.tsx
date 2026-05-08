@@ -314,30 +314,30 @@ function ProposalPage() {
                       <h3 className="text-2xl font-bold font-['Bebas_Neue'] tracking-wide">Plano Essencial</h3>
                     </div>
                     <p className="text-gray-400 text-sm mb-6">Manutenção da base tecnológica para sua operação continuar rodando sem interrupções.</p>
-                    <div className="p-4 bg-blue-500/5 rounded-xl border border-blue-500/10">
-                      <p className="text-xs text-blue-300 font-bold uppercase mb-2">Benefício Principal:</p>
-                      <p className="text-sm text-gray-300 italic">"Sua empresa sempre encontrada, com e-mails que passam confiança e domínio garantido."</p>
+                    <div className="p-5 bg-blue-500/5 rounded-xl border border-blue-500/10">
+                      <p className="text-sm text-blue-300 font-bold uppercase mb-2">Benefício Principal:</p>
+                      <p className="text-base text-gray-300 italic">"Sua empresa sempre encontrada, com e-mails que passam confiança e domínio garantido."</p>
                     </div>
                   </div>
                   <div className="md:w-2/3 flex flex-col md:flex-row gap-8">
-                    <div className="flex-1 space-y-4">
-                      <h4 className="text-white font-bold text-sm uppercase tracking-widest border-l-2 border-blue-500 pl-3">O que inclui:</h4>
-                      <ul className="space-y-3">
-                        <li className="flex gap-2 text-sm text-gray-300">
-                          <Check className="w-4 h-4 text-blue-500 shrink-0" />
+                    <div className="flex-1 space-y-6">
+                      <h4 className="text-white font-bold text-lg uppercase tracking-widest border-l-2 border-blue-500 pl-3">O que inclui:</h4>
+                      <ul className="space-y-4">
+                        <li className="flex gap-3 text-base text-gray-300">
+                          <Check className="w-5 h-5 text-blue-500 shrink-0" />
                           <span><strong>Domínio .com.br:</strong> Sua marca protegida na internet (ex: hcb-ar.com.br).</span>
                         </li>
-                        <li className="flex gap-2 text-sm text-gray-300">
-                          <Check className="w-4 h-4 text-blue-500 shrink-0" />
+                        <li className="flex gap-3 text-base text-gray-300">
+                          <Check className="w-5 h-5 text-blue-500 shrink-0" />
                           <span><strong>Hospedagem Premium:</strong> Servidores rápidos que garantem que seu site não caia.</span>
                         </li>
-                        <li className="flex gap-2 text-sm text-gray-300">
-                          <Check className="w-4 h-4 text-blue-500 shrink-0" />
+                        <li className="flex gap-3 text-base text-gray-300">
+                          <Check className="w-5 h-5 text-blue-500 shrink-0" />
                           <span><strong>E-mails @hcb:</strong> Chega de usar Gmail para fechar negócios de alto valor.</span>
                         </li>
                       </ul>
-                      <h4 className="text-white font-bold text-sm uppercase tracking-widest border-l-2 border-blue-500 pl-3 mt-6">Exemplo Prático:</h4>
-                      <div className="bg-white/5 p-4 rounded-xl text-xs text-gray-400 leading-relaxed">
+                      <h4 className="text-white font-bold text-lg uppercase tracking-widest border-l-2 border-blue-500 pl-3 mt-8">Exemplo Prático:</h4>
+                      <div className="bg-white/5 p-6 rounded-xl text-sm text-gray-400 leading-relaxed">
                         Imagine um cliente procurando por "ar condicionado automotivo" e encontrando sua marca com um e-mail <strong>contato@hcb-ar.com.br</strong>. A percepção de tamanho e seriedade da sua empresa muda instantaneamente.
                       </div>
                     </div>
