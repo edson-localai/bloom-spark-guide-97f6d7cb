@@ -565,33 +565,50 @@ function ProposalPage() {
             {/* Mobile Accordion */}
             <div className="md:hidden space-y-4">
               {plans.map((plan) => (
-                <div key={plan.id} className="border border-white/10 rounded-2xl overflow-hidden bg-black/20">
+                <div key={plan.id} className="border border-white/10 rounded-2xl overflow-hidden bg-black/20 backdrop-blur-sm">
                   <details className="group [&_summary::-webkit-details-marker]:hidden">
-                    <summary className="flex items-center justify-between p-6 cursor-pointer hover:bg-white/5 transition-colors">
-                      <span className="font-bold text-lg">{plan.name}</span>
-                      <ChevronDown className="w-5 h-5 text-blue-500 transition-transform group-open:rotate-180" />
+                    <summary className="flex items-center justify-between p-6 cursor-pointer hover:bg-white/5 transition-colors select-none">
+                      <div className="flex items-center gap-4">
+                        <div className={`p-2 rounded-lg ${plan.popular ? 'bg-blue-500 text-white' : 'bg-blue-500/10 text-blue-400'}`}>
+                          {plan.icon}
+                        </div>
+                        <div className="flex flex-col">
+                          <span className="font-bold text-lg font-['Bebas_Neue'] tracking-wide">{plan.name}</span>
+                          <span className="text-[10px] text-blue-400 font-bold uppercase tracking-widest">{plan.price} {plan.period}</span>
+                        </div>
+                      </div>
+                      <div className="w-8 h-8 rounded-full border border-white/10 flex items-center justify-center group-open:bg-blue-500 group-open:border-blue-500 transition-all">
+                        <ChevronDown className="w-4 h-4 text-blue-500 group-open:text-white transition-transform group-open:rotate-180" />
+                      </div>
                     </summary>
-                    <div className="p-6 pt-0 border-t border-white/10">
-                      <ul className="space-y-3 pt-4">
+                    <div className="p-6 pt-0 border-t border-white/5 bg-white/[0.01]">
+                      <ul className="space-y-4 pt-6">
                         {comparisonFeatures.map((feat, i) => (
-                          <li key={i} className="flex items-center justify-between text-sm">
-                            <span className="text-gray-400">{feat.label}</span>
-                            {plan.id === 'starter' && (feat.essential ? <CheckCircle2 className="w-4 h-4 text-blue-500" /> : <X className="w-4 h-4 text-gray-700" />)}
-                            {plan.id === 'pro' && (feat.pro ? <CheckCircle2 className="w-4 h-4 text-blue-500" /> : <X className="w-4 h-4 text-gray-700" />)}
-                            {plan.id === 'elite' && (feat.elite ? <CheckCircle2 className="w-4 h-4 text-amber-500" /> : <X className="w-4 h-4 text-gray-700" />)}
+                          <li key={i} className="flex items-center justify-between text-sm group/item">
+                            <span className="text-gray-400 group-hover/item:text-gray-200 transition-colors">{feat.label}</span>
+                            <div className="flex items-center">
+                              {plan.id === 'starter' && (feat.essential ? <CheckCircle2 className="w-5 h-5 text-blue-500" /> : <X className="w-5 h-5 text-gray-800" />)}
+                              {plan.id === 'pro' && (feat.pro ? <CheckCircle2 className="w-5 h-5 text-blue-500" /> : <X className="w-5 h-5 text-gray-800" />)}
+                              {plan.id === 'elite' && (feat.elite ? <CheckCircle2 className="w-5 h-5 text-amber-500" /> : <X className="w-5 h-5 text-gray-800" />)}
+                            </div>
                           </li>
                         ))}
                       </ul>
                       <button 
                         onClick={() => handlePlanSelect(plan)}
-                        className="w-full mt-6 py-3 bg-blue-600 text-white rounded-xl font-bold text-sm"
+                        className={`w-full mt-8 py-4 rounded-xl font-bold text-sm transition-all shadow-lg ${
+                          plan.popular 
+                            ? "bg-blue-600 hover:bg-blue-500 text-white shadow-blue-600/20" 
+                            : "bg-white/10 hover:bg-white/20 text-white"
+                        }`}
                       >
-                        Selecionar {plan.name}
+                        Escolher {plan.name}
                       </button>
                     </div>
                   </details>
                 </div>
               ))}
+
             </div>
           </div>
         </section>
