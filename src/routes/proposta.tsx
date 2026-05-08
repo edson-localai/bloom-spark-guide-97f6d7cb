@@ -335,8 +335,15 @@ function ProposalPage() {
                       <p className="text-sm text-gray-300 italic">"Converta curiosos em clientes reais através de um site rápido, bonito e persuasivo."</p>
                     </div>
                   </div>
-                  <div className="md:w-2/3 grid sm:grid-cols-2 gap-6">
-                    <div className="space-y-4">
+                  <div className="md:w-2/3 flex flex-col md:flex-row gap-8">
+                    <div className="flex-1 rounded-2xl overflow-hidden h-48 md:h-auto border border-white/10 group-hover:border-blue-500/50 transition-colors order-2 md:order-1">
+                      <img 
+                        src="/src/assets/segment-heavy.jpg" 
+                        alt="Landing Page de Alta Performance" 
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                      />
+                    </div>
+                    <div className="flex-1 space-y-4 order-1 md:order-2">
                       <h4 className="text-white font-bold text-sm uppercase tracking-widest border-l-2 border-blue-500 pl-3">O que inclui:</h4>
                       <ul className="space-y-3">
                         <li className="flex gap-2 text-sm text-gray-300">
@@ -352,9 +359,7 @@ function ProposalPage() {
                           <span><strong>Botão flutuante WhatsApp:</strong> Facilita o contato imediato do cliente.</span>
                         </li>
                       </ul>
-                    </div>
-                    <div className="space-y-4">
-                      <h4 className="text-white font-bold text-sm uppercase tracking-widest border-l-2 border-blue-500 pl-3">Exemplo Prático:</h4>
+                      <h4 className="text-white font-bold text-sm uppercase tracking-widest border-l-2 border-blue-500 pl-3 mt-6">Exemplo Prático:</h4>
                       <div className="bg-blue-500/10 p-4 rounded-xl text-xs text-gray-300 leading-relaxed border border-blue-500/10">
                         Um dono de caminhonete vê seu anúncio, entra num site que carrega em menos de 2 segundos, vê fotos reais do seu trabalho e clica no botão do WhatsApp. Você recebe um lead já "quente".
                       </div>
