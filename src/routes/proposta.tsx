@@ -12,14 +12,16 @@ export const Route = createFileRoute("/proposta")({
 function ProposalPage() {
   const [selectedPlan, setSelectedPlan] = useState<any>(null);
   const [showConfirmation, setShowConfirmation] = useState(false);
+  const [customMessage, setCustomMessage] = useState("");
 
   const handlePlanSelect = (plan: any) => {
     setSelectedPlan(plan);
+    setCustomMessage(`Olá! Confirmo meu interesse no ${plan.name} para a HCB Ar Condicionado. Como podemos prosseguir?`);
     setShowConfirmation(true);
   };
 
   const confirmSelection = () => {
-    const message = encodeURIComponent(`Olá! Confirmo meu interesse no ${selectedPlan.name} para a HCB Ar Condicionado. Como podemos prosseguir?`);
+    const message = encodeURIComponent(customMessage);
     window.open(`https://wa.me/5591981267484?text=${message}`, '_blank');
     setShowConfirmation(false);
   };
@@ -447,7 +449,17 @@ function ProposalPage() {
                 </div>
               </div>
 
-              <div className="space-y-4">
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold uppercase tracking-widest text-gray-500 ml-1">Mensagem para o WhatsApp:</label>
+                    <textarea 
+                      value={customMessage}
+                      onChange={(e) => setCustomMessage(e.target.value)}
+                      className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-sm text-gray-300 focus:outline-none focus:border-blue-500/50 min-h-[100px] resize-none"
+                      placeholder="Escreva sua mensagem personalizada..."
+                    />
+                  </div>
+
                 <button
                   onClick={confirmSelection}
                   className="w-full py-4 px-6 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-bold flex items-center justify-center gap-2 transition-all shadow-lg shadow-blue-600/20 group"
