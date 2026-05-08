@@ -170,28 +170,41 @@ function ProposalPage() {
                   )}
 
 
-                  <div className="mb-6">
-                    <div className="mb-4">{plan.icon}</div>
-                    <h3 className="text-2xl font-bold mb-1">{plan.name}</h3>
-                    <p className="text-blue-400 text-sm font-medium">{plan.tagline}</p>
-                  </div>
-
                   <div className="mb-8">
-                    <div className="flex items-baseline gap-1">
-                      <span className="text-3xl font-bold">R$ {plan.price}</span>
+                    <div className="mb-6 flex items-center justify-between">
+                      <div className={`p-4 rounded-2xl ${plan.popular ? 'bg-blue-500 text-white' : 'bg-white/5 text-blue-400'}`}>
+                        {plan.icon}
+                      </div>
+                      {plan.popular && (
+                        <span className="text-[10px] font-black uppercase tracking-widest px-3 py-1 bg-blue-500/10 text-blue-400 rounded-lg border border-blue-500/20">
+                          Recomendado
+                        </span>
+                      )}
                     </div>
-                    <p className="text-gray-400 text-sm">{plan.period}</p>
+                    <h3 className="text-3xl font-bold mb-2 font-['Bebas_Neue'] tracking-wide group-hover:text-blue-400 transition-colors">{plan.name}</h3>
+                    <p className="text-gray-400 text-xs font-semibold uppercase tracking-widest">{plan.tagline}</p>
                   </div>
 
-                  <p className="text-gray-300 mb-8 text-sm leading-relaxed">
+                  <div className="mb-10 p-6 bg-white/5 rounded-2xl border border-white/5 group-hover:border-blue-500/20 transition-colors">
+                    <div className="flex items-baseline gap-1 mb-1">
+                      <span className="text-sm font-medium text-gray-500 uppercase tracking-tighter">R$</span>
+                      <span className="text-4xl font-black tracking-tight">{plan.price}</span>
+                    </div>
+                    <p className="text-[10px] text-blue-400 font-bold uppercase tracking-widest">{plan.period}</p>
+                  </div>
+
+                  <p className="text-gray-400 mb-10 text-sm leading-relaxed font-medium">
                     {plan.description}
                   </p>
 
-                  <div className="space-y-4 mb-10 flex-grow">
+                  <div className="space-y-5 mb-12 flex-grow">
+                    <p className="text-[10px] font-black text-gray-500 uppercase tracking-[0.2em] mb-4">O que está incluso:</p>
                     {plan.features.map((feature, idx) => (
-                      <div key={idx} className="flex items-start gap-3">
-                        <Check className="w-5 h-5 text-blue-500 shrink-0 mt-0.5" />
-                        <span className="text-gray-300 text-sm leading-tight">{feature}</span>
+                      <div key={idx} className="flex items-center gap-4 group/feature">
+                        <div className="w-6 h-6 rounded-full bg-blue-500/10 border border-blue-500/20 flex items-center justify-center shrink-0 group-hover/feature:bg-blue-500 group-hover/feature:border-blue-500 transition-all duration-300">
+                          <Check className="w-3.5 h-3.5 text-blue-500 group-hover/feature:text-white transition-colors" />
+                        </div>
+                        <span className="text-gray-300 text-sm font-medium tracking-tight group-hover/feature:text-white transition-colors">{feature}</span>
                       </div>
                     ))}
                   </div>
