@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
-import { Check, Rocket, Zap, Crown, Shield, ArrowRight, MessageCircle, X, Copy, CheckCircle2, AlertCircle, Globe, Server, Mail, HelpCircle, Lock, Layout, Palette, Search, MessageSquare, Bot, Users, BarChart3, Star } from "lucide-react";
+import { Check, Rocket, Zap, Crown, Shield, ArrowRight, MessageCircle, X, Copy, CheckCircle2, AlertCircle, Globe, Server, Mail, HelpCircle, Lock, Layout, Palette, Search, MessageSquare, Bot, Users, BarChart3, Star, ChevronDown, ChevronUp } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Logo from "../components/Logo";
 import Footer from "../components/Footer";
@@ -461,7 +461,53 @@ function ProposalPage() {
           </div>
         </section>
 
-        {/* Comparative Table Section */}
+        {/* FAQ Section */}
+        <section className="py-24 bg-black/40">
+          <div className="container mx-auto px-6 max-w-4xl">
+            <div className="text-center mb-16">
+              <h2 className="text-3xl md:text-5xl font-bold mb-4 font-['Bebas_Neue'] tracking-wider">Perguntas Frequentes</h2>
+              <p className="text-gray-400">Tudo o que você precisa saber para começar agora mesmo.</p>
+            </div>
+
+            <div className="space-y-4">
+              {[
+                {
+                  q: "Quais são as formas de pagamento?",
+                  a: "Aceitamos PIX, boleto bancário e cartão de crédito (parcelamento em até 12x com acréscimo da operadora). No Plano Elite, o valor mensal de R$ 200,00 é faturado via recorrencia mensal."
+                },
+                {
+                  q: "Como funciona o suporte?",
+                  a: "Oferecemos suporte via WhatsApp em horário comercial para todos os planos. No Plano Elite, o suporte é prioritário VIP, com tempo de resposta reduzido."
+                },
+                {
+                  q: "Qual o tempo de setup (ativação)?",
+                  a: "O Plano Starter é ativado em até 24h. O site do Plano Profissional e a automação do Plano Elite levam em média de 10 a 15 dias úteis para desenvolvimento e entrega final."
+                },
+                {
+                  q: "Preciso de um servidor de e-mail separado?",
+                  a: "Não, a hospedagem inclusa já contempla suas contas de e-mail profissionais (ex: contato@hcb.com.br). Tudo é gerenciado em um único lugar."
+                },
+                {
+                  q: "Posso mudar de plano depois?",
+                  a: "Sim! Você pode fazer o upgrade de qualquer plano a qualquer momento para aproveitar novos recursos conforme sua empresa cresce."
+                }
+              ].map((faq, i) => (
+                <div key={i} className="group">
+                  <details className="bg-white/5 border border-white/5 rounded-2xl overflow-hidden [&_summary::-webkit-details-marker]:hidden">
+                    <summary className="flex items-center justify-between p-6 cursor-pointer hover:bg-white/10 transition-colors list-none">
+                      <span className="font-bold text-gray-200">{faq.q}</span>
+                      <ChevronDown className="w-5 h-5 text-blue-500 transition-transform group-open:rotate-180" />
+                    </summary>
+                    <div className="p-6 pt-0 text-gray-400 text-sm leading-relaxed border-t border-white/5 bg-white/[0.02]">
+                      {faq.a}
+                    </div>
+                  </details>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
         <section className="py-24 bg-black/20">
           <div className="container mx-auto px-6">
             <div className="text-center mb-16">
