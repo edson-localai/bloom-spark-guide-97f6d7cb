@@ -144,6 +144,35 @@ function ProposalPage() {
           </div>
         </section>
 
+        {/* Value Proposition Highlights */}
+        <section className="pt-12 pb-6">
+          <div className="container mx-auto px-6">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8">
+              {[
+                { icon: <Zap className="w-5 h-5" />, title: "Velocidade", desc: "Carregamento instantâneo" },
+                { icon: <Shield className="w-5 h-5" />, title: "Segurança", desc: "Dados e domínio protegidos" },
+                { icon: <Rocket className="w-5 h-5" />, title: "Conversão", desc: "Foco total em vendas" },
+                { icon: <MessageCircle className="w-5 h-5" />, title: "Automação", desc: "Atendimento inteligente" }
+              ].map((item, i) => (
+                <motion.div 
+                  key={i}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.1 }}
+                  viewport={{ once: true }}
+                  className="flex flex-col items-center text-center p-6 rounded-3xl bg-white/5 border border-white/5 hover:border-blue-500/30 transition-colors"
+                >
+                  <div className="w-12 h-12 rounded-2xl bg-blue-500/10 flex items-center justify-center text-blue-400 mb-4">
+                    {item.icon}
+                  </div>
+                  <h4 className="text-sm font-bold uppercase tracking-widest mb-1 text-white">{item.title}</h4>
+                  <p className="text-[10px] text-gray-500 font-medium">{item.desc}</p>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
+
         {/* Pricing Cards */}
         <section className="py-20 relative">
           {/* Animated Background Gradients */}
