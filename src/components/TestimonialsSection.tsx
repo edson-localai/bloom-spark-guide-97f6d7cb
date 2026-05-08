@@ -6,25 +6,29 @@ const reviews = [
     name: "Jamile Dantas",
     rating: 5,
     text: "Super indico a HCB, atendimento de qualidade, ambiente espetacular, todas as peças originais, preços que cabem no seu bolso. Pode confiar que é a melhor loja de peças de ar condicionado, sem falar no preço.",
-    date: "1 mês atrás"
+    date: "1 mês atrás",
+    image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=150"
   },
   {
     name: "Robson Alves Dos Santos",
     rating: 5,
     text: "Super recomendo; o atendimento é excepcional, o ambiente é elegante e os funcionários são muito gentis. Me senti muito bem durante essa experiência; comprar nessa empresa é uma experiência única.",
-    date: "2 meses atrás"
+    date: "2 meses atrás",
+    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=150"
   },
   {
     name: "Refricar refrigeração",
     rating: 5,
     text: "Bom atendimento, peças de qualidade, preço competitivo e facilidade no pagamento. Quando procuro peças para minha oficina, sempre encontro aqui, por isso recomendo!",
-    date: "3 meses atrás"
+    date: "3 meses atrás",
+    image: "https://images.unsplash.com/photo-1556155092-490a1ba16284?auto=format&fit=crop&q=80&w=150"
   },
   {
     name: "giselle silva",
     rating: 5,
     text: "Preços justos oferecidos ao cliente, atendimento personalizado e rapidez na entrega conforme o combinado.",
-    date: "4 meses atrás"
+    date: "4 meses atrás",
+    image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&q=80&w=150"
   }
 ];
 
