@@ -26,7 +26,7 @@ function ProposalPage() {
 
   const confirmSelection = () => {
     const message = encodeURIComponent(customMessage);
-    const url = `https://wa.me/5591981267484?text=${message}`;
+    const url = `https://wa.me/5551982249479?text=${message}`;
     const newWindow = window.open(url, '_blank');
     
     if (!newWindow || newWindow.closed || typeof newWindow.closed === 'undefined') {
@@ -655,7 +655,7 @@ function ProposalPage() {
               Qualquer dúvida que tiver sobre os planos, estou à disposição para conversarmos e ajustarmos os detalhes.
             </p>
             <a 
-              href="https://wa.me/5591981267484" 
+              href="https://wa.me/5551982249479" 
               target="_blank" 
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 bg-[#25D366] hover:bg-[#20ba59] text-white py-4 px-10 rounded-full font-bold text-lg transition-transform hover:scale-105 shadow-xl shadow-green-500/20"
