@@ -544,20 +544,32 @@ function ProposalPage() {
                   </tr>
                 </thead>
                 <tbody className="text-gray-300">
-                  {comparisonFeatures.map((row, i) => (
-                    <tr key={i} className="border-b border-white/5 hover:bg-white/[0.02] transition-colors">
-                      <td className="py-5 px-4 text-sm font-medium">{row.label}</td>
-                      <td className="py-5 px-4 text-center">
-                        {row.essential ? <CheckCircle2 className="w-5 h-5 text-blue-500 mx-auto" /> : <X className="w-5 h-5 text-gray-700 mx-auto" />}
-                      </td>
-                      <td className="py-5 px-4 text-center bg-blue-500/5">
-                        {row.pro ? <CheckCircle2 className="w-5 h-5 text-blue-500 mx-auto" /> : <X className="w-5 h-5 text-gray-700 mx-auto" />}
-                      </td>
-                      <td className="py-5 px-4 text-center">
-                        {row.elite ? <CheckCircle2 className="w-5 h-5 text-amber-500 mx-auto" /> : <X className="w-5 h-5 text-gray-700 mx-auto" />}
-                      </td>
-                    </tr>
-                  ))}
+                  {comparisonFeatures.map((row, i) => {
+                    const isExclusive = !row.essential;
+                    return (
+                      <tr key={i} className={`border-b border-white/5 hover:bg-white/[0.02] transition-colors ${isExclusive ? 'bg-blue-500/[0.02]' : ''}`}>
+                        <td className="py-5 px-4 text-sm font-medium">
+                          <div className="flex items-center gap-2">
+                            {row.label}
+                            {isExclusive && (
+                              <span className="text-[8px] font-black uppercase tracking-tighter px-1.5 py-0.5 rounded bg-blue-500/20 text-blue-400 border border-blue-500/10">
+                                Exclusivo
+                              </span>
+                            )}
+                          </div>
+                        </td>
+                        <td className="py-5 px-4 text-center">
+                          {row.essential ? <CheckCircle2 className="w-5 h-5 text-blue-500 mx-auto" /> : <X className="w-5 h-5 text-gray-800 mx-auto opacity-20" />}
+                        </td>
+                        <td className="py-5 px-4 text-center bg-blue-500/5">
+                          {row.pro ? <CheckCircle2 className="w-5 h-5 text-blue-500 mx-auto" /> : <X className="w-5 h-5 text-gray-800 mx-auto opacity-20" />}
+                        </td>
+                        <td className="py-5 px-4 text-center">
+                          {row.elite ? <CheckCircle2 className="w-5 h-5 text-amber-500 mx-auto" /> : <X className="w-5 h-5 text-gray-800 mx-auto opacity-20" />}
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>
