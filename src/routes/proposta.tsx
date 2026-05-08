@@ -99,7 +99,21 @@ function ProposalPage() {
       buttonText: "Escalar meu Negócio",
       popular: false
     }
+  const comparisonFeatures = [
+    { label: "Domínio .com.br", essential: true, pro: true, elite: true },
+    { label: "Hospedagem Premium", essential: true, pro: true, elite: true },
+    { label: "E-mails Profissionais", essential: true, pro: true, elite: true },
+    { label: "Certificado SSL", essential: true, pro: true, elite: true },
+    { label: "Site / Landing Page", essential: false, pro: true, elite: true },
+    { label: "Design Exclusivo", essential: false, pro: true, elite: true },
+    { label: "Otimização Google (SEO)", essential: false, pro: true, elite: true },
+    { label: "Integração WhatsApp", essential: false, pro: true, elite: true },
+    { label: "Automação WhatsApp (Bot)", essential: false, pro: false, elite: true },
+    { label: "CRM de Vendas", essential: false, pro: false, elite: true },
+    { label: "Relatórios de Performance", essential: false, pro: false, elite: true },
+    { label: "Suporte VIP Prioritário", essential: false, pro: false, elite: true },
   ];
+
 
 
 
