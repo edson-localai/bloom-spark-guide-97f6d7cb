@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
-import { Check, Rocket, Zap, Crown, Shield, ArrowRight, MessageCircle, X, Copy, CheckCircle2, AlertCircle } from "lucide-react";
+import { Check, Rocket, Zap, Crown, Shield, ArrowRight, MessageCircle, X, Copy, CheckCircle2, AlertCircle, Globe, Server, Mail, HelpCircle, Lock, Layout, Palette, Search, MessageSquare, Bot, Users, BarChart3, Star } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Logo from "../components/Logo";
 import Footer from "../components/Footer";
