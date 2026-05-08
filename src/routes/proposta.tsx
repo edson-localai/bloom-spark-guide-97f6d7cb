@@ -1,7 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
-import { Check, Rocket, Zap, Crown, Shield, ArrowRight, MessageCircle, X, Copy, CheckCircle2, AlertCircle, Globe, Server, Mail, HelpCircle, Lock, Layout, Palette, Search, MessageSquare, Bot, Users, BarChart3, Star, ChevronDown, ChevronUp } from "lucide-react";
+import { Check, Rocket, Zap, Crown, Shield, ArrowRight, MessageCircle, X, Copy, CheckCircle2, AlertCircle, Globe, Server, Mail, HelpCircle, Lock, Layout, Palette, Search, MessageSquare, Bot, Users, BarChart3, Star, ChevronDown, ChevronUp, Info } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../components/ui/tooltip";
 import Logo from "../components/Logo";
 import Footer from "../components/Footer";
 
@@ -244,24 +245,36 @@ function ProposalPage() {
 
                   <div className="space-y-5 mb-12 flex-grow">
                     <p className="text-[10px] font-black text-gray-500 uppercase tracking-[0.2em] mb-4">O que está incluso:</p>
-                    {plan.features.map((feature: any, idx: number) => (
-                      <div key={idx} className="flex items-start gap-4 group/feature">
-                        <div className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 transition-all duration-300 mt-0.5 ${
-                          plan.id === 'elite' 
-                            ? 'bg-amber-500/10 border border-amber-500/20 text-amber-500 group-hover/feature:bg-amber-500 group-hover/feature:border-amber-500' 
-                            : 'bg-blue-500/10 border border-blue-500/20 text-blue-400 group-hover/feature:bg-blue-500 group-hover/feature:border-blue-500'
-                        }`}>
-                          <div className="group-hover/feature:text-white transition-colors">
-                            {feature.icon}
-                          </div>
-                        </div>
-                        <div className="flex flex-col">
-                          <span className="text-gray-200 text-sm font-bold tracking-tight group-hover/feature:text-white transition-colors leading-none mb-1">{feature.text}</span>
-                          <span className="text-[10px] text-gray-500 font-medium tracking-tight group-hover/feature:text-blue-300 transition-colors">{feature.subtext}</span>
-                        </div>
-                      </div>
-                    ))}
-
+                    <TooltipProvider delayDuration={300}>
+                      {plan.features.map((feature: any, idx: number) => (
+                        <Tooltip key={idx}>
+                          <TooltipTrigger asChild>
+                            <div className="flex items-start gap-4 group/feature cursor-help">
+                              <div className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 transition-all duration-300 mt-0.5 ${
+                                plan.id === 'elite' 
+                                  ? 'bg-amber-500/10 border border-amber-500/20 text-amber-500 group-hover/feature:bg-amber-500 group-hover/feature:border-amber-500' 
+                                  : 'bg-blue-500/10 border border-blue-500/20 text-blue-400 group-hover/feature:bg-blue-500 group-hover/feature:border-blue-500'
+                              }`}>
+                                <div className="group-hover/feature:text-white transition-colors">
+                                  {feature.icon}
+                                </div>
+                              </div>
+                              <div className="flex flex-col">
+                                <div className="flex items-center gap-1.5">
+                                  <span className="text-gray-200 text-sm font-bold tracking-tight group-hover/feature:text-white transition-colors leading-none mb-1">{feature.text}</span>
+                                  <Info className="w-3 h-3 text-gray-600 group-hover/feature:text-blue-400 transition-colors" />
+                                </div>
+                                <span className="text-[10px] text-gray-500 font-medium tracking-tight group-hover/feature:text-blue-300 transition-colors">{feature.subtext}</span>
+                              </div>
+                            </div>
+                          </TooltipTrigger>
+                          <TooltipContent className="max-w-[200px] bg-[#0F172A] border-blue-500/30 text-xs text-gray-300 p-3 rounded-xl shadow-2xl">
+                            <p className="font-bold text-white mb-1">{feature.text}</p>
+                            {feature.subtext}. Este recurso garante que sua empresa tenha os melhores padrões do mercado digital.
+                          </TooltipContent>
+                        </Tooltip>
+                      ))}
+                    </TooltipProvider>
                   </div>
 
                   <button
