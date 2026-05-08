@@ -341,12 +341,15 @@ function ProposalPage() {
                         Imagine um cliente procurando por "ar condicionado automotivo" e encontrando sua marca com um e-mail <strong>contato@hcb-ar.com.br</strong>. A percepção de tamanho e seriedade da sua empresa muda instantaneamente.
                       </div>
                     </div>
-                    <div className="flex-1 rounded-2xl overflow-hidden h-48 md:h-auto border border-white/10 group-hover:border-blue-500/30 transition-colors">
+                    <div className="flex-1 rounded-2xl overflow-hidden h-64 md:h-auto border border-white/10 group-hover:border-blue-500/30 transition-colors shadow-2xl relative">
                       <img 
                         src="/src/assets/segment-light.jpg" 
                         alt="Presença Digital Starter" 
-                        className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700"
+                        className="w-full h-full object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700"
                       />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-end p-6">
+                        <span className="text-white font-bold text-sm uppercase tracking-widest">Base Sólida</span>
+                      </div>
                     </div>
                   </div>
                 </div>
