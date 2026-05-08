@@ -343,12 +343,13 @@ function ProposalPage() {
                     </div>
                     <div className="flex-1 rounded-2xl overflow-hidden h-64 md:h-auto border border-white/10 group-hover:border-blue-500/30 transition-colors shadow-2xl relative">
                       <img 
-                        src="/src/assets/segment-light.jpg" 
+                        src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=800" 
                         alt="Presença Digital Starter" 
                         className="w-full h-full object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700"
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-end p-6">
-                        <span className="text-white font-bold text-sm uppercase tracking-widest">Base Sólida</span>
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-60 group-hover:opacity-40 transition-opacity duration-500" />
+                      <div className="absolute inset-0 flex items-end p-6">
+                        <span className="text-white font-bold text-sm uppercase tracking-widest bg-blue-500/80 px-3 py-1 rounded backdrop-blur-sm">Base Sólida</span>
                       </div>
                     </div>
                   </div>
@@ -375,12 +376,13 @@ function ProposalPage() {
                   <div className="md:w-2/3 flex flex-col md:flex-row gap-8">
                     <div className="flex-1 rounded-2xl overflow-hidden h-64 md:h-auto border border-white/10 group-hover:border-blue-500/50 transition-colors order-2 md:order-1 shadow-2xl relative">
                       <img 
-                        src="/src/assets/segment-heavy.jpg" 
+                        src="https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?auto=format&fit=crop&q=80&w=800" 
                         alt="Landing Page de Alta Performance" 
                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-end p-6">
-                        <span className="text-white font-bold text-sm uppercase tracking-widest">Máxima Performance</span>
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-60 group-hover:opacity-40 transition-opacity duration-500" />
+                      <div className="absolute inset-0 flex items-end p-6">
+                        <span className="text-white font-bold text-sm uppercase tracking-widest bg-blue-600/80 px-3 py-1 rounded backdrop-blur-sm">Máxima Performance</span>
                       </div>
                     </div>
                     <div className="flex-1 space-y-4 order-1 md:order-2">
@@ -448,12 +450,13 @@ function ProposalPage() {
                     </div>
                     <div className="flex-1 rounded-2xl overflow-hidden h-64 md:h-auto border border-white/10 group-hover:border-amber-500/40 transition-colors shadow-2xl relative">
                       <img 
-                        src="/src/assets/storefront.jpg" 
+                        src="https://images.unsplash.com/photo-1551288049-bbbda536339a?auto=format&fit=crop&q=80&w=800" 
                         alt="Automação e CRM Elite" 
                         className="w-full h-full object-cover group-hover:rotate-1 group-hover:scale-110 transition-transform duration-700"
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-end p-6">
-                        <span className="text-amber-400 font-bold text-sm uppercase tracking-widest">Gestão Inteligente</span>
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-60 group-hover:opacity-40 transition-opacity duration-500" />
+                      <div className="absolute inset-0 flex items-end p-6">
+                        <span className="text-amber-400 font-bold text-sm uppercase tracking-widest bg-amber-500/20 px-3 py-1 rounded backdrop-blur-sm border border-amber-500/30">Gestão Inteligente</span>
                       </div>
                     </div>
                   </div>
