@@ -1,5 +1,6 @@
-import { motion } from 'framer-motion';
-import { Star, Quote } from 'lucide-react';
+import { useState, useEffect, useCallback } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Star, Quote, ChevronLeft, ChevronRight } from 'lucide-react';
 
 const reviews = [
   {
@@ -33,12 +34,29 @@ const reviews = [
 ];
 
 const TestimonialsSection = () => {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isAutoPlaying, setIsAutoPlaying] = useState(true);
+
+  const nextSlide = useCallback(() => {
+    setCurrentIndex((prev) => (prev + 1) % reviews.length);
+  }, []);
+
+  const prevSlide = useCallback(() => {
+    setCurrentIndex((prev) => (prev - 1 + reviews.length) % reviews.length);
+  }, []);
+
+  useEffect(() => {
+    if (!isAutoPlaying) return;
+    const interval = setInterval(nextSlide, 5000);
+    return () => clearInterval(interval);
+  }, [isAutoPlaying, nextSlide]);
+
   return (
     <section id="depoimentos" className="py-20 sm:py-32 relative overflow-hidden bg-[#0A0A0A] px-[max(24px,5vw)]">
       {/* Background Glow */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-[#0066CC]/5 rounded-full blur-[120px] pointer-events-none" />
       
-      <div className="container mx-auto px-4 relative z-10">
+      <div className="container mx-auto relative z-10">
         <div className="text-center mb-16">
           <motion.h2 
             initial={{ opacity: 0, y: 20 }}
@@ -59,53 +77,92 @@ const TestimonialsSection = () => {
           </motion.p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-5xl mx-auto">
-          {reviews.map((review, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: index * 0.1 }}
-              className="group p-8 rounded-2xl bg-white/5 border border-white/10 hover:border-[#0066CC]/50 transition-all duration-300 relative overflow-hidden backdrop-blur-sm"
-            >
-              <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
-                <Quote size={48} className="text-white" />
-              </div>
-              
-              <div className="flex gap-1 mb-4">
-                {[...Array(review.rating)].map((_, i) => (
-                  <Star key={i} size={16} className="fill-[#FFB800] text-[#FFB800]" />
-                ))}
-              </div>
-
-              <p className="text-gray-300 mb-6 italic leading-relaxed">
-                "{review.text}"
-              </p>
-
-              <div className="flex items-center justify-between">
-                <div>
-                  <h4 className="font-bold text-white group-hover:text-[#0066CC] transition-colors">
-                    {review.name}
-                  </h4>
-                  <span className="text-sm text-gray-500">{review.date}</span>
+        <div className="relative max-w-4xl mx-auto px-4 sm:px-12">
+          <div className="overflow-hidden min-h-[350px] flex items-center">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={currentIndex}
+                initial={{ opacity: 0, x: 50 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -50 }}
+                transition={{ duration: 0.5, ease: "easeOut" }}
+                className="group p-8 sm:p-12 rounded-[32px] bg-white/5 border border-white/10 hover:border-[#0066CC]/50 transition-all duration-500 relative overflow-hidden backdrop-blur-md w-full"
+                onMouseEnter={() => setIsAutoPlaying(false)}
+                onMouseLeave={() => setIsAutoPlaying(true)}
+              >
+                <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity">
+                  <Quote size={80} className="text-white" />
                 </div>
-                {review.image ? (
-                  <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-[#0066CC]/30 group-hover:border-[#0066CC] transition-colors">
-                    <img 
-                      src={review.image} 
-                      alt={review.name}
-                      className="w-full h-full object-cover"
-                    />
+                
+                <div className="flex gap-1.5 mb-8">
+                  {[...Array(reviews[currentIndex].rating)].map((_, i) => (
+                    <Star key={i} size={20} className="fill-[#FFB800] text-[#FFB800]" />
+                  ))}
+                </div>
+
+                <p className="text-[#F5F8FF] text-xl sm:text-2xl font-light italic leading-relaxed mb-10 relative z-10">
+                  "{reviews[currentIndex].text}"
+                </p>
+
+                <div className="flex items-center justify-between mt-auto">
+                  <div className="flex items-center gap-4">
+                    {reviews[currentIndex].image ? (
+                      <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-[#0066CC]/30 group-hover:border-[#0066CC] transition-colors">
+                        <img 
+                          src={reviews[currentIndex].image} 
+                          alt={reviews[currentIndex].name}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    ) : (
+                      <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#0066CC] to-[#004499] flex items-center justify-center text-white font-bold text-xl border-2 border-transparent">
+                        {reviews[currentIndex].name.charAt(0)}
+                      </div>
+                    )}
+                    <div>
+                      <h4 className="font-['Rajdhani'] text-xl font-bold text-white group-hover:text-[#60C0FF] transition-colors">
+                        {reviews[currentIndex].name}
+                      </h4>
+                      <span className="font-['Inter'] text-sm text-[#8A9BB5] uppercase tracking-wider">{reviews[currentIndex].date}</span>
+                    </div>
                   </div>
-                ) : (
-                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#0066CC] to-[#004499] flex items-center justify-center text-white font-bold text-sm border-2 border-transparent">
-                    {review.name.charAt(0)}
-                  </div>
-                )}
-              </div>
-            </motion.div>
-          ))}
+                </div>
+              </motion.div>
+            </AnimatePresence>
+          </div>
+
+          {/* Navigation Arrows */}
+          <button 
+            onClick={prevSlide}
+            className="absolute left-[-20px] sm:left-[-10px] top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-[#16191F]/80 border border-white/10 text-white hover:bg-[#0066CC] hover:scale-110 transition-all z-20 flex items-center justify-center backdrop-blur-sm"
+            aria-label="Depoimento anterior"
+          >
+            <ChevronLeft size={24} />
+          </button>
+          <button 
+            onClick={nextSlide}
+            className="absolute right-[-20px] sm:right-[-10px] top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-[#16191F]/80 border border-white/10 text-white hover:bg-[#0066CC] hover:scale-110 transition-all z-20 flex items-center justify-center backdrop-blur-sm"
+            aria-label="Próximo depoimento"
+          >
+            <ChevronRight size={24} />
+          </button>
+
+          {/* Pagination Dots */}
+          <div className="flex justify-center gap-3 mt-12">
+            {reviews.map((_, i) => (
+              <button
+                key={i}
+                onClick={() => {
+                  setCurrentIndex(i);
+                  setIsAutoPlaying(false);
+                }}
+                className={`h-1.5 rounded-full transition-all duration-500 ${
+                  i === currentIndex ? 'bg-[#0066CC] w-12' : 'bg-white/20 w-4 hover:bg-white/40'
+                }`}
+                aria-label={`Ir para depoimento ${i + 1}`}
+              />
+            ))}
+          </div>
         </div>
 
         <motion.div 
