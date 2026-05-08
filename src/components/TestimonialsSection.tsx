@@ -90,9 +90,19 @@ const TestimonialsSection = () => {
                   </h4>
                   <span className="text-sm text-gray-500">{review.date}</span>
                 </div>
-                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#0066CC] to-[#004499] flex items-center justify-center text-white font-bold text-sm">
-                  {review.name.charAt(0)}
-                </div>
+                {review.image ? (
+                  <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-[#0066CC]/30 group-hover:border-[#0066CC] transition-colors">
+                    <img 
+                      src={review.image} 
+                      alt={review.name}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                ) : (
+                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#0066CC] to-[#004499] flex items-center justify-center text-white font-bold text-sm border-2 border-transparent">
+                    {review.name.charAt(0)}
+                  </div>
+                )}
               </div>
             </motion.div>
           ))}
