@@ -529,31 +529,19 @@ function ProposalPage() {
               <p className="text-gray-400 max-w-2xl mx-auto">Visão detalhada de cada recurso lado a lado.</p>
             </div>
 
-            <div className="overflow-x-auto">
+            {/* Desktop Table */}
+            <div className="hidden md:block overflow-x-auto">
               <table className="w-full border-collapse">
                 <thead>
                   <tr className="border-b border-white/10">
                     <th className="py-6 px-4 text-left text-sm font-bold uppercase tracking-widest text-gray-500">Recursos</th>
-                    <th className="py-6 px-4 text-center text-sm font-bold uppercase tracking-widest text-blue-400">Essencial</th>
+                    <th className="py-6 px-4 text-center text-sm font-bold uppercase tracking-widest text-blue-400">Starter</th>
                     <th className="py-6 px-4 text-center text-sm font-bold uppercase tracking-widest text-blue-500 bg-blue-500/5 rounded-t-3xl">Profissional</th>
                     <th className="py-6 px-4 text-center text-sm font-bold uppercase tracking-widest text-amber-400">Elite</th>
                   </tr>
                 </thead>
                 <tbody className="text-gray-300">
-                  {[
-                    { label: "Domínio .com.br", essential: true, pro: true, elite: true },
-                    { label: "Hospedagem Premium", essential: true, pro: true, elite: true },
-                    { label: "E-mails Profissionais", essential: true, pro: true, elite: true },
-                    { label: "Certificado SSL", essential: true, pro: true, elite: true },
-                    { label: "Site / Landing Page", essential: false, pro: true, elite: true },
-                    { label: "Design Exclusivo", essential: false, pro: true, elite: true },
-                    { label: "Otimização Google (SEO)", essential: false, pro: true, elite: true },
-                    { label: "Integração WhatsApp", essential: false, pro: true, elite: true },
-                    { label: "Automação WhatsApp (Bot)", essential: false, pro: false, elite: true },
-                    { label: "CRM de Vendas", essential: false, pro: false, elite: true },
-                    { label: "Relatórios de Performance", essential: false, pro: false, elite: true },
-                    { label: "Suporte VIP Prioritário", essential: false, pro: false, elite: true },
-                  ].map((row, i) => (
+                  {comparisonFeatures.map((row, i) => (
                     <tr key={i} className="border-b border-white/5 hover:bg-white/[0.02] transition-colors">
                       <td className="py-5 px-4 text-sm font-medium">{row.label}</td>
                       <td className="py-5 px-4 text-center">
@@ -568,24 +556,39 @@ function ProposalPage() {
                     </tr>
                   ))}
                 </tbody>
-                <tfoot>
-                  <tr>
-                    <td className="py-8 px-4"></td>
-                    <td className="py-8 px-4 text-center">
-                      <p className="text-lg font-bold mb-2">R$ 400</p>
-                      <button onClick={() => handlePlanSelect(plans[0])} className="text-[10px] font-bold uppercase tracking-widest text-blue-400 hover:text-blue-300">Selecionar</button>
-                    </td>
-                    <td className="py-8 px-4 text-center bg-blue-500/5 rounded-b-3xl">
-                      <p className="text-lg font-bold mb-2">R$ 1.000</p>
-                      <button onClick={() => handlePlanSelect(plans[1])} className="text-[10px] font-bold uppercase tracking-widest text-blue-500 hover:text-blue-400">Selecionar</button>
-                    </td>
-                    <td className="py-8 px-4 text-center">
-                      <p className="text-lg font-bold mb-2">R$ 1.500</p>
-                      <button onClick={() => handlePlanSelect(plans[2])} className="text-[10px] font-bold uppercase tracking-widest text-amber-500 hover:text-amber-400">Selecionar</button>
-                    </td>
-                  </tr>
-                </tfoot>
               </table>
+            </div>
+
+            {/* Mobile Accordion */}
+            <div className="md:hidden space-y-4">
+              {plans.map((plan) => (
+                <div key={plan.id} className="border border-white/10 rounded-2xl overflow-hidden bg-black/20">
+                  <details className="group [&_summary::-webkit-details-marker]:hidden">
+                    <summary className="flex items-center justify-between p-6 cursor-pointer hover:bg-white/5 transition-colors">
+                      <span className="font-bold text-lg">{plan.name}</span>
+                      <ChevronDown className="w-5 h-5 text-blue-500 transition-transform group-open:rotate-180" />
+                    </summary>
+                    <div className="p-6 pt-0 border-t border-white/10">
+                      <ul className="space-y-3 pt-4">
+                        {comparisonFeatures.map((feat, i) => (
+                          <li key={i} className="flex items-center justify-between text-sm">
+                            <span className="text-gray-400">{feat.label}</span>
+                            {plan.id === 'starter' && (feat.essential ? <CheckCircle2 className="w-4 h-4 text-blue-500" /> : <X className="w-4 h-4 text-gray-700" />)}
+                            {plan.id === 'pro' && (feat.pro ? <CheckCircle2 className="w-4 h-4 text-blue-500" /> : <X className="w-4 h-4 text-gray-700" />)}
+                            {plan.id === 'elite' && (feat.elite ? <CheckCircle2 className="w-4 h-4 text-amber-500" /> : <X className="w-4 h-4 text-gray-700" />)}
+                          </li>
+                        ))}
+                      </ul>
+                      <button 
+                        onClick={() => handlePlanSelect(plan)}
+                        className="w-full mt-6 py-3 bg-blue-600 text-white rounded-xl font-bold text-sm"
+                      >
+                        Selecionar {plan.name}
+                      </button>
+                    </div>
+                  </details>
+                </div>
+              ))}
             </div>
           </div>
         </section>
