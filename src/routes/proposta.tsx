@@ -151,10 +151,10 @@ function ProposalPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
             >
-              <h1 className="text-4xl md:text-6xl font-bold mb-6">
+              <h1 className="text-5xl md:text-7xl font-bold mb-8">
                 Evolua a Presença Digital da <span className="text-blue-500">HCB</span>
               </h1>
-              <p className="text-xl text-gray-400 max-w-3xl mx-auto mb-10 leading-relaxed">
+              <p className="text-2xl text-gray-400 max-w-4xl mx-auto mb-12 leading-relaxed">
                 Preparamos 3 caminhos estratégicos para o seu negócio. Escolha o plano que melhor se adapta ao momento da sua empresa e vamos acelerar juntos.
               </p>
             </motion.div>
@@ -182,8 +182,8 @@ function ProposalPage() {
                   <div className="w-12 h-12 rounded-2xl bg-blue-500/10 flex items-center justify-center text-blue-400 mb-4">
                     {item.icon}
                   </div>
-                  <h4 className="text-sm font-bold uppercase tracking-widest mb-1 text-white">{item.title}</h4>
-                  <p className="text-[10px] text-gray-500 font-medium">{item.desc}</p>
+                  <h4 className="text-base font-bold uppercase tracking-widest mb-2 text-white">{item.title}</h4>
+                  <p className="text-xs text-gray-500 font-medium">{item.desc}</p>
                 </motion.div>
               ))}
             </div>
@@ -227,24 +227,24 @@ function ProposalPage() {
                         </span>
                       )}
                     </div>
-                    <h3 className="text-3xl font-bold mb-2 font-['Bebas_Neue'] tracking-wide group-hover:text-blue-400 transition-colors">{plan.name}</h3>
-                    <p className="text-gray-400 text-xs font-semibold uppercase tracking-widest">{plan.tagline}</p>
+                    <h3 className="text-4xl font-bold mb-3 font-['Bebas_Neue'] tracking-wide group-hover:text-blue-400 transition-colors">{plan.name}</h3>
+                    <p className="text-gray-400 text-sm font-semibold uppercase tracking-widest">{plan.tagline}</p>
                   </div>
 
-                  <div className="mb-10 p-6 bg-white/5 rounded-2xl border border-white/5 group-hover:border-blue-500/20 transition-colors">
-                    <div className="flex items-baseline gap-1 mb-1">
-                      <span className="text-sm font-medium text-gray-500 uppercase tracking-tighter">R$</span>
-                      <span className="text-4xl font-black tracking-tight">{plan.price}</span>
+                  <div className="mb-10 p-8 bg-white/5 rounded-2xl border border-white/5 group-hover:border-blue-500/20 transition-colors">
+                    <div className="flex items-baseline gap-1 mb-2">
+                      <span className="text-base font-medium text-gray-500 uppercase tracking-tighter">R$</span>
+                      <span className="text-5xl font-black tracking-tight">{plan.price}</span>
                     </div>
-                    <p className="text-[10px] text-blue-400 font-bold uppercase tracking-widest">{plan.period}</p>
+                    <p className="text-xs text-blue-400 font-bold uppercase tracking-widest">{plan.period}</p>
                   </div>
 
-                  <p className="text-gray-400 mb-10 text-sm leading-relaxed font-medium">
+                  <p className="text-gray-300 mb-10 text-base leading-relaxed font-medium">
                     {plan.description}
                   </p>
 
-                  <div className="space-y-5 mb-12 flex-grow">
-                    <p className="text-[10px] font-black text-gray-500 uppercase tracking-[0.2em] mb-4">O que está incluso:</p>
+                  <div className="space-y-6 mb-12 flex-grow">
+                    <p className="text-xs font-black text-gray-500 uppercase tracking-[0.2em] mb-6">O que está incluso:</p>
                     <TooltipProvider delayDuration={300}>
                       {plan.features.map((feature: any, idx: number) => (
                         <Tooltip key={idx}>
@@ -261,10 +261,10 @@ function ProposalPage() {
                               </div>
                               <div className="flex flex-col">
                                 <div className="flex items-center gap-1.5">
-                                  <span className="text-gray-200 text-sm font-bold tracking-tight group-hover/feature:text-white transition-colors leading-none mb-1">{feature.text}</span>
-                                  <Info className="w-3 h-3 text-gray-600 group-hover/feature:text-blue-400 transition-colors" />
+                                  <span className="text-gray-200 text-base font-bold tracking-tight group-hover/feature:text-white transition-colors leading-none mb-1">{feature.text}</span>
+                                  <Info className="w-4 h-4 text-gray-600 group-hover/feature:text-blue-400 transition-colors" />
                                 </div>
-                                <span className="text-[10px] text-gray-500 font-medium tracking-tight group-hover/feature:text-blue-300 transition-colors">{feature.subtext}</span>
+                                <span className="text-xs text-gray-500 font-medium tracking-tight group-hover/feature:text-blue-300 transition-colors">{feature.subtext}</span>
                               </div>
                             </div>
                           </TooltipTrigger>
@@ -279,7 +279,7 @@ function ProposalPage() {
 
                   <button
                     onClick={() => handlePlanSelect(plan)}
-                    className={`w-full py-4 px-6 rounded-xl font-bold flex items-center justify-center gap-2 transition-all ${
+                    className={`w-full py-5 px-8 rounded-xl font-bold text-lg flex items-center justify-center gap-2 transition-all ${
                       plan.popular 
                         ? "bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-600/20" 
                         : "bg-white/10 hover:bg-white/20 text-white"
@@ -314,30 +314,30 @@ function ProposalPage() {
                       <h3 className="text-2xl font-bold font-['Bebas_Neue'] tracking-wide">Plano Essencial</h3>
                     </div>
                     <p className="text-gray-400 text-sm mb-6">Manutenção da base tecnológica para sua operação continuar rodando sem interrupções.</p>
-                    <div className="p-4 bg-blue-500/5 rounded-xl border border-blue-500/10">
-                      <p className="text-xs text-blue-300 font-bold uppercase mb-2">Benefício Principal:</p>
-                      <p className="text-sm text-gray-300 italic">"Sua empresa sempre encontrada, com e-mails que passam confiança e domínio garantido."</p>
+                    <div className="p-5 bg-blue-500/5 rounded-xl border border-blue-500/10">
+                      <p className="text-sm text-blue-300 font-bold uppercase mb-2">Benefício Principal:</p>
+                      <p className="text-base text-gray-300 italic">"Sua empresa sempre encontrada, com e-mails que passam confiança e domínio garantido."</p>
                     </div>
                   </div>
                   <div className="md:w-2/3 flex flex-col md:flex-row gap-8">
-                    <div className="flex-1 space-y-4">
-                      <h4 className="text-white font-bold text-sm uppercase tracking-widest border-l-2 border-blue-500 pl-3">O que inclui:</h4>
-                      <ul className="space-y-3">
-                        <li className="flex gap-2 text-sm text-gray-300">
-                          <Check className="w-4 h-4 text-blue-500 shrink-0" />
+                    <div className="flex-1 space-y-6">
+                      <h4 className="text-white font-bold text-lg uppercase tracking-widest border-l-2 border-blue-500 pl-3">O que inclui:</h4>
+                      <ul className="space-y-4">
+                        <li className="flex gap-3 text-base text-gray-300">
+                          <Check className="w-5 h-5 text-blue-500 shrink-0" />
                           <span><strong>Domínio .com.br:</strong> Sua marca protegida na internet (ex: hcb-ar.com.br).</span>
                         </li>
-                        <li className="flex gap-2 text-sm text-gray-300">
-                          <Check className="w-4 h-4 text-blue-500 shrink-0" />
+                        <li className="flex gap-3 text-base text-gray-300">
+                          <Check className="w-5 h-5 text-blue-500 shrink-0" />
                           <span><strong>Hospedagem Premium:</strong> Servidores rápidos que garantem que seu site não caia.</span>
                         </li>
-                        <li className="flex gap-2 text-sm text-gray-300">
-                          <Check className="w-4 h-4 text-blue-500 shrink-0" />
+                        <li className="flex gap-3 text-base text-gray-300">
+                          <Check className="w-5 h-5 text-blue-500 shrink-0" />
                           <span><strong>E-mails @hcb:</strong> Chega de usar Gmail para fechar negócios de alto valor.</span>
                         </li>
                       </ul>
-                      <h4 className="text-white font-bold text-sm uppercase tracking-widest border-l-2 border-blue-500 pl-3 mt-6">Exemplo Prático:</h4>
-                      <div className="bg-white/5 p-4 rounded-xl text-xs text-gray-400 leading-relaxed">
+                      <h4 className="text-white font-bold text-lg uppercase tracking-widest border-l-2 border-blue-500 pl-3 mt-8">Exemplo Prático:</h4>
+                      <div className="bg-white/5 p-6 rounded-xl text-sm text-gray-400 leading-relaxed">
                         Imagine um cliente procurando por "ar condicionado automotivo" e encontrando sua marca com um e-mail <strong>contato@hcb-ar.com.br</strong>. A percepção de tamanho e seriedade da sua empresa muda instantaneamente.
                       </div>
                     </div>
@@ -553,12 +553,12 @@ function ProposalPage() {
             <div className="hidden md:block overflow-x-auto">
               <table className="w-full border-collapse">
                 <thead>
-                  <tr className="border-b border-white/10">
-                    <th className="py-6 px-4 text-left text-sm font-bold uppercase tracking-widest text-gray-500">Recursos</th>
-                    <th className="py-6 px-4 text-center text-sm font-bold uppercase tracking-widest text-blue-400">Starter</th>
-                    <th className="py-6 px-4 text-center text-sm font-bold uppercase tracking-widest text-blue-500 bg-blue-500/5 rounded-t-3xl">Profissional</th>
-                    <th className="py-6 px-4 text-center text-sm font-bold uppercase tracking-widest text-amber-400">Elite</th>
-                  </tr>
+                <tr className="border-b border-white/10">
+                  <th className="py-8 px-6 text-left text-base font-bold uppercase tracking-widest text-gray-500">Recursos</th>
+                  <th className="py-8 px-6 text-center text-base font-bold uppercase tracking-widest text-blue-400">Starter</th>
+                  <th className="py-8 px-6 text-center text-base font-bold uppercase tracking-widest text-blue-500 bg-blue-500/5 rounded-t-3xl">Profissional</th>
+                  <th className="py-8 px-6 text-center text-base font-bold uppercase tracking-widest text-amber-400">Elite</th>
+                </tr>
                 </thead>
                 <tbody className="text-gray-300">
                   {comparisonFeatures.map((row, i) => {
