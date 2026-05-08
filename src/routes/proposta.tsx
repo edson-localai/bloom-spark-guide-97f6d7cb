@@ -246,8 +246,12 @@ function ProposalPage() {
                     <p className="text-[10px] font-black text-gray-500 uppercase tracking-[0.2em] mb-4">O que está incluso:</p>
                     {plan.features.map((feature: any, idx: number) => (
                       <div key={idx} className="flex items-start gap-4 group/feature">
-                        <div className="w-8 h-8 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center shrink-0 group-hover/feature:bg-blue-500 group-hover/feature:border-blue-500 transition-all duration-300 mt-0.5">
-                          <div className="text-blue-400 group-hover/feature:text-white transition-colors">
+                        <div className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 transition-all duration-300 mt-0.5 ${
+                          plan.id === 'elite' 
+                            ? 'bg-amber-500/10 border border-amber-500/20 text-amber-500 group-hover/feature:bg-amber-500 group-hover/feature:border-amber-500' 
+                            : 'bg-blue-500/10 border border-blue-500/20 text-blue-400 group-hover/feature:bg-blue-500 group-hover/feature:border-blue-500'
+                        }`}>
+                          <div className="group-hover/feature:text-white transition-colors">
                             {feature.icon}
                           </div>
                         </div>
