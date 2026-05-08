@@ -446,12 +446,15 @@ function ProposalPage() {
                         Um cliente manda mensagem às 22h. O Bot responde: "Olá! Qual o modelo do seu carro?". Ele responde "Hilux 2022". O Bot já deixa o lead pronto no seu CRM para você fechar o agendamento no dia seguinte cedo.
                       </div>
                     </div>
-                    <div className="flex-1 rounded-2xl overflow-hidden h-48 md:h-auto border border-white/10 group-hover:border-amber-500/40 transition-colors">
+                    <div className="flex-1 rounded-2xl overflow-hidden h-64 md:h-auto border border-white/10 group-hover:border-amber-500/40 transition-colors shadow-2xl relative">
                       <img 
                         src="/src/assets/storefront.jpg" 
                         alt="Automação e CRM Elite" 
-                        className="w-full h-full object-cover group-hover:rotate-2 group-hover:scale-110 transition-transform duration-700"
+                        className="w-full h-full object-cover group-hover:rotate-1 group-hover:scale-110 transition-transform duration-700"
                       />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-end p-6">
+                        <span className="text-amber-400 font-bold text-sm uppercase tracking-widest">Gestão Inteligente</span>
+                      </div>
                     </div>
                   </div>
                 </div>
