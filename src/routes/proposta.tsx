@@ -323,14 +323,45 @@ function ProposalPage() {
               <h2 className="text-3xl md:text-4xl font-bold mb-4 font-['Bebas_Neue'] tracking-wider">Por que investir agora?</h2>
               <p className="text-gray-400">Entenda as vantagens de cada recurso estratégico.</p>
             </div>
-...
 
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+              <div className="p-6 bg-black/30 rounded-2xl border border-white/5">
+                <div className="w-12 h-12 bg-blue-500/20 rounded-lg flex items-center justify-center mb-6">
+                  <Zap className="text-blue-500 w-6 h-6" />
+                </div>
+                <h4 className="text-xl font-bold mb-3 font-['Bebas_Neue'] tracking-wide">Velocidade</h4>
+                <p className="text-gray-400 text-sm">Um site rápido não apenas agrada o cliente, mas aumenta sua nota no Google, reduzindo custos com anúncios.</p>
+              </div>
+              <div className="p-6 bg-black/30 rounded-2xl border border-white/5">
+                <div className="w-12 h-12 bg-blue-500/20 rounded-lg flex items-center justify-center mb-6">
+                  <Check className="text-blue-500 w-6 h-6" />
+                </div>
+                <h4 className="text-xl font-bold mb-3 font-['Bebas_Neue'] tracking-wide">Profissionalismo</h4>
+                <p className="text-gray-400 text-sm">Abandone o e-mail amador e as redes sociais como única vitrine. Tenha uma casa digital sólida e confiável.</p>
+              </div>
+              <div className="p-6 bg-black/30 rounded-2xl border border-white/5">
+                <div className="w-12 h-12 bg-blue-500/20 rounded-lg flex items-center justify-center mb-6">
+                  <Rocket className="text-blue-500 w-6 h-6" />
+                </div>
+                <h4 className="text-xl font-bold mb-3 font-['Bebas_Neue'] tracking-wide">Automação</h4>
+                <p className="text-gray-400 text-sm">Não perca vendas por demora no WhatsApp. O CRM e a automação garantem que todo lead seja atendido instantaneamente.</p>
+              </div>
+              <div className="p-6 bg-black/30 rounded-2xl border border-white/5">
+                <div className="w-12 h-12 bg-blue-500/20 rounded-lg flex items-center justify-center mb-6">
+                  <Shield className="text-blue-500 w-6 h-6" />
+                </div>
+                <h4 className="text-xl font-bold mb-3 font-['Bebas_Neue'] tracking-wide">Segurança</h4>
+                <p className="text-gray-400 text-sm">Hospedagem blindada e certificados de segurança inclusos para garantir que seu site esteja sempre online e seguro.</p>
+              </div>
+            </div>
+          </div>
+        </section>
 
         {/* Final CTA */}
         <section className="py-24 text-center">
           <div className="container mx-auto px-6 max-w-2xl">
-            <h2 className="text-3xl font-bold mb-6">Pronto para dar o próximo passo?</h2>
-            <p className="text-gray-400 mb-10 text-lg">
+            <h2 className="text-3xl font-bold mb-6 font-['Bebas_Neue'] tracking-wider">Pronto para dar o próximo passo?</h2>
+            <p className="text-gray-400 mb-10 text-lg leading-relaxed">
               Qualquer dúvida que tiver sobre os planos, estou à disposição para conversarmos e ajustarmos os detalhes.
             </p>
             <a 
@@ -339,6 +370,7 @@ function ProposalPage() {
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 bg-[#25D366] hover:bg-[#20ba59] text-white py-4 px-10 rounded-full font-bold text-lg transition-transform hover:scale-105 shadow-xl shadow-green-500/20"
             >
+              <MessageCircle className="w-6 h-6" />
               Falar agora pelo WhatsApp
             </a>
           </div>
