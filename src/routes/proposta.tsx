@@ -216,7 +216,7 @@ function ProposalPage() {
                   )}
 
 
-                  <div className="mb-8">
+                  <div className="mb-8 h-[160px] flex flex-col justify-start">
                     <div className="mb-6 flex items-center justify-between">
                       <div className={`p-4 rounded-2xl ${plan.popular ? 'bg-blue-500 text-white' : 'bg-white/5 text-blue-400'}`}>
                         {plan.icon}
@@ -239,7 +239,7 @@ function ProposalPage() {
                     <p className="text-xs text-blue-400 font-bold uppercase tracking-widest">{plan.period}</p>
                   </div>
 
-                  <p className="text-gray-300 mb-10 text-base leading-relaxed font-medium">
+                  <p className="text-gray-300 mb-10 text-base leading-relaxed font-medium min-h-[80px]">
                     {plan.description}
                   </p>
 
