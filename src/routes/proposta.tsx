@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
-import { Check, Rocket, Zap, Crown, Shield, ArrowRight, MessageCircle, X, Copy, CheckCircle2, AlertCircle } from "lucide-react";
+import { Check, Rocket, Zap, Crown, Shield, ArrowRight, MessageCircle, X, Copy, CheckCircle2, AlertCircle, Globe, Server, Mail, HelpCircle, Lock, Layout, Palette, Search, MessageSquare, Bot, Users, BarChart3, Star } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Logo from "../components/Logo";
 import Footer from "../components/Footer";
@@ -43,22 +43,22 @@ function ProposalPage() {
 
   const plans = [
     {
-      id: "essencial",
-      name: "Plano Essencial",
+      id: "starter",
+      name: "Plano Starter",
       tagline: "Presença Digital Garantida",
       price: "400,00",
       period: "Anual",
       description: "Ideal para manter sua identidade online ativa e profissional.",
       features: [
-        "Registro de Domínio (.com.br)",
-        "Hospedagem de Alta Performance",
-        "E-mails Profissionais",
-        "Suporte Técnico Especializado",
-        "Certificado SSL incluso"
+        { icon: <Globe className="w-4 h-4" />, text: "Domínio Profissional", subtext: "Seu endereço exclusivo na web" },
+        { icon: <Server className="w-4 h-4" />, text: "Hospedagem de Elite", subtext: "Velocidade e estabilidade" },
+        { icon: <Mail className="w-4 h-4" />, text: "Contas de E-mail @hcb", subtext: "Credibilidade em cada contato" },
+        { icon: <Lock className="w-4 h-4" />, text: "Certificado SSL", subtext: "Site seguro e confiável" },
+        { icon: <HelpCircle className="w-4 h-4" />, text: "Suporte Técnico", subtext: "Auxílio sempre que precisar" }
       ],
       icon: <Shield className="w-8 h-8 text-blue-400" />,
       color: "border-blue-500/20 bg-blue-500/5",
-      buttonText: "Quero Manter Este",
+      buttonText: "Manter Presença",
       popular: false
     },
     {
@@ -69,12 +69,11 @@ function ProposalPage() {
       period: "Pagamento Único + 400,00 Anual",
       description: "O site que sua empresa merece, focado em conversão e autoridade.",
       features: [
-        "Tudo do Plano Essencial",
-        "Landing Page de Alta Performance",
-        "Design Premium & Exclusivo",
-        "Otimização para Google (SEO)",
-        "Site Rápido e Responsivo",
-        "Integração com WhatsApp"
+        { icon: <Layout className="w-4 h-4" />, text: "Landing Page Premium", subtext: "Design focado em conversão" },
+        { icon: <Palette className="w-4 h-4" />, text: "Identidade Visual", subtext: "Visual moderno e impactante" },
+        { icon: <Search className="w-4 h-4" />, text: "Otimização SEO", subtext: "Apareça no topo das buscas" },
+        { icon: <MessageSquare className="w-4 h-4" />, text: "Botão WhatsApp", subtext: "Contato imediato e fácil" },
+        { icon: <Zap className="w-4 h-4" />, text: "Alta Performance", subtext: "Carregamento ultra-rápido" }
       ],
       icon: <Rocket className="w-8 h-8 text-blue-500" />,
       color: "border-blue-500 bg-blue-500/10",
@@ -83,25 +82,25 @@ function ProposalPage() {
     },
     {
       id: "elite",
-      name: "Plano Elite Digital",
+      name: "Plano Elite",
       tagline: "Máxima Conversão & Gestão",
       price: "1.500,00",
       period: "Pagamento Único + 200,00 Mensal",
       description: "Transforme seu atendimento em uma máquina de vendas automática.",
       features: [
-        "Tudo do Plano Profissional",
-        "Automação de Atendimento WhatsApp",
-        "CRM Integrado (Gestão de Leads)",
-        "Relatórios de Performance",
-        "Suporte Prioritário VIP",
-        "Manutenção Mensal Inclusa"
+        { icon: <Bot className="w-4 h-4" />, text: "Automação WhatsApp", subtext: "Atendimento automático 24h" },
+        { icon: <Users className="w-4 h-4" />, text: "CRM Estratégico", subtext: "Gestão profissional de leads" },
+        { icon: <BarChart3 className="w-4 h-4" />, text: "Relatórios de Vendas", subtext: "Decisões baseadas em dados" },
+        { icon: <Star className="w-4 h-4" />, text: "Suporte VIP", subtext: "Atendimento priorizado" },
+        { icon: <Zap className="w-4 h-4" />, text: "Escalabilidade", subtext: "Pronto para crescer rápido" }
       ],
       icon: <Crown className="w-8 h-8 text-amber-400" />,
       color: "border-amber-500/50 bg-amber-500/5",
-      buttonText: "Quero Escalar meu Negócio",
+      buttonText: "Escalar meu Negócio",
       popular: false
     }
   ];
+
 
 
   return (
@@ -228,14 +227,20 @@ function ProposalPage() {
 
                   <div className="space-y-5 mb-12 flex-grow">
                     <p className="text-[10px] font-black text-gray-500 uppercase tracking-[0.2em] mb-4">O que está incluso:</p>
-                    {plan.features.map((feature, idx) => (
-                      <div key={idx} className="flex items-center gap-4 group/feature">
-                        <div className="w-6 h-6 rounded-full bg-blue-500/10 border border-blue-500/20 flex items-center justify-center shrink-0 group-hover/feature:bg-blue-500 group-hover/feature:border-blue-500 transition-all duration-300">
-                          <Check className="w-3.5 h-3.5 text-blue-500 group-hover/feature:text-white transition-colors" />
+                    {plan.features.map((feature: any, idx: number) => (
+                      <div key={idx} className="flex items-start gap-4 group/feature">
+                        <div className="w-8 h-8 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center shrink-0 group-hover/feature:bg-blue-500 group-hover/feature:border-blue-500 transition-all duration-300 mt-0.5">
+                          <div className="text-blue-400 group-hover/feature:text-white transition-colors">
+                            {feature.icon}
+                          </div>
                         </div>
-                        <span className="text-gray-300 text-sm font-medium tracking-tight group-hover/feature:text-white transition-colors">{feature}</span>
+                        <div className="flex flex-col">
+                          <span className="text-gray-200 text-sm font-bold tracking-tight group-hover/feature:text-white transition-colors leading-none mb-1">{feature.text}</span>
+                          <span className="text-[10px] text-gray-500 font-medium tracking-tight group-hover/feature:text-blue-300 transition-colors">{feature.subtext}</span>
+                        </div>
                       </div>
                     ))}
+
                   </div>
 
                   <button
@@ -568,12 +573,15 @@ function ProposalPage() {
               <div className="bg-white/5 rounded-2xl p-6 mb-8 border border-white/5">
                 <h4 className="text-sm font-bold uppercase tracking-wider text-blue-400 mb-4">Resumo do Plano:</h4>
                 <ul className="space-y-3">
-                  {selectedPlan.features.slice(0, 3).map((feature: string, i: number) => (
+                  {selectedPlan.features.slice(0, 3).map((feature: any, i: number) => (
                     <li key={i} className="flex items-center gap-3 text-sm text-gray-300">
-                      <Check className="w-4 h-4 text-blue-500" />
-                      {feature}
+                      <div className="text-blue-500 shrink-0">
+                        {feature.icon}
+                      </div>
+                      <span className="font-medium">{feature.text}</span>
                     </li>
                   ))}
+
                   <li className="text-xs text-gray-500 italic mt-2">+ todos os outros benefícios detalhados.</li>
                 </ul>
                 <div className="mt-6 pt-6 border-t border-white/10 flex justify-between items-baseline">
