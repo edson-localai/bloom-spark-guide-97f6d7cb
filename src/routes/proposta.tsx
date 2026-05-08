@@ -175,46 +175,156 @@ function ProposalPage() {
           </div>
         </section>
 
-        {/* Comparison Details Section */}
-        <section className="py-24 bg-white/5">
+        {/* Detailed Features Section */}
+        <section className="py-24 bg-gradient-to-b from-transparent via-blue-500/5 to-transparent">
           <div className="container mx-auto px-6">
             <div className="text-center mb-16">
-              <h2 className="text-3xl md:text-4xl font-bold mb-4">Por que investir agora?</h2>
-              <p className="text-gray-400">Entenda as vantagens de cada recurso estratégico.</p>
+              <h2 className="text-3xl md:text-5xl font-bold mb-4 font-['Bebas_Neue'] tracking-wider">Detalhamento dos Planos</h2>
+              <p className="text-gray-400 max-w-2xl mx-auto">Compare o que cada investimento entrega e como ele impacta o crescimento da HCB.</p>
             </div>
 
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-              <div className="p-6 bg-black/30 rounded-2xl border border-white/5">
-                <div className="w-12 h-12 bg-blue-500/20 rounded-lg flex items-center justify-center mb-6">
-                  <Zap className="text-blue-500 w-6 h-6" />
+            <div className="space-y-12">
+              {/* Essencial */}
+              <div className="bg-black/40 border border-blue-500/20 rounded-3xl p-8 md:p-12">
+                <div className="flex flex-col md:flex-row gap-8">
+                  <div className="md:w-1/3">
+                    <div className="flex items-center gap-3 mb-4">
+                      <Shield className="w-8 h-8 text-blue-400" />
+                      <h3 className="text-2xl font-bold font-['Bebas_Neue'] tracking-wide">Plano Essencial</h3>
+                    </div>
+                    <p className="text-gray-400 text-sm mb-6">Manutenção da base tecnológica para sua operação continuar rodando sem interrupções.</p>
+                    <div className="p-4 bg-blue-500/5 rounded-xl border border-blue-500/10">
+                      <p className="text-xs text-blue-300 font-bold uppercase mb-2">Benefício Principal:</p>
+                      <p className="text-sm text-gray-300 italic">"Sua empresa sempre encontrada, com e-mails que passam confiança e domínio garantido."</p>
+                    </div>
+                  </div>
+                  <div className="md:w-2/3 grid sm:grid-cols-2 gap-6">
+                    <div className="space-y-4">
+                      <h4 className="text-white font-bold text-sm uppercase tracking-widest border-l-2 border-blue-500 pl-3">O que inclui:</h4>
+                      <ul className="space-y-3">
+                        <li className="flex gap-2 text-sm text-gray-300">
+                          <Check className="w-4 h-4 text-blue-500 shrink-0" />
+                          <span><strong>Domínio .com.br:</strong> Sua marca protegida na internet (ex: hcb-ar.com.br).</span>
+                        </li>
+                        <li className="flex gap-2 text-sm text-gray-300">
+                          <Check className="w-4 h-4 text-blue-500 shrink-0" />
+                          <span><strong>Hospedagem Premium:</strong> Servidores rápidos que garantem que seu site não caia.</span>
+                        </li>
+                        <li className="flex gap-2 text-sm text-gray-300">
+                          <Check className="w-4 h-4 text-blue-500 shrink-0" />
+                          <span><strong>E-mails @hcb:</strong> Chega de usar Gmail para fechar negócios de alto valor.</span>
+                        </li>
+                      </ul>
+                    </div>
+                    <div className="space-y-4">
+                      <h4 className="text-white font-bold text-sm uppercase tracking-widest border-l-2 border-blue-500 pl-3">Exemplo Prático:</h4>
+                      <div className="bg-white/5 p-4 rounded-xl text-xs text-gray-400 leading-relaxed">
+                        Imagine um cliente procurando por "ar condicionado automotivo" e encontrando sua marca com um e-mail <strong>contato@hcb-ar.com.br</strong>. A percepção de tamanho e seriedade da sua empresa muda instantaneamente.
+                      </div>
+                    </div>
+                  </div>
                 </div>
-                <h4 className="text-xl font-bold mb-3">Velocidade</h4>
-                <p className="text-gray-400 text-sm">Um site rápido não apenas agrada o cliente, mas aumenta sua nota no Google, reduzindo custos com anúncios.</p>
               </div>
-              <div className="p-6 bg-black/30 rounded-2xl border border-white/5">
-                <div className="w-12 h-12 bg-blue-500/20 rounded-lg flex items-center justify-center mb-6">
-                  <Check className="text-blue-500 w-6 h-6" />
+
+              {/* Profissional */}
+              <div className="bg-blue-600/5 border border-blue-500 rounded-3xl p-8 md:p-12 relative overflow-hidden">
+                <div className="absolute top-0 right-0 p-6 opacity-10">
+                  <Rocket className="w-32 h-32 text-blue-500" />
                 </div>
-                <h4 className="text-xl font-bold mb-3">Profissionalismo</h4>
-                <p className="text-gray-400 text-sm">Abandone o e-mail amador e as redes sociais como única vitrine. Tenha uma casa digital sólida e confiável.</p>
+                <div className="flex flex-col md:flex-row gap-8 relative z-10">
+                  <div className="md:w-1/3">
+                    <div className="flex items-center gap-3 mb-4">
+                      <Rocket className="w-8 h-8 text-blue-500" />
+                      <h3 className="text-2xl font-bold font-['Bebas_Neue'] tracking-wide">Plano Profissional</h3>
+                    </div>
+                    <p className="text-gray-400 text-sm mb-6">Uma máquina de vendas 24h por dia. Seu site focado em converter visitantes em orçamentos.</p>
+                    <div className="p-4 bg-blue-500/10 rounded-xl border border-blue-500/20">
+                      <p className="text-xs text-blue-400 font-bold uppercase mb-2">Benefício Principal:</p>
+                      <p className="text-sm text-gray-300 italic">"Converta curiosos em clientes reais através de um site rápido, bonito e persuasivo."</p>
+                    </div>
+                  </div>
+                  <div className="md:w-2/3 grid sm:grid-cols-2 gap-6">
+                    <div className="space-y-4">
+                      <h4 className="text-white font-bold text-sm uppercase tracking-widest border-l-2 border-blue-500 pl-3">O que inclui:</h4>
+                      <ul className="space-y-3">
+                        <li className="flex gap-2 text-sm text-gray-300">
+                          <Check className="w-4 h-4 text-blue-500 shrink-0" />
+                          <span><strong>Landing Page Premium:</strong> Design moderno que destaca seus diferenciais (Off-road, Agrícola, etc).</span>
+                        </li>
+                        <li className="flex gap-2 text-sm text-gray-300">
+                          <Check className="w-4 h-4 text-blue-500 shrink-0" />
+                          <span><strong>SEO Local:</strong> Configuração para aparecer no topo das buscas em sua região.</span>
+                        </li>
+                        <li className="flex gap-2 text-sm text-gray-300">
+                          <Check className="w-4 h-4 text-blue-500 shrink-0" />
+                          <span><strong>Botão flutuante WhatsApp:</strong> Facilita o contato imediato do cliente.</span>
+                        </li>
+                      </ul>
+                    </div>
+                    <div className="space-y-4">
+                      <h4 className="text-white font-bold text-sm uppercase tracking-widest border-l-2 border-blue-500 pl-3">Exemplo Prático:</h4>
+                      <div className="bg-blue-500/10 p-4 rounded-xl text-xs text-gray-300 leading-relaxed border border-blue-500/10">
+                        Um dono de caminhonete vê seu anúncio, entra num site que carrega em menos de 2 segundos, vê fotos reais do seu trabalho e clica no botão do WhatsApp. Você recebe um lead já "quente".
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <div className="p-6 bg-black/30 rounded-2xl border border-white/5">
-                <div className="w-12 h-12 bg-blue-500/20 rounded-lg flex items-center justify-center mb-6">
-                  <Rocket className="text-blue-500 w-6 h-6" />
+
+              {/* Elite */}
+              <div className="bg-black/40 border border-amber-500/30 rounded-3xl p-8 md:p-12">
+                <div className="flex flex-col md:flex-row gap-8">
+                  <div className="md:w-1/3">
+                    <div className="flex items-center gap-3 mb-4">
+                      <Crown className="w-8 h-8 text-amber-400" />
+                      <h3 className="text-2xl font-bold font-['Bebas_Neue'] tracking-wide text-amber-400">Plano Elite Digital</h3>
+                    </div>
+                    <p className="text-gray-400 text-sm mb-6">Gestão inteligente e atendimento automático. Escalabilidade total para sua oficina.</p>
+                    <div className="p-4 bg-amber-500/5 rounded-xl border border-amber-500/10">
+                      <p className="text-xs text-amber-400 font-bold uppercase mb-2">Benefício Principal:</p>
+                      <p className="text-sm text-gray-300 italic">"Nunca mais perca um cliente por demora no atendimento. Gestão profissional de leads."</p>
+                    </div>
+                  </div>
+                  <div className="md:w-2/3 grid sm:grid-cols-2 gap-6">
+                    <div className="space-y-4">
+                      <h4 className="text-white font-bold text-sm uppercase tracking-widest border-l-2 border-amber-500 pl-3">O que inclui:</h4>
+                      <ul className="space-y-3">
+                        <li className="flex gap-2 text-sm text-gray-300">
+                          <Check className="w-4 h-4 text-amber-500 shrink-0" />
+                          <span><strong>Bot de Atendimento:</strong> Qualifica o cliente (marca, modelo, defeito) antes de você falar com ele.</span>
+                        </li>
+                        <li className="flex gap-2 text-sm text-gray-300">
+                          <Check className="w-4 h-4 text-amber-500 shrink-0" />
+                          <span><strong>CRM Básico:</strong> Painel para ver quem entrou em contato, quem fechou e quem precisa de retorno.</span>
+                        </li>
+                        <li className="flex gap-2 text-sm text-gray-300">
+                          <Check className="w-4 h-4 text-amber-500 shrink-0" />
+                          <span><strong>Relatório Mensal:</strong> Quantas pessoas visitaram e quantos orçamentos foram gerados.</span>
+                        </li>
+                      </ul>
+                    </div>
+                    <div className="space-y-4">
+                      <h4 className="text-white font-bold text-sm uppercase tracking-widest border-l-2 border-amber-500 pl-3">Exemplo Prático:</h4>
+                      <div className="bg-amber-500/5 p-4 rounded-xl text-xs text-gray-400 leading-relaxed border border-amber-500/5">
+                        Um cliente manda mensagem às 22h. O Bot responde: "Olá! Qual o modelo do seu carro?". Ele responde "Hilux 2022". O Bot já deixa o lead pronto no seu CRM para você fechar o agendamento no dia seguinte cedo.
+                      </div>
+                    </div>
+                  </div>
                 </div>
-                <h4 className="text-xl font-bold mb-3">Automação</h4>
-                <p className="text-gray-400 text-sm">Não perca vendas por demora no WhatsApp. O CRM e a automação garantem que todo lead seja atendido instantaneamente.</p>
-              </div>
-              <div className="p-6 bg-black/30 rounded-2xl border border-white/5">
-                <div className="w-12 h-12 bg-blue-500/20 rounded-lg flex items-center justify-center mb-6">
-                  <Shield className="text-blue-500 w-6 h-6" />
-                </div>
-                <h4 className="text-xl font-bold mb-3">Segurança</h4>
-                <p className="text-gray-400 text-sm">Hospedagem blindada e certificados de segurança inclusos para garantir que seu site esteja sempre online e seguro.</p>
               </div>
             </div>
           </div>
         </section>
+
+        {/* Why Invest Now - Original Section but slightly adjusted */}
+        <section className="py-24">
+          <div className="container mx-auto px-6">
+            <div className="text-center mb-16">
+              <h2 className="text-3xl md:text-4xl font-bold mb-4 font-['Bebas_Neue'] tracking-wider">Por que investir agora?</h2>
+              <p className="text-gray-400">Entenda as vantagens de cada recurso estratégico.</p>
+            </div>
+...
+
 
         {/* Final CTA */}
         <section className="py-24 text-center">
