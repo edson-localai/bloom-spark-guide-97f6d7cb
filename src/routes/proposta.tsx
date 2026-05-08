@@ -448,15 +448,31 @@ function ProposalPage() {
                         Um cliente manda mensagem às 22h. O Bot responde: "Olá! Qual o modelo do seu carro?". Ele responde "Hilux 2022". O Bot já deixa o lead pronto no seu CRM para você fechar o agendamento no dia seguinte cedo.
                       </div>
                     </div>
-                    <div className="flex-1 rounded-2xl overflow-hidden aspect-video md:aspect-[4/3] border border-white/10 group-hover:border-amber-500/40 transition-colors shadow-2xl relative">
-                      <img 
-                        src="https://images.unsplash.com/photo-1551288049-bbbda536339a?auto=format&fit=crop&q=80&w=800" 
-                        alt="Automação e CRM Elite" 
-                        className="w-full h-full object-cover group-hover:rotate-1 group-hover:scale-110 transition-transform duration-700"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-60 group-hover:opacity-40 transition-opacity duration-500" />
-                      <div className="absolute inset-0 flex items-end p-6">
-                        <span className="text-amber-400 font-bold text-sm uppercase tracking-widest bg-amber-500/20 px-3 py-1 rounded backdrop-blur-sm border border-amber-500/30">Gestão Inteligente</span>
+                    <div className="flex-1 space-y-6">
+                      <h4 className="text-white font-bold text-sm uppercase tracking-widest border-l-2 border-amber-500 pl-3 mt-6">Gestão em Tempo Real:</h4>
+                      <div className="grid grid-cols-1 gap-4">
+                        <div className="rounded-2xl overflow-hidden aspect-video md:aspect-[4/3] border border-white/10 group-hover:border-amber-500/40 transition-colors shadow-2xl relative">
+                          <img 
+                            src="https://images.unsplash.com/photo-1551288049-bbbda536339a?auto=format&fit=crop&q=80&w=800" 
+                            alt="Automação e CRM Elite" 
+                            className="w-full h-full object-cover group-hover:rotate-1 group-hover:scale-110 transition-transform duration-700"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-60 group-hover:opacity-40 transition-opacity duration-500" />
+                          <div className="absolute inset-0 flex items-end p-6">
+                            <span className="text-amber-400 font-bold text-sm uppercase tracking-widest bg-amber-500/20 px-3 py-1 rounded backdrop-blur-sm border border-amber-500/30">Relatórios de Vendas</span>
+                          </div>
+                        </div>
+                        <div className="rounded-2xl overflow-hidden aspect-video md:aspect-[4/3] border border-white/10 group-hover:border-amber-500/40 transition-colors shadow-2xl relative">
+                          <img 
+                            src="https://images.unsplash.com/photo-1551434678-e076c223a692?auto=format&fit=crop&q=80&w=800" 
+                            alt="CRM e Gestão de Leads" 
+                            className="w-full h-full object-cover group-hover:-rotate-1 group-hover:scale-110 transition-transform duration-700"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-60 group-hover:opacity-40 transition-opacity duration-500" />
+                          <div className="absolute inset-0 flex items-end p-6">
+                            <span className="text-amber-400 font-bold text-sm uppercase tracking-widest bg-amber-500/20 px-3 py-1 rounded backdrop-blur-sm border border-amber-500/30">Gestão Inteligente</span>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>
