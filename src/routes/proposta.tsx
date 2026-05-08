@@ -151,10 +151,10 @@ function ProposalPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
             >
-              <h1 className="text-4xl md:text-6xl font-bold mb-6">
+              <h1 className="text-5xl md:text-7xl font-bold mb-8">
                 Evolua a Presença Digital da <span className="text-blue-500">HCB</span>
               </h1>
-              <p className="text-xl text-gray-400 max-w-3xl mx-auto mb-10 leading-relaxed">
+              <p className="text-2xl text-gray-400 max-w-4xl mx-auto mb-12 leading-relaxed">
                 Preparamos 3 caminhos estratégicos para o seu negócio. Escolha o plano que melhor se adapta ao momento da sua empresa e vamos acelerar juntos.
               </p>
             </motion.div>
@@ -182,8 +182,8 @@ function ProposalPage() {
                   <div className="w-12 h-12 rounded-2xl bg-blue-500/10 flex items-center justify-center text-blue-400 mb-4">
                     {item.icon}
                   </div>
-                  <h4 className="text-sm font-bold uppercase tracking-widest mb-1 text-white">{item.title}</h4>
-                  <p className="text-[10px] text-gray-500 font-medium">{item.desc}</p>
+                  <h4 className="text-base font-bold uppercase tracking-widest mb-2 text-white">{item.title}</h4>
+                  <p className="text-xs text-gray-500 font-medium">{item.desc}</p>
                 </motion.div>
               ))}
             </div>
@@ -227,24 +227,24 @@ function ProposalPage() {
                         </span>
                       )}
                     </div>
-                    <h3 className="text-3xl font-bold mb-2 font-['Bebas_Neue'] tracking-wide group-hover:text-blue-400 transition-colors">{plan.name}</h3>
-                    <p className="text-gray-400 text-xs font-semibold uppercase tracking-widest">{plan.tagline}</p>
+                    <h3 className="text-4xl font-bold mb-3 font-['Bebas_Neue'] tracking-wide group-hover:text-blue-400 transition-colors">{plan.name}</h3>
+                    <p className="text-gray-400 text-sm font-semibold uppercase tracking-widest">{plan.tagline}</p>
                   </div>
 
-                  <div className="mb-10 p-6 bg-white/5 rounded-2xl border border-white/5 group-hover:border-blue-500/20 transition-colors">
-                    <div className="flex items-baseline gap-1 mb-1">
-                      <span className="text-sm font-medium text-gray-500 uppercase tracking-tighter">R$</span>
-                      <span className="text-4xl font-black tracking-tight">{plan.price}</span>
+                  <div className="mb-10 p-8 bg-white/5 rounded-2xl border border-white/5 group-hover:border-blue-500/20 transition-colors">
+                    <div className="flex items-baseline gap-1 mb-2">
+                      <span className="text-base font-medium text-gray-500 uppercase tracking-tighter">R$</span>
+                      <span className="text-5xl font-black tracking-tight">{plan.price}</span>
                     </div>
-                    <p className="text-[10px] text-blue-400 font-bold uppercase tracking-widest">{plan.period}</p>
+                    <p className="text-xs text-blue-400 font-bold uppercase tracking-widest">{plan.period}</p>
                   </div>
 
-                  <p className="text-gray-400 mb-10 text-sm leading-relaxed font-medium">
+                  <p className="text-gray-300 mb-10 text-base leading-relaxed font-medium">
                     {plan.description}
                   </p>
 
-                  <div className="space-y-5 mb-12 flex-grow">
-                    <p className="text-[10px] font-black text-gray-500 uppercase tracking-[0.2em] mb-4">O que está incluso:</p>
+                  <div className="space-y-6 mb-12 flex-grow">
+                    <p className="text-xs font-black text-gray-500 uppercase tracking-[0.2em] mb-6">O que está incluso:</p>
                     <TooltipProvider delayDuration={300}>
                       {plan.features.map((feature: any, idx: number) => (
                         <Tooltip key={idx}>
@@ -261,10 +261,10 @@ function ProposalPage() {
                               </div>
                               <div className="flex flex-col">
                                 <div className="flex items-center gap-1.5">
-                                  <span className="text-gray-200 text-sm font-bold tracking-tight group-hover/feature:text-white transition-colors leading-none mb-1">{feature.text}</span>
-                                  <Info className="w-3 h-3 text-gray-600 group-hover/feature:text-blue-400 transition-colors" />
+                                  <span className="text-gray-200 text-base font-bold tracking-tight group-hover/feature:text-white transition-colors leading-none mb-1">{feature.text}</span>
+                                  <Info className="w-4 h-4 text-gray-600 group-hover/feature:text-blue-400 transition-colors" />
                                 </div>
-                                <span className="text-[10px] text-gray-500 font-medium tracking-tight group-hover/feature:text-blue-300 transition-colors">{feature.subtext}</span>
+                                <span className="text-xs text-gray-500 font-medium tracking-tight group-hover/feature:text-blue-300 transition-colors">{feature.subtext}</span>
                               </div>
                             </div>
                           </TooltipTrigger>
@@ -279,7 +279,7 @@ function ProposalPage() {
 
                   <button
                     onClick={() => handlePlanSelect(plan)}
-                    className={`w-full py-4 px-6 rounded-xl font-bold flex items-center justify-center gap-2 transition-all ${
+                    className={`w-full py-5 px-8 rounded-xl font-bold text-lg flex items-center justify-center gap-2 transition-all ${
                       plan.popular 
                         ? "bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-600/20" 
                         : "bg-white/10 hover:bg-white/20 text-white"
@@ -553,12 +553,12 @@ function ProposalPage() {
             <div className="hidden md:block overflow-x-auto">
               <table className="w-full border-collapse">
                 <thead>
-                  <tr className="border-b border-white/10">
-                    <th className="py-6 px-4 text-left text-sm font-bold uppercase tracking-widest text-gray-500">Recursos</th>
-                    <th className="py-6 px-4 text-center text-sm font-bold uppercase tracking-widest text-blue-400">Starter</th>
-                    <th className="py-6 px-4 text-center text-sm font-bold uppercase tracking-widest text-blue-500 bg-blue-500/5 rounded-t-3xl">Profissional</th>
-                    <th className="py-6 px-4 text-center text-sm font-bold uppercase tracking-widest text-amber-400">Elite</th>
-                  </tr>
+                <tr className="border-b border-white/10">
+                  <th className="py-8 px-6 text-left text-base font-bold uppercase tracking-widest text-gray-500">Recursos</th>
+                  <th className="py-8 px-6 text-center text-base font-bold uppercase tracking-widest text-blue-400">Starter</th>
+                  <th className="py-8 px-6 text-center text-base font-bold uppercase tracking-widest text-blue-500 bg-blue-500/5 rounded-t-3xl">Profissional</th>
+                  <th className="py-8 px-6 text-center text-base font-bold uppercase tracking-widest text-amber-400">Elite</th>
+                </tr>
                 </thead>
                 <tbody className="text-gray-300">
                   {comparisonFeatures.map((row, i) => {
