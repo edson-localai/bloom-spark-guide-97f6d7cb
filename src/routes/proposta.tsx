@@ -156,10 +156,11 @@ function ProposalPage() {
                     ))}
                   </div>
 
-                  <a
-                    href={`https://wa.me/5591981267484?text=Ol%C3%A1%2C%20tenho%20interesse%20no%20${encodeURIComponent(plan.name)}%20para%20a%20HCB.`}
-                    target="_blank"
-                    rel="noopener noreferrer"
+                  <button
+                    onClick={() => {
+                      const message = encodeURIComponent(`Olá! Tenho interesse no ${plan.name} para a HCB Ar Condicionado. Gostaria de saber mais detalhes sobre como começar.`);
+                      window.open(`https://wa.me/5591981267484?text=${message}`, '_blank');
+                    }}
                     className={`w-full py-4 px-6 rounded-xl font-bold flex items-center justify-center gap-2 transition-all ${
                       plan.popular 
                         ? "bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-600/20" 
@@ -168,7 +169,7 @@ function ProposalPage() {
                   >
                     {plan.buttonText}
                     <ArrowRight className="w-4 h-4" />
-                  </a>
+                  </button>
                 </motion.div>
               ))}
             </div>
