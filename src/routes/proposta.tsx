@@ -227,14 +227,20 @@ function ProposalPage() {
 
                   <div className="space-y-5 mb-12 flex-grow">
                     <p className="text-[10px] font-black text-gray-500 uppercase tracking-[0.2em] mb-4">O que está incluso:</p>
-                    {plan.features.map((feature, idx) => (
-                      <div key={idx} className="flex items-center gap-4 group/feature">
-                        <div className="w-6 h-6 rounded-full bg-blue-500/10 border border-blue-500/20 flex items-center justify-center shrink-0 group-hover/feature:bg-blue-500 group-hover/feature:border-blue-500 transition-all duration-300">
-                          <Check className="w-3.5 h-3.5 text-blue-500 group-hover/feature:text-white transition-colors" />
+                    {plan.features.map((feature: any, idx: number) => (
+                      <div key={idx} className="flex items-start gap-4 group/feature">
+                        <div className="w-8 h-8 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center shrink-0 group-hover/feature:bg-blue-500 group-hover/feature:border-blue-500 transition-all duration-300 mt-0.5">
+                          <div className="text-blue-400 group-hover/feature:text-white transition-colors">
+                            {feature.icon}
+                          </div>
                         </div>
-                        <span className="text-gray-300 text-sm font-medium tracking-tight group-hover/feature:text-white transition-colors">{feature}</span>
+                        <div className="flex flex-col">
+                          <span className="text-gray-200 text-sm font-bold tracking-tight group-hover/feature:text-white transition-colors leading-none mb-1">{feature.text}</span>
+                          <span className="text-[10px] text-gray-500 font-medium tracking-tight group-hover/feature:text-blue-300 transition-colors">{feature.subtext}</span>
+                        </div>
                       </div>
                     ))}
+
                   </div>
 
                   <button
@@ -567,12 +573,15 @@ function ProposalPage() {
               <div className="bg-white/5 rounded-2xl p-6 mb-8 border border-white/5">
                 <h4 className="text-sm font-bold uppercase tracking-wider text-blue-400 mb-4">Resumo do Plano:</h4>
                 <ul className="space-y-3">
-                  {selectedPlan.features.slice(0, 3).map((feature: string, i: number) => (
+                  {selectedPlan.features.slice(0, 3).map((feature: any, i: number) => (
                     <li key={i} className="flex items-center gap-3 text-sm text-gray-300">
-                      <Check className="w-4 h-4 text-blue-500" />
-                      {feature}
+                      <div className="text-blue-500 shrink-0">
+                        {feature.icon}
+                      </div>
+                      <span className="font-medium">{feature.text}</span>
                     </li>
                   ))}
+
                   <li className="text-xs text-gray-500 italic mt-2">+ todos os outros benefícios detalhados.</li>
                 </ul>
                 <div className="mt-6 pt-6 border-t border-white/10 flex justify-between items-baseline">
