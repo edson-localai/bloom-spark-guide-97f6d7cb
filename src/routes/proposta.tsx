@@ -392,6 +392,79 @@ function ProposalPage() {
       </main>
 
       <Footer />
+
+      {/* Confirmation Modal */}
+      <AnimatePresence>
+        {showConfirmation && selectedPlan && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setShowConfirmation(false)}
+              className="absolute inset-0 bg-black/80 backdrop-blur-sm"
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              className="relative w-full max-w-lg bg-[#0F172A] border border-blue-500/30 rounded-3xl p-8 shadow-2xl overflow-hidden"
+            >
+              <div className="absolute -top-24 -right-24 w-48 h-48 bg-blue-600/20 blur-[80px] rounded-full" />
+              
+              <button 
+                onClick={() => setShowConfirmation(false)}
+                className="absolute top-4 right-4 p-2 text-gray-400 hover:text-white transition-colors"
+              >
+                <X className="w-6 h-6" />
+              </button>
+
+              <div className="text-center mb-8">
+                <div className="inline-flex p-4 bg-blue-500/10 rounded-2xl border border-blue-500/20 mb-4">
+                  {selectedPlan.icon}
+                </div>
+                <h3 className="text-2xl font-bold mb-2">Ótima escolha!</h3>
+                <p className="text-gray-400">Você selecionou o <span className="text-blue-400 font-bold">{selectedPlan.name}</span>.</p>
+              </div>
+
+              <div className="bg-white/5 rounded-2xl p-6 mb-8 border border-white/5">
+                <h4 className="text-sm font-bold uppercase tracking-wider text-blue-400 mb-4">Resumo do Plano:</h4>
+                <ul className="space-y-3">
+                  {selectedPlan.features.slice(0, 3).map((feature: string, i: number) => (
+                    <li key={i} className="flex items-center gap-3 text-sm text-gray-300">
+                      <Check className="w-4 h-4 text-blue-500" />
+                      {feature}
+                    </li>
+                  ))}
+                  <li className="text-xs text-gray-500 italic mt-2">+ todos os outros benefícios detalhados.</li>
+                </ul>
+                <div className="mt-6 pt-6 border-t border-white/10 flex justify-between items-baseline">
+                  <span className="text-gray-400 text-sm font-medium">Investimento:</span>
+                  <div className="text-right">
+                    <span className="text-xl font-bold text-white">R$ {selectedPlan.price}</span>
+                    <p className="text-[10px] text-gray-500 uppercase tracking-tighter">{selectedPlan.period}</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <button
+                  onClick={confirmSelection}
+                  className="w-full py-4 px-6 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-bold flex items-center justify-center gap-2 transition-all shadow-lg shadow-blue-600/20 group"
+                >
+                  <MessageCircle className="w-5 h-5" />
+                  Confirmar e chamar no WhatsApp
+                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                </button>
+                <p className="text-center text-xs text-gray-500">
+                  Ao clicar, você será direcionado para o atendimento humano para os próximos passos.
+                </p>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
+
