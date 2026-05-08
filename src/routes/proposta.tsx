@@ -544,20 +544,32 @@ function ProposalPage() {
                   </tr>
                 </thead>
                 <tbody className="text-gray-300">
-                  {comparisonFeatures.map((row, i) => (
-                    <tr key={i} className="border-b border-white/5 hover:bg-white/[0.02] transition-colors">
-                      <td className="py-5 px-4 text-sm font-medium">{row.label}</td>
-                      <td className="py-5 px-4 text-center">
-                        {row.essential ? <CheckCircle2 className="w-5 h-5 text-blue-500 mx-auto" /> : <X className="w-5 h-5 text-gray-700 mx-auto" />}
-                      </td>
-                      <td className="py-5 px-4 text-center bg-blue-500/5">
-                        {row.pro ? <CheckCircle2 className="w-5 h-5 text-blue-500 mx-auto" /> : <X className="w-5 h-5 text-gray-700 mx-auto" />}
-                      </td>
-                      <td className="py-5 px-4 text-center">
-                        {row.elite ? <CheckCircle2 className="w-5 h-5 text-amber-500 mx-auto" /> : <X className="w-5 h-5 text-gray-700 mx-auto" />}
-                      </td>
-                    </tr>
-                  ))}
+                  {comparisonFeatures.map((row, i) => {
+                    const isExclusive = !row.essential;
+                    return (
+                      <tr key={i} className={`border-b border-white/5 hover:bg-white/[0.02] transition-colors ${isExclusive ? 'bg-blue-500/[0.02]' : ''}`}>
+                        <td className="py-5 px-4 text-sm font-medium">
+                          <div className="flex items-center gap-2">
+                            {row.label}
+                            {isExclusive && (
+                              <span className="text-[8px] font-black uppercase tracking-tighter px-1.5 py-0.5 rounded bg-blue-500/20 text-blue-400 border border-blue-500/10">
+                                Exclusivo
+                              </span>
+                            )}
+                          </div>
+                        </td>
+                        <td className="py-5 px-4 text-center">
+                          {row.essential ? <CheckCircle2 className="w-5 h-5 text-blue-500 mx-auto" /> : <X className="w-5 h-5 text-gray-800 mx-auto opacity-20" />}
+                        </td>
+                        <td className="py-5 px-4 text-center bg-blue-500/5">
+                          {row.pro ? <CheckCircle2 className="w-5 h-5 text-blue-500 mx-auto" /> : <X className="w-5 h-5 text-gray-800 mx-auto opacity-20" />}
+                        </td>
+                        <td className="py-5 px-4 text-center">
+                          {row.elite ? <CheckCircle2 className="w-5 h-5 text-amber-500 mx-auto" /> : <X className="w-5 h-5 text-gray-800 mx-auto opacity-20" />}
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>
@@ -583,16 +595,22 @@ function ProposalPage() {
                     </summary>
                     <div className="p-6 pt-0 border-t border-white/5 bg-white/[0.01]">
                       <ul className="space-y-4 pt-6">
-                        {comparisonFeatures.map((feat, i) => (
-                          <li key={i} className="flex items-center justify-between text-sm group/item">
-                            <span className="text-gray-400 group-hover/item:text-gray-200 transition-colors">{feat.label}</span>
-                            <div className="flex items-center">
-                              {plan.id === 'starter' && (feat.essential ? <CheckCircle2 className="w-5 h-5 text-blue-500" /> : <X className="w-5 h-5 text-gray-800" />)}
-                              {plan.id === 'pro' && (feat.pro ? <CheckCircle2 className="w-5 h-5 text-blue-500" /> : <X className="w-5 h-5 text-gray-800" />)}
-                              {plan.id === 'elite' && (feat.elite ? <CheckCircle2 className="w-5 h-5 text-amber-500" /> : <X className="w-5 h-5 text-gray-800" />)}
-                            </div>
-                          </li>
-                        ))}
+                        {comparisonFeatures.map((feat, i) => {
+                          const isExclusive = !feat.essential;
+                          return (
+                            <li key={i} className={`flex items-center justify-between text-sm group/item p-2 rounded-lg ${isExclusive ? 'bg-blue-500/5 border border-blue-500/10' : ''}`}>
+                              <div className="flex flex-col">
+                                <span className="text-gray-400 group-hover/item:text-gray-200 transition-colors font-medium">{feat.label}</span>
+                                {isExclusive && <span className="text-[8px] font-black uppercase text-blue-400 tracking-widest">Recurso Exclusivo</span>}
+                              </div>
+                              <div className="flex items-center">
+                                {plan.id === 'starter' && (feat.essential ? <CheckCircle2 className="w-5 h-5 text-blue-500" /> : <X className="w-5 h-5 text-gray-800" />)}
+                                {plan.id === 'pro' && (feat.pro ? <CheckCircle2 className="w-5 h-5 text-blue-500" /> : <X className="w-5 h-5 text-gray-800" />)}
+                                {plan.id === 'elite' && (feat.elite ? <CheckCircle2 className="w-5 h-5 text-amber-500" /> : <X className="w-5 h-5 text-gray-800" />)}
+                              </div>
+                            </li>
+                          );
+                        })}
                       </ul>
                       <button 
                         onClick={() => handlePlanSelect(plan)}
