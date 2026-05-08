@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
-import { Check, Rocket, Zap, Crown, Shield, ArrowRight, MessageCircle, X } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Check, Rocket, Zap, Crown, Shield, ArrowRight, MessageCircle, X, Copy, CheckCircle2, AlertCircle } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Logo from "../components/Logo";
 import Footer from "../components/Footer";
@@ -13,17 +13,32 @@ function ProposalPage() {
   const [selectedPlan, setSelectedPlan] = useState<any>(null);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [customMessage, setCustomMessage] = useState("");
+  const [showPopupError, setShowPopupError] = useState(false);
+  const [copied, setCopied] = useState(false);
 
   const handlePlanSelect = (plan: any) => {
     setSelectedPlan(plan);
     setCustomMessage(`Olá! Confirmo meu interesse no ${plan.name} para a HCB Ar Condicionado. Como podemos prosseguir?`);
     setShowConfirmation(true);
+    setShowPopupError(false);
   };
 
   const confirmSelection = () => {
     const message = encodeURIComponent(customMessage);
-    window.open(`https://wa.me/5591981267484?text=${message}`, '_blank');
-    setShowConfirmation(false);
+    const url = `https://wa.me/5591981267484?text=${message}`;
+    const newWindow = window.open(url, '_blank');
+    
+    if (!newWindow || newWindow.closed || typeof newWindow.closed === 'undefined') {
+      setShowPopupError(true);
+    } else {
+      setShowConfirmation(false);
+    }
+  };
+
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(customMessage);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   };
 
   const plans = [
@@ -458,16 +473,49 @@ function ProposalPage() {
                       className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-sm text-gray-300 focus:outline-none focus:border-blue-500/50 min-h-[100px] resize-none"
                       placeholder="Escreva sua mensagem personalizada..."
                     />
+                    <button 
+                      onClick={copyToClipboard}
+                      className="flex items-center gap-2 text-[10px] text-gray-500 hover:text-blue-400 transition-colors uppercase tracking-widest font-bold mt-1"
+                    >
+                      {copied ? (
+                        <>
+                          <CheckCircle2 className="w-3 h-3 text-green-500" />
+                          Copiado!
+                        </>
+                      ) : (
+                        <>
+                          <Copy className="w-3 h-3" />
+                          Copiar mensagem
+                        </>
+                      )}
+                    </button>
                   </div>
 
-                <button
-                  onClick={confirmSelection}
-                  className="w-full py-4 px-6 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-bold flex items-center justify-center gap-2 transition-all shadow-lg shadow-blue-600/20 group"
-                >
-                  <MessageCircle className="w-5 h-5" />
-                  Confirmar e chamar no WhatsApp
-                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                </button>
+                  {showPopupError && (
+                    <motion.div 
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="p-3 bg-amber-500/10 border border-amber-500/20 rounded-xl flex items-start gap-3"
+                    >
+                      <AlertCircle className="w-5 h-5 text-amber-500 shrink-0 mt-0.5" />
+                      <div>
+                        <p className="text-xs text-amber-200 font-bold mb-1">O WhatsApp não abriu?</p>
+                        <p className="text-[10px] text-amber-200/60 leading-tight">
+                          Parece que seu navegador bloqueou a janela. Tente clicar no botão abaixo novamente ou copie a mensagem acima.
+                        </p>
+                      </div>
+                    </motion.div>
+                  )}
+
+                  <button
+                    onClick={confirmSelection}
+                    className="w-full py-4 px-6 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-bold flex items-center justify-center gap-2 transition-all shadow-lg shadow-blue-600/20 group"
+                  >
+                    <MessageCircle className="w-5 h-5" />
+                    Confirmar e chamar no WhatsApp
+                    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                  </button>
+
                 <p className="text-center text-xs text-gray-500">
                   Ao clicar, você será direcionado para o atendimento humano para os próximos passos.
                 </p>
