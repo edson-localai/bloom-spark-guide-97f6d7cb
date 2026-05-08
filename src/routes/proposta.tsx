@@ -24,6 +24,7 @@ function ProposalPage() {
     setShowConfirmation(false);
   };
 
+  const plans = [
     {
       id: "essencial",
       name: "Plano Essencial",
@@ -84,6 +85,7 @@ function ProposalPage() {
       popular: false
     }
   ];
+
 
   return (
     <div className="min-h-screen bg-[#0A0A0A] text-white selection:bg-blue-500/30">
