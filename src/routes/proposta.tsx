@@ -341,12 +341,15 @@ function ProposalPage() {
                         Imagine um cliente procurando por "ar condicionado automotivo" e encontrando sua marca com um e-mail <strong>contato@hcb-ar.com.br</strong>. A percepção de tamanho e seriedade da sua empresa muda instantaneamente.
                       </div>
                     </div>
-                    <div className="flex-1 rounded-2xl overflow-hidden h-48 md:h-auto border border-white/10 group-hover:border-blue-500/30 transition-colors">
+                    <div className="flex-1 rounded-2xl overflow-hidden h-64 md:h-auto border border-white/10 group-hover:border-blue-500/30 transition-colors shadow-2xl relative">
                       <img 
                         src="/src/assets/segment-light.jpg" 
                         alt="Presença Digital Starter" 
-                        className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700"
+                        className="w-full h-full object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700"
                       />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-end p-6">
+                        <span className="text-white font-bold text-sm uppercase tracking-widest">Base Sólida</span>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -370,12 +373,15 @@ function ProposalPage() {
                     </div>
                   </div>
                   <div className="md:w-2/3 flex flex-col md:flex-row gap-8">
-                    <div className="flex-1 rounded-2xl overflow-hidden h-48 md:h-auto border border-white/10 group-hover:border-blue-500/50 transition-colors order-2 md:order-1">
+                    <div className="flex-1 rounded-2xl overflow-hidden h-64 md:h-auto border border-white/10 group-hover:border-blue-500/50 transition-colors order-2 md:order-1 shadow-2xl relative">
                       <img 
                         src="/src/assets/segment-heavy.jpg" 
                         alt="Landing Page de Alta Performance" 
                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                       />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-end p-6">
+                        <span className="text-white font-bold text-sm uppercase tracking-widest">Máxima Performance</span>
+                      </div>
                     </div>
                     <div className="flex-1 space-y-4 order-1 md:order-2">
                       <h4 className="text-white font-bold text-sm uppercase tracking-widest border-l-2 border-blue-500 pl-3">O que inclui:</h4>
@@ -440,12 +446,15 @@ function ProposalPage() {
                         Um cliente manda mensagem às 22h. O Bot responde: "Olá! Qual o modelo do seu carro?". Ele responde "Hilux 2022". O Bot já deixa o lead pronto no seu CRM para você fechar o agendamento no dia seguinte cedo.
                       </div>
                     </div>
-                    <div className="flex-1 rounded-2xl overflow-hidden h-48 md:h-auto border border-white/10 group-hover:border-amber-500/40 transition-colors">
+                    <div className="flex-1 rounded-2xl overflow-hidden h-64 md:h-auto border border-white/10 group-hover:border-amber-500/40 transition-colors shadow-2xl relative">
                       <img 
                         src="/src/assets/storefront.jpg" 
                         alt="Automação e CRM Elite" 
-                        className="w-full h-full object-cover group-hover:rotate-2 group-hover:scale-110 transition-transform duration-700"
+                        className="w-full h-full object-cover group-hover:rotate-1 group-hover:scale-110 transition-transform duration-700"
                       />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-end p-6">
+                        <span className="text-amber-400 font-bold text-sm uppercase tracking-widest">Gestão Inteligente</span>
+                      </div>
                     </div>
                   </div>
                 </div>
