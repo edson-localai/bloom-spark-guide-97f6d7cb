@@ -695,7 +695,7 @@ function ProposalPage() {
                 <ul className="space-y-3">
                   {selectedPlan.features.slice(0, 3).map((feature: any, i: number) => (
                     <li key={i} className="flex items-center gap-3 text-sm text-gray-300">
-                      <div className="text-blue-500 shrink-0">
+                      <div className={`${selectedPlan.id === 'elite' ? 'text-amber-500' : 'text-blue-500'} shrink-0`}>
                         {feature.icon}
                       </div>
                       <span className="font-medium">{feature.text}</span>
