@@ -285,8 +285,8 @@ function ProposalPage() {
                       <p className="text-sm text-gray-300 italic">"Sua empresa sempre encontrada, com e-mails que passam confiança e domínio garantido."</p>
                     </div>
                   </div>
-                  <div className="md:w-2/3 grid sm:grid-cols-2 gap-6">
-                    <div className="space-y-4">
+                  <div className="md:w-2/3 flex flex-col md:flex-row gap-8">
+                    <div className="flex-1 space-y-4">
                       <h4 className="text-white font-bold text-sm uppercase tracking-widest border-l-2 border-blue-500 pl-3">O que inclui:</h4>
                       <ul className="space-y-3">
                         <li className="flex gap-2 text-sm text-gray-300">
@@ -302,12 +302,17 @@ function ProposalPage() {
                           <span><strong>E-mails @hcb:</strong> Chega de usar Gmail para fechar negócios de alto valor.</span>
                         </li>
                       </ul>
-                    </div>
-                    <div className="space-y-4">
-                      <h4 className="text-white font-bold text-sm uppercase tracking-widest border-l-2 border-blue-500 pl-3">Exemplo Prático:</h4>
+                      <h4 className="text-white font-bold text-sm uppercase tracking-widest border-l-2 border-blue-500 pl-3 mt-6">Exemplo Prático:</h4>
                       <div className="bg-white/5 p-4 rounded-xl text-xs text-gray-400 leading-relaxed">
                         Imagine um cliente procurando por "ar condicionado automotivo" e encontrando sua marca com um e-mail <strong>contato@hcb-ar.com.br</strong>. A percepção de tamanho e seriedade da sua empresa muda instantaneamente.
                       </div>
+                    </div>
+                    <div className="flex-1 rounded-2xl overflow-hidden h-48 md:h-auto border border-white/10 group-hover:border-blue-500/30 transition-colors">
+                      <img 
+                        src="/src/assets/segment-light.jpg" 
+                        alt="Presença Digital Starter" 
+                        className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700"
+                      />
                     </div>
                   </div>
                 </div>
