@@ -99,6 +99,8 @@ function ProposalPage() {
       buttonText: "Escalar meu Negócio",
       popular: false
     }
+  ];
+
   const comparisonFeatures = [
     { label: "Domínio .com.br", essential: true, pro: true, elite: true },
     { label: "Hospedagem Premium", essential: true, pro: true, elite: true },
@@ -113,6 +115,7 @@ function ProposalPage() {
     { label: "Relatórios de Performance", essential: false, pro: false, elite: true },
     { label: "Suporte VIP Prioritário", essential: false, pro: false, elite: true },
   ];
+
 
 
 
