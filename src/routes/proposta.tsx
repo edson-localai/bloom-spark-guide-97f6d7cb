@@ -341,7 +341,7 @@ function ProposalPage() {
                         Imagine um cliente procurando por "ar condicionado automotivo" e encontrando sua marca com um e-mail <strong>contato@hcb-ar.com.br</strong>. A percepção de tamanho e seriedade da sua empresa muda instantaneamente.
                       </div>
                     </div>
-                    <div className="flex-1 rounded-2xl overflow-hidden h-64 md:h-auto border border-white/10 group-hover:border-blue-500/30 transition-colors shadow-2xl relative">
+                    <div className="flex-1 rounded-2xl overflow-hidden aspect-video md:aspect-[4/3] border border-white/10 group-hover:border-blue-500/30 transition-colors shadow-2xl relative">
                       <img 
                         src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=800" 
                         alt="Presença Digital Starter" 
@@ -374,7 +374,7 @@ function ProposalPage() {
                     </div>
                   </div>
                   <div className="md:w-2/3 flex flex-col md:flex-row gap-8">
-                    <div className="flex-1 rounded-2xl overflow-hidden h-64 md:h-auto border border-white/10 group-hover:border-blue-500/50 transition-colors order-2 md:order-1 shadow-2xl relative">
+                    <div className="flex-1 rounded-2xl overflow-hidden aspect-video md:aspect-[4/3] border border-white/10 group-hover:border-blue-500/50 transition-colors order-2 md:order-1 shadow-2xl relative">
                       <img 
                         src="https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?auto=format&fit=crop&q=80&w=800" 
                         alt="Landing Page de Alta Performance" 
@@ -448,7 +448,7 @@ function ProposalPage() {
                         Um cliente manda mensagem às 22h. O Bot responde: "Olá! Qual o modelo do seu carro?". Ele responde "Hilux 2022". O Bot já deixa o lead pronto no seu CRM para você fechar o agendamento no dia seguinte cedo.
                       </div>
                     </div>
-                    <div className="flex-1 rounded-2xl overflow-hidden h-64 md:h-auto border border-white/10 group-hover:border-amber-500/40 transition-colors shadow-2xl relative">
+                    <div className="flex-1 rounded-2xl overflow-hidden aspect-video md:aspect-[4/3] border border-white/10 group-hover:border-amber-500/40 transition-colors shadow-2xl relative">
                       <img 
                         src="https://images.unsplash.com/photo-1551288049-bbbda536339a?auto=format&fit=crop&q=80&w=800" 
                         alt="Automação e CRM Elite" 
