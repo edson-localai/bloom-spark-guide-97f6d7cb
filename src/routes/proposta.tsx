@@ -1,5 +1,5 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { Check, Rocket, Zap, Crown, Shield, ArrowRight } from "lucide-react";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { Check, Rocket, Zap, Crown, Shield, ArrowRight, MessageCircle } from "lucide-react";
 import { motion } from "framer-motion";
 import Logo from "../components/Logo";
 import Footer from "../components/Footer";
@@ -73,11 +73,21 @@ function ProposalPage() {
 
   return (
     <div className="min-h-screen bg-[#0A0A0A] text-white selection:bg-blue-500/30">
-      <header className="py-8 border-b border-white/5 bg-black/50 backdrop-blur-md sticky top-0 z-50">
+      <header className="py-6 border-b border-white/5 bg-black/50 backdrop-blur-md sticky top-0 z-50">
         <div className="container mx-auto px-6 flex justify-between items-center">
-          <Logo />
+          <Link to="/" className="flex items-center gap-2 group transition-transform duration-300 hover:scale-[1.02]">
+            <Logo size="md" />
+            <div className="hidden sm:flex flex-col">
+              <span className="font-['Bebas_Neue'] text-[26px] leading-none text-[#F5F8FF] tracking-wide group-hover:text-[#60C0FF] transition-colors uppercase">HCB</span>
+              <span className="font-['Rajdhani'] text-[10px] font-semibold tracking-[0.15em] text-[#8A9BB5] uppercase">
+                Ar Condicionado
+              </span>
+            </div>
+          </Link>
           <div className="hidden md:block">
-            <span className="text-blue-400 font-semibold">Proposta Comercial Exclusiva</span>
+            <span className="text-blue-400 font-['Rajdhani'] font-bold uppercase tracking-wider text-sm border border-blue-500/30 px-4 py-2 rounded-full bg-blue-500/5">
+              Proposta Comercial Exclusiva
+            </span>
           </div>
         </div>
       </header>
@@ -146,7 +156,10 @@ function ProposalPage() {
                     ))}
                   </div>
 
-                  <button 
+                  <a
+                    href={`https://wa.me/5591981267484?text=Ol%C3%A1%2C%20tenho%20interesse%20no%20${encodeURIComponent(plan.name)}%20para%20a%20HCB.`}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className={`w-full py-4 px-6 rounded-xl font-bold flex items-center justify-center gap-2 transition-all ${
                       plan.popular 
                         ? "bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-600/20" 
@@ -155,7 +168,7 @@ function ProposalPage() {
                   >
                     {plan.buttonText}
                     <ArrowRight className="w-4 h-4" />
-                  </button>
+                  </a>
                 </motion.div>
               ))}
             </div>
