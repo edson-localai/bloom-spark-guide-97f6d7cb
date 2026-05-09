@@ -16,6 +16,7 @@ import {
   Loader2,
   FileText,
   GraduationCap,
+  ShieldCheck,
 } from 'lucide-react';
 
 export const Route = createFileRoute('/atendimento')({
