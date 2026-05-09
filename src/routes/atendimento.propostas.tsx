@@ -46,13 +46,35 @@ function PropostasPage() {
 
   const filteredProposals = useMemo(() => {
     if (!debouncedSearch) return proposals;
+    
     const s = debouncedSearch.toLowerCase();
-    return proposals.filter(p => 
-      p.proposal_number.toLowerCase().includes(s) ||
-      (p.contact?.name || '').toLowerCase().includes(s) ||
-      (p.contact?.vehicle_brand || '').toLowerCase().includes(s) ||
-      (p.contact?.vehicle_model || '').toLowerCase().includes(s)
-    );
+    const normalizedSearch = s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]/g, "");
+
+    return proposals.filter(p => {
+      const pNumber = (p.proposal_number || '').toLowerCase();
+      const pName = (p.contact?.name || '').toLowerCase();
+      const pBrand = (p.contact?.vehicle_brand || '').toLowerCase();
+      const pModel = (p.contact?.vehicle_model || '').toLowerCase();
+
+      // Check standard include
+      if (pNumber.includes(s) || pName.includes(s) || pBrand.includes(s) || pModel.includes(s)) {
+        return true;
+      }
+
+      // Check normalized (flexible) match
+      const normalize = (str: string) => str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]/g, "");
+      
+      if (normalizedSearch.length > 0) {
+        if (normalize(pNumber).includes(normalizedSearch) || 
+            normalize(pName).includes(normalizedSearch) || 
+            normalize(pBrand).includes(normalizedSearch) || 
+            normalize(pModel).includes(normalizedSearch)) {
+          return true;
+        }
+      }
+
+      return false;
+    });
   }, [proposals, debouncedSearch]);
 
   useEffect(() => {
