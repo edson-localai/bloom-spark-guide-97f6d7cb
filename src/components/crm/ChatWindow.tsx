@@ -1,10 +1,11 @@
 import { useState, useRef, useEffect } from 'react';
-import { Send, User, Bot, Paperclip, MoreVertical, ShieldCheck, Clock, Sparkles, Loader2 } from 'lucide-react';
+import { Send, User, Bot, Paperclip, MoreVertical, ShieldCheck, Clock, Sparkles, Loader2, Smile, Zap, Hammer } from 'lucide-react';
 import { Message, Conversation, Contact } from '@/types/crm';
 import { useMessages } from '@/hooks/useMessages';
-import { getAiSuggestion } from '@/services/aiService';
+import { getAiSuggestions, AiSuggestions } from '@/services/aiService';
 import { extractContactData } from '@/lib/ai.functions';
 import { toast } from 'sonner';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface ChatWindowProps {
   conversation: (Conversation & { contact: Contact | null }) | null;
