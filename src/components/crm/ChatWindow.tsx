@@ -22,10 +22,12 @@ export function ChatWindow({ conversation }: ChatWindowProps) {
   const [isUploading, setIsUploading] = useState(false);
   const [suggestions, setSuggestions] = useState<AiSuggestions | null>(null);
   const [showSchedule, setShowSchedule] = useState(false);
+  const [showTransfer, setShowTransfer] = useState(false);
   const [scheduledDate, setScheduledDate] = useState('');
   const [scheduledTime, setScheduledTime] = useState('');
   
   const { messages, loading, sendMessage } = useMessages(conversation?.id ?? null);
+  const { agents } = useAgents();
   const scrollRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -35,7 +37,30 @@ export function ChatWindow({ conversation }: ChatWindowProps) {
     }
     setSuggestions(null);
     setShowSchedule(false);
+    setShowTransfer(false);
   }, [messages, conversation?.id]);
+
+  const handleTransfer = async (agentId: string) => {
+    if (!conversation) return;
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      const { error } = await supabase
+        .from('conversations')
+        .update({ 
+          agent_id: agentId,
+          transferred_from: user?.id as any,
+          transferred_at: new Date().toISOString()
+        } as any)
+        .eq('id', conversation.id);
+
+      if (error) throw error;
+
+      toast.success('Chat transferido com sucesso!');
+      setShowTransfer(false);
+    } catch (err) {
+      toast.error('Erro ao transferir chat.');
+    }
+  };
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
