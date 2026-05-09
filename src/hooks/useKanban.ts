@@ -23,12 +23,21 @@ export function useKanban() {
 
   async function moveCard(id: string, newStatus: string) {
     try {
+      const old = items.find(i => i.id === id);
       const { error } = await supabase
         .from('conversations')
         .update({ status: newStatus as any })
         .eq('id', id);
       if (error) throw error;
       setItems(prev => prev.map(item => item.id === id ? { ...item, status: newStatus as any } : item));
+      
+      logAudit({
+        action: 'kanban.move',
+        entityType: 'conversation',
+        entityId: id,
+        oldData: { status: old?.status },
+        newData: { status: newStatus },
+      });
     } catch (error) {
       console.error('Error moving card:', error);
     }
