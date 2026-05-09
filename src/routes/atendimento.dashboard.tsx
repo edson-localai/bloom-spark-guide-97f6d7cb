@@ -111,11 +111,11 @@ function DashboardPage() {
           color="#8B5CF6" 
         />
         <StatCard 
-          title="Tempo Médio" 
-          value="4m 12s" 
-          change="-18%" 
-          trend="down" 
-          icon={Clock} 
+          title="Tempo Médio de Espera" 
+          value={avgWaitTime} 
+          change={waitingNow > 0 ? `${waitingNow} na fila` : 'Fila vazia'} 
+          trend={waitingNow > 0 ? 'up' : 'down'} 
+          icon={Hourglass} 
           color="#F59E0B" 
         />
         <StatCard 
