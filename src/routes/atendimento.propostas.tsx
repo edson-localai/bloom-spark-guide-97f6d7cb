@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { useState, useMemo, useEffect } from 'react';
-import { FileText, Plus, Trash2, Send, Download, Loader2, User, ChevronRight, Calculator, X, Edit2, CheckCircle2, SendHorizonal, Clock, Search, SearchX } from 'lucide-react';
+import { FileText, Plus, Trash2, Send, Download, Loader2, User, ChevronRight, Calculator, X, Edit2, CheckCircle2, SendHorizonal, Clock, Search, SearchX, ArrowUpDown } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useContacts } from '@/hooks/useContacts';
 import { toast } from 'sonner';
@@ -34,6 +34,7 @@ function PropostasPage() {
   const [loadingProposals, setLoadingProposals] = useState(true);
   const [search, setSearch] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
+  const [sortOrder, setSortOrder] = useState<'newest' | 'oldest'>('newest');
 
   const subtotal = useMemo(() => items.reduce((acc, item) => acc + (item.quantity * item.price), 0), [items]);
 
@@ -272,15 +273,40 @@ function PropostasPage() {
             exit={{ opacity: 0, y: -10 }}
             className="px-8 py-4"
           >
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
-              <input
-                type="text"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder="Buscar por cliente, veículo ou Nº da proposta..."
-                className="w-full max-w-md bg-[#151821] border border-[#1F232E] rounded-xl py-2.5 pl-10 pr-4 text-sm text-zinc-300 focus:outline-none focus:border-cyan-500/50 transition-colors"
-              />
+            <div className="flex items-center gap-4">
+              <div className="relative flex-1 max-w-md">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
+                <input
+                  type="text"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  placeholder="Buscar por cliente, veículo ou Nº da proposta..."
+                  className="w-full bg-[#151821] border border-[#1F232E] rounded-xl py-2.5 pl-10 pr-4 text-sm text-zinc-300 focus:outline-none focus:border-cyan-500/50 transition-colors"
+                />
+              </div>
+
+              <div className="flex items-center gap-2 bg-[#151821] border border-[#1F232E] rounded-xl p-1">
+                <button
+                  onClick={() => setSortOrder('newest')}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                    sortOrder === 'newest' 
+                      ? 'bg-cyan-500/10 text-cyan-500 border border-cyan-500/20' 
+                      : 'text-zinc-500 hover:text-zinc-300'
+                  }`}
+                >
+                  Mais Recentes
+                </button>
+                <button
+                  onClick={() => setSortOrder('oldest')}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                    sortOrder === 'oldest' 
+                      ? 'bg-cyan-500/10 text-cyan-500 border border-cyan-500/20' 
+                      : 'text-zinc-500 hover:text-zinc-300'
+                  }`}
+                >
+                  Mais Antigas
+                </button>
+              </div>
             </div>
           </motion.div>
         )}
