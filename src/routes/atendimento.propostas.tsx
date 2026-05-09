@@ -46,37 +46,44 @@ function PropostasPage() {
   }, [search]);
 
   const filteredProposals = useMemo(() => {
-    if (!debouncedSearch) return proposals;
-    
-    const s = debouncedSearch.toLowerCase();
-    const normalizedSearch = s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]/g, "");
+    let result = proposals;
+    if (debouncedSearch) {
+      const s = debouncedSearch.toLowerCase();
+      const normalizedSearch = s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]/g, "");
 
-    return proposals.filter(p => {
-      const pNumber = (p.proposal_number || '').toLowerCase();
-      const pName = (p.contact?.name || '').toLowerCase();
-      const pBrand = (p.contact?.vehicle_brand || '').toLowerCase();
-      const pModel = (p.contact?.vehicle_model || '').toLowerCase();
+      result = proposals.filter(p => {
+        const pNumber = (p.proposal_number || '').toLowerCase();
+        const pName = (p.contact?.name || '').toLowerCase();
+        const pBrand = (p.contact?.vehicle_brand || '').toLowerCase();
+        const pModel = (p.contact?.vehicle_model || '').toLowerCase();
 
-      // Check standard include
-      if (pNumber.includes(s) || pName.includes(s) || pBrand.includes(s) || pModel.includes(s)) {
-        return true;
-      }
-
-      // Check normalized (flexible) match
-      const normalize = (str: string) => str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]/g, "");
-      
-      if (normalizedSearch.length > 0) {
-        if (normalize(pNumber).includes(normalizedSearch) || 
-            normalize(pName).includes(normalizedSearch) || 
-            normalize(pBrand).includes(normalizedSearch) || 
-            normalize(pModel).includes(normalizedSearch)) {
+        // Check standard include
+        if (pNumber.includes(s) || pName.includes(s) || pBrand.includes(s) || pModel.includes(s)) {
           return true;
         }
-      }
 
-      return false;
+        // Check normalized (flexible) match
+        const normalize = (str: string) => str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]/g, "");
+        
+        if (normalizedSearch.length > 0) {
+          if (normalize(pNumber).includes(normalizedSearch) || 
+              normalize(pName).includes(normalizedSearch) || 
+              normalize(pBrand).includes(normalizedSearch) || 
+              normalize(pModel).includes(normalizedSearch)) {
+            return true;
+          }
+        }
+
+        return false;
+      });
+    }
+
+    return [...result].sort((a, b) => {
+      const dateA = new Date(a.created_at).getTime();
+      const dateB = new Date(b.created_at).getTime();
+      return sortOrder === 'newest' ? dateB - dateA : dateA - dateB;
     });
-  }, [proposals, debouncedSearch]);
+  }, [proposals, debouncedSearch, sortOrder]);
 
   useEffect(() => {
     fetchProposals();
