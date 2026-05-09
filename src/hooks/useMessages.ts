@@ -26,7 +26,18 @@ export function useMessages(conversationId: string | null) {
           filter: `conversation_id=eq.${conversationId}`,
         },
         (payload) => {
-          setMessages((prev) => [...prev, payload.new as Message]);
+          const newMsg = payload.new as Message;
+          setMessages((prev) => [...prev, newMsg]);
+
+          // Trigger Auto-reply se for mensagem do contato
+          if (newMsg.sender_type === 'contact') {
+            handleAutoReply({ 
+              data: {
+                conversationId: conversationId, 
+                content: newMsg.content || '' 
+              } 
+            });
+          }
         }
       )
       .subscribe();
