@@ -1,7 +1,9 @@
 import { useState, useRef, useEffect } from 'react';
-import { Send, User, Bot, Paperclip, MoreVertical, ShieldCheck, Clock } from 'lucide-react';
+import { Send, User, Bot, Paperclip, MoreVertical, ShieldCheck, Clock, Sparkles, Loader2 } from 'lucide-react';
 import { Message, Conversation, Contact } from '@/types/crm';
 import { useMessages } from '@/hooks/useMessages';
+import { getAiSuggestion } from '@/services/aiService';
+import { toast } from 'sonner';
 
 interface ChatWindowProps {
   conversation: (Conversation & { contact: Contact | null }) | null;
@@ -9,6 +11,7 @@ interface ChatWindowProps {
 
 export function ChatWindow({ conversation }: ChatWindowProps) {
   const [input, setInput] = useState('');
+  const [isAiLoading, setIsAiLoading] = useState(false);
   const { messages, loading, sendMessage } = useMessages(conversation?.id ?? null);
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -17,6 +20,22 @@ export function ChatWindow({ conversation }: ChatWindowProps) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
   }, [messages]);
+
+  const handleAiSuggest = async () => {
+    if (!conversation || messages.length === 0) return;
+    setIsAiLoading(true);
+    try {
+      const suggestion = await getAiSuggestion(conversation.id, messages);
+      if (suggestion) {
+        setInput(suggestion);
+        toast.success('Clara sugeriu uma resposta!');
+      }
+    } catch (error) {
+      toast.error('Erro ao buscar sugestão da Clara.');
+    } finally {
+      setIsAiLoading(false);
+    }
+  };
 
   const handleSend = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -114,26 +133,41 @@ export function ChatWindow({ conversation }: ChatWindowProps) {
 
       {/* Input Area */}
       <div className="p-4 border-t border-[#1F232E]" style={{ background: '#0F1117' }}>
-        <form onSubmit={handleSend} className="flex items-center gap-3">
-          <button type="button" className="p-2 text-zinc-500 hover:text-cyan-400 transition-colors">
-            <Paperclip className="h-5 w-5" />
-          </button>
-          <div className="flex-1 relative">
-            <input
-              type="text"
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              placeholder="Digite sua mensagem..."
-              className="w-full bg-[#151821] border border-[#1F232E] rounded-xl py-2.5 px-4 text-sm text-zinc-200 focus:outline-none focus:border-cyan-500/50 transition-colors"
-            />
+        <form onSubmit={handleSend} className="flex flex-col gap-3">
+          <div className="flex items-center gap-2 mb-1">
+            <button
+              type="button"
+              onClick={handleAiSuggest}
+              disabled={isAiLoading || !conversation}
+              className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 text-[10px] font-bold uppercase tracking-wider hover:bg-cyan-500/20 transition-all disabled:opacity-50"
+            >
+              {isAiLoading ? <Loader2 className="h-3 w-3 animate-spin" /> : <Sparkles className="h-3 w-3" />}
+              Sugestão da Clara
+            </button>
+            <span className="text-[10px] text-zinc-600 font-medium">Use IA para responder mais rápido</span>
           </div>
-          <button
-            type="submit"
-            disabled={!input.trim()}
-            className="h-10 w-10 flex items-center justify-center rounded-xl bg-cyan-500 text-black hover:bg-cyan-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            <Send className="h-5 w-5" />
-          </button>
+
+          <div className="flex items-center gap-3">
+            <button type="button" className="p-2 text-zinc-500 hover:text-cyan-400 transition-colors">
+              <Paperclip className="h-5 w-5" />
+            </button>
+            <div className="flex-1 relative">
+              <input
+                type="text"
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                placeholder="Digite sua mensagem..."
+                className="w-full bg-[#151821] border border-[#1F232E] rounded-xl py-2.5 px-4 text-sm text-zinc-200 focus:outline-none focus:border-cyan-500/50 transition-colors"
+              />
+            </div>
+            <button
+              type="submit"
+              disabled={!input.trim()}
+              className="h-10 w-10 flex items-center justify-center rounded-xl bg-cyan-500 text-black hover:bg-cyan-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <Send className="h-5 w-5" />
+            </button>
+          </div>
         </form>
       </div>
     </div>
