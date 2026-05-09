@@ -10,8 +10,9 @@ export function useAgents() {
   useEffect(() => {
     fetchAgents();
 
-    // Configuração de Presence/Realtime
-    const channel = supabase.channel('online-agents', {
+    // Configuração de Presence/Realtime — nome único evita reusar canal já inscrito (StrictMode/HMR)
+    const channelName = `online-agents-${Math.random().toString(36).slice(2, 8)}`;
+    const channel = supabase.channel(channelName, {
       config: {
         presence: {
           key: 'user',
