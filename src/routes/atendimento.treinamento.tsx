@@ -261,14 +261,15 @@ function TreinamentoPage() {
   );
 }
 
-function RoleTab({ active, onClick, icon: Icon, label }: { active: boolean; onClick: () => void; icon: any; label: string }) {
+function RoleTab({ active, onClick, icon: Icon, label, disabled }: { active: boolean; onClick: () => void; icon: any; label: string; disabled?: boolean }) {
   return (
     <button
       onClick={onClick}
+      disabled={disabled}
       className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all ${
         active 
           ? 'bg-cyan-500 text-black shadow-lg shadow-cyan-500/20' 
-          : 'text-zinc-500 hover:text-white'
+          : disabled ? 'text-zinc-700 cursor-default' : 'text-zinc-500 hover:text-white'
       }`}
     >
       <Icon className="h-4 w-4" />
