@@ -238,3 +238,19 @@ export function ChatWindow({ conversation }: ChatWindowProps) {
     </div>
   );
 }
+
+function SuggestionButton({ icon: Icon, label, text, onClick }: { icon: any, label: string, text: string, onClick: () => void }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="flex flex-col text-left p-2.5 rounded-xl bg-[#151821] border border-[#1F232E] hover:border-cyan-500/40 hover:bg-cyan-500/5 transition-all group"
+    >
+      <div className="flex items-center gap-1.5 mb-1.5">
+        <Icon className="h-3 w-3 text-cyan-400" />
+        <span className="text-[9px] uppercase font-bold tracking-widest text-zinc-500 group-hover:text-cyan-400">{label}</span>
+      </div>
+      <p className="text-[11px] text-zinc-400 line-clamp-2 leading-relaxed group-hover:text-zinc-200">{text}</p>
+    </button>
+  );
+}
