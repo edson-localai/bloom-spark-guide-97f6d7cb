@@ -11,22 +11,23 @@ export function useTimeline(contactId: string | null) {
   }, [contactId]);
 
   async function fetchEvents() {
+    if (!contactId) return;
     setLoading(true);
     try {
-      // Busca logs de auditoria e eventos de conversa relacionados ao contato
-      // Para simplificar, buscamos audit_logs onde entity_id é o contactId ou conversationIds do contato
-      
       const { data: convs } = await supabase
         .from('conversations')
         .select('id')
         .eq('contact_id', contactId);
       
       const convIds = convs?.map(c => c.id) || [];
+      const filter = convIds.length > 0 
+        ? `entity_id.eq.${contactId},entity_id.in.(${convIds.join(',')})`
+        : `entity_id.eq.${contactId}`;
 
       const { data: logs } = await supabase
         .from('audit_logs')
         .select('*')
-        .or(`entity_id.eq.${contactId},entity_id.in.(${convIds.join(',')})`)
+        .or(filter)
         .order('created_at', { ascending: false });
 
       setEvents(logs || []);
