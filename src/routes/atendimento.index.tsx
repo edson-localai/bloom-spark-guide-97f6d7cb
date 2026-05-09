@@ -1,26 +1,51 @@
+import { useState, useMemo } from 'react';
 import { createFileRoute } from '@tanstack/react-router';
-import { Inbox } from 'lucide-react';
+import { ConversationList } from '@/components/crm/ConversationList';
+import { ChatWindow } from '@/components/crm/ChatWindow';
+import { ContactSidebar } from '@/components/crm/ContactSidebar';
+import { useConversations } from '@/hooks/useConversations';
+import { Loader2 } from 'lucide-react';
 
 export const Route = createFileRoute('/atendimento/')({
   component: InboxPage,
 });
 
 function InboxPage() {
-  return (
-    <div className="h-screen flex items-center justify-center px-6">
-      <div className="max-w-md text-center">
-        <div
-          className="h-14 w-14 rounded-2xl mx-auto flex items-center justify-center mb-4"
-          style={{ background: 'rgba(0,204,238,0.1)', color: '#00CCEE' }}
-        >
-          <Inbox className="h-6 w-6" />
-        </div>
-        <h1 className="text-2xl font-semibold text-white mb-2">Inbox</h1>
-        <p className="text-sm text-zinc-400 leading-relaxed">
-          Fase 1 concluída — fundação do CRM pronta. As conversas aparecerão aqui na Fase 2,
-          junto com o Kanban arrastável e o painel de chat em tempo real.
-        </p>
+  const { conversations, loading } = useConversations();
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+
+  const selectedConversation = useMemo(() => {
+    return conversations.find((c) => c.id === selectedId) || null;
+  }, [conversations, selectedId]);
+
+  if (loading && conversations.length === 0) {
+    return (
+      <div className="h-full flex items-center justify-center">
+        <Loader2 className="h-6 w-6 animate-spin text-cyan-400" />
       </div>
+    );
+  }
+
+  return (
+    <div className="h-full flex overflow-hidden">
+      {/* List Column */}
+      <div className="w-80 shrink-0 h-full border-r border-[#1F232E]">
+        <ConversationList
+          conversations={conversations as any}
+          selectedId={selectedId}
+          onSelect={setSelectedId}
+        />
+      </div>
+
+      {/* Main Chat Column */}
+      <div className="flex-1 h-full min-w-0">
+        <ChatWindow conversation={selectedConversation as any} />
+      </div>
+
+      {/* Details Column */}
+      {selectedConversation && (
+        <ContactSidebar contact={(selectedConversation as any).contact} />
+      )}
     </div>
   );
 }

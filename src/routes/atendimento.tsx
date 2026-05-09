@@ -72,10 +72,10 @@ function Sidebar({ email, role }: { email: string; role?: string }) {
 
   const items: { to: string; icon: typeof Inbox; label: string; exact?: boolean; ready?: boolean }[] = [
     { to: '/atendimento', icon: Inbox, label: 'Inbox', exact: true, ready: true },
-    { to: '/atendimento/kanban', icon: KanbanSquare, label: 'Kanban' },
-    { to: '/atendimento/contatos', icon: Users, label: 'Contatos' },
-    { to: '/atendimento/respostas', icon: MessageSquare, label: 'Respostas' },
-    { to: '/atendimento/whatsapp', icon: Smartphone, label: 'WhatsApp' },
+    { to: '/atendimento/kanban', icon: KanbanSquare, label: 'Kanban', ready: true },
+    { to: '/atendimento/contatos', icon: Users, label: 'Contatos', ready: true },
+    { to: '/atendimento/respostas', icon: MessageSquare, label: 'Respostas', ready: true },
+    { to: '/atendimento/whatsapp', icon: Smartphone, label: 'WhatsApp', ready: true },
     { to: '/atendimento/dashboard', icon: BarChart3, label: 'Dashboard' },
     { to: '/atendimento/config', icon: Settings, label: 'Configurações' },
   ];
