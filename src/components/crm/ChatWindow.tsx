@@ -1,7 +1,9 @@
 import { useState, useRef, useEffect } from 'react';
-import { Send, User, Bot, Paperclip, MoreVertical, ShieldCheck, Clock } from 'lucide-react';
+import { Send, User, Bot, Paperclip, MoreVertical, ShieldCheck, Clock, Sparkles, Loader2 } from 'lucide-react';
 import { Message, Conversation, Contact } from '@/types/crm';
 import { useMessages } from '@/hooks/useMessages';
+import { getAiSuggestion } from '@/services/aiService';
+import { toast } from 'sonner';
 
 interface ChatWindowProps {
   conversation: (Conversation & { contact: Contact | null }) | null;
