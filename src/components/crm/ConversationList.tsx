@@ -1,7 +1,9 @@
-import { Search, Filter, User } from 'lucide-react';
+import { Search, Filter, User, SearchX } from 'lucide-react';
 import { Conversation, Contact } from '@/types/crm';
 import { formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useState } from 'react';
 
 interface ConversationListProps {
   conversations: (Conversation & { contact: Contact | null })[];
