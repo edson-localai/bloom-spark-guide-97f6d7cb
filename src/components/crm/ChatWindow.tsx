@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { Send, User, Bot, Paperclip, MoreVertical, ShieldCheck, Clock, Sparkles, Loader2, Smile, Zap, Hammer } from 'lucide-react';
+import { Send, User, Bot, Paperclip, MoreVertical, ShieldCheck, Clock, Sparkles, Loader2, Smile, Zap, Hammer, StickyNote, MessageCircle } from 'lucide-react';
 import { Message, Conversation, Contact } from '@/types/crm';
 import { useMessages } from '@/hooks/useMessages';
 import { getAiSuggestions, AiSuggestions } from '@/services/aiService';
