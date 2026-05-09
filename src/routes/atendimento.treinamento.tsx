@@ -44,38 +44,42 @@ const COURSES: Record<UserType, Module[]> = {
   vendedor: [
     {
       id: 'v-1',
-      title: 'Primeiros Passos',
+      title: 'Trilha do Atendente HCB',
       lessons: [
-        { id: 'l1', title: 'Visão Geral do Inbox', description: 'Aprenda a navegar pelas conversas e responder clientes.', duration: '5 min', type: 'video', icon: MessageSquare },
-        { id: 'l2', title: 'Atendimento via WhatsApp', description: 'Como usar a integração oficial para falar com clientes.', duration: '8 min', type: 'video', icon: Smartphone },
+        { id: 'v-l1', title: '1. Domine o Inbox', description: 'Aprenda a organizar suas conversas e nunca deixar um cliente esperando.', duration: '5 min', type: 'video', icon: MessageSquare },
+        { id: 'v-l2', title: '2. WhatsApp Profissional', description: 'Como usar as ferramentas de automação e respostas rápidas.', duration: '8 min', type: 'video', icon: Smartphone },
+        { id: 'v-l3', title: '3. Gestão de Contatos', description: 'Cadastrando veículos e informações vitais do cliente.', duration: '7 min', type: 'video', icon: Users },
       ]
     },
     {
       id: 'v-2',
-      title: 'Vendas & Orçamentos',
+      title: 'Trilha do Consultor de Vendas',
       lessons: [
-        { id: 'l3', title: 'Gerando Propostas Profissionais', description: 'Passo a passo para criar e enviar PDFs de orçamentos.', duration: '10 min', type: 'video', icon: FileText },
-        { id: 'l4', title: 'Gestão de Kanban', description: 'Como organizar seu funil de vendas e não perder leads.', duration: '6 min', type: 'video', icon: Kanban },
+        { id: 'v-l4', title: '1. O Poder do Kanban', description: 'Como mover leads pelo funil até o fechamento.', duration: '10 min', type: 'video', icon: Kanban },
+        { id: 'v-l5', title: '2. Propostas Imbatíveis', description: 'Criando orçamentos profissionais em PDF que vendem por você.', duration: '12 min', type: 'video', icon: FileText },
+        { id: 'v-l6', title: '3. Técnicas de Fechamento', description: 'Como usar o histórico do CRM para converter mais.', duration: '8 min', type: 'video', icon: CheckCircle2 },
       ]
     }
   ],
   gerente: [
     {
       id: 'g-1',
-      title: 'Gestão de Equipe',
+      title: 'Trilha de Liderança e Performance',
       lessons: [
-        { id: 'g-l1', title: 'Monitoramento em Tempo Real', description: 'Como supervisionar as conversas e dar suporte aos vendedores.', duration: '7 min', type: 'video', icon: Users },
-        { id: 'g-l2', title: 'Análise de Dashboard', description: 'Interpretando métricas de conversão e tempo de resposta.', duration: '12 min', type: 'video', icon: BarChart3 },
+        { id: 'g-l1', title: '1. Supervisão de Atendimento', description: 'Como monitorar a qualidade e o tom de voz da equipe.', duration: '10 min', type: 'video', icon: Users },
+        { id: 'g-l2', title: '2. Análise de Funil', description: 'Identificando gargalos no Kanban da equipe.', duration: '15 min', type: 'video', icon: BarChart3 },
+        { id: 'g-l3', title: '3. Relatórios Estratégicos', description: 'Extraindo dados para tomada de decisão.', duration: '12 min', type: 'video', icon: FileText },
       ]
     }
   ],
   admin: [
     {
       id: 'a-1',
-      title: 'Configurações Avançadas',
+      title: 'Trilha de Gestor de Sistema',
       lessons: [
-        { id: 'a-l1', title: 'Gestão de Usuários', description: 'Como criar contas e definir permissões de acesso.', duration: '5 min', type: 'video', icon: ShieldCheck },
-        { id: 'a-l2', title: 'Configuração da Instância', description: 'Conectando números e ajustando webhooks.', duration: '15 min', type: 'video', icon: Settings },
+        { id: 'a-l1', title: '1. Segurança e Acesso', description: 'Gerenciando usuários, senhas e níveis de permissão.', duration: '7 min', type: 'video', icon: ShieldCheck },
+        { id: 'a-l2', title: '2. Conectividade WhatsApp', description: 'Manutenção de instâncias e estabilidade do sistema.', duration: '15 min', type: 'video', icon: Settings },
+        { id: 'a-l3', title: '3. Automações Globais', description: 'Configurando respostas automáticas e fluxos do CRM.', duration: '20 min', type: 'video', icon: Smartphone },
       ]
     }
   ]
