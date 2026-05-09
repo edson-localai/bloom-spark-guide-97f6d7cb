@@ -5,9 +5,17 @@ export const Route = createFileRoute('/api/public/process-scheduled')({
   server: {
     handlers: {
       POST: async ({ request }: { request: Request }) => {
+        // Require shared-secret header to prevent unauthenticated triggering
+        const expected = process.env.CRON_SECRET;
+        const auth = request.headers.get('authorization');
+        if (!expected || auth !== `Bearer ${expected}`) {
+          return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+            status: 401,
+            headers: { 'Content-Type': 'application/json' },
+          });
+        }
+
         try {
-          console.log('Starting scheduled messages processing...');
-          
           const { data: pending, error: fetchError } = await supabaseAdmin
             .from('scheduled_messages')
             .select('*')
