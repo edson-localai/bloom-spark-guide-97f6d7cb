@@ -1,11 +1,14 @@
-import { User, Car, Tag, MapPin, Calendar, FileText, ChevronRight, Clock, History } from 'lucide-react';
+import { User, Car, Tag, MapPin, Calendar, FileText, ChevronRight, Clock, History, CalendarClock, XCircle, CheckCircle2 } from 'lucide-react';
 import { Contact } from '@/types/crm';
 import { useTimeline } from '@/hooks/useTimeline';
-import { formatDistanceToNow } from 'date-fns';
+import { useScheduledMessages } from '@/hooks/useScheduledMessages';
+import { formatDistanceToNow, format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface ContactSidebarProps {
   contact: Contact | null;
+  conversationId?: string | null;
 }
 
 export function ContactSidebar({ contact }: ContactSidebarProps) {
