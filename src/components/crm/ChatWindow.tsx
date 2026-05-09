@@ -78,16 +78,12 @@ export function ChatWindow({ conversation }: ChatWindowProps) {
 
       if (uploadError) throw uploadError;
 
-      const { data: { publicUrl } } = supabase.storage
-        .from('crm_media')
-        .getPublicUrl(filePath);
-
       await sendMessage(file.name, file.type.startsWith('image/') ? 'image' : 'document', false);
       
-      // Update the last message to include media info (heurística simples para MVP)
+      // Armazena o PATH do arquivo em vez da URL pública (bucket privado)
       await supabase.from('messages')
         .update({
-          media_url: publicUrl,
+          media_url: filePath,
           media_mime: file.type
         } as any)
         .eq('content', file.name)
