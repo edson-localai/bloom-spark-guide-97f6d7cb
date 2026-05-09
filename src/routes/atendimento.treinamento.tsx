@@ -131,6 +131,11 @@ function TreinamentoPage() {
   const [activeUserType, setActiveUserType] = useState<UserType>(getDefaultUserType(userRole));
   const [selectedLesson, setSelectedLesson] = useState<Lesson | null>(null);
   const [completedLessons, setCompletedLessons] = useState<string[]>([]);
+  const [quizResults, setQuizResults] = useState<Record<string, { score: number, total: number }>>({});
+  const [activeQuiz, setActiveQuiz] = useState<Question[] | null>(null);
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [quizScore, setQuizScore] = useState(0);
+  const [showQuizResult, setShowQuizResult] = useState(false);
 
   const currentCourse = COURSES[activeUserType];
   const allLessons = currentCourse.flatMap(m => m.lessons);
@@ -139,14 +144,87 @@ function TreinamentoPage() {
     : 0;
 
   useEffect(() => {
+    fetchUserData();
+  }, []);
+
+  async function fetchUserData() {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    const { data } = await supabase
+      .from('quiz_results')
+      .select('lesson_id, score, total_questions')
+      .eq('user_id', user.id);
+    
+    if (data) {
+      const results: Record<string, { score: number, total: number }> = {};
+      const completed: string[] = [];
+      data.forEach(r => {
+        results[r.lesson_id] = { score: r.score, total: r.total_questions };
+        completed.push(r.lesson_id);
+      });
+      setQuizResults(results);
+      setCompletedLessons(completed);
+    }
+  }
+
+  useEffect(() => {
     setActiveUserType(getDefaultUserType(userRole));
-    // Reset selected lesson when role changes unless it's an admin browsing
   }, [userRole]);
 
+  const saveQuizResult = async (lessonId: string, score: number, total: number) => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    const { error } = await supabase
+      .from('quiz_results')
+      .upsert({
+        user_id: user.id,
+        lesson_id: lessonId,
+        score,
+        total_questions: total
+      }, { onConflict: 'user_id,lesson_id' });
+
+    if (error) {
+      toast.error('Erro ao salvar resultado do quiz');
+    } else {
+      setQuizResults(prev => ({ ...prev, [lessonId]: { score, total } }));
+      if (!completedLessons.includes(lessonId)) {
+        setCompletedLessons(prev => [...prev, lessonId]);
+      }
+    }
+  };
+
+  const handleQuizAnswer = (optionIndex: number) => {
+    if (!activeQuiz) return;
+    
+    if (optionIndex === activeQuiz[currentQuestionIndex].correctAnswer) {
+      setQuizScore(prev => prev + 1);
+    }
+
+    if (currentQuestionIndex < activeQuiz.length - 1) {
+      setCurrentQuestionIndex(prev => prev + 1);
+    } else {
+      setShowQuizResult(true);
+      if (selectedLesson) {
+        saveQuizResult(selectedLesson.id, quizScore + (optionIndex === activeQuiz[currentQuestionIndex].correctAnswer ? 1 : 0), activeQuiz.length);
+      }
+    }
+  };
+
+  const startQuiz = () => {
+    if (selectedLesson?.quiz) {
+      setActiveQuiz(selectedLesson.quiz);
+      setCurrentQuestionIndex(0);
+      setQuizScore(0);
+      setShowQuizResult(false);
+    }
+  };
+
   const toggleComplete = (lessonId: string) => {
-    setCompletedLessons(prev => 
-      prev.includes(lessonId) ? prev.filter(id => id !== lessonId) : [...prev, lessonId]
-    );
+    if (completedLessons.includes(lessonId)) return;
+    setCompletedLessons(prev => [...prev, lessonId]);
+    saveQuizResult(lessonId, 1, 1); // For practical/video without quiz
   };
 
   const nextLesson = () => {
