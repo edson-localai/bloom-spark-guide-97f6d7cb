@@ -37,6 +37,8 @@ function PropostasPage() {
   const [sortOrder, setSortOrder] = useState<'newest' | 'oldest'>('newest');
   const [statusFilter, setStatusFilter] = useState<'all' | 'draft' | 'sent' | 'accepted' | 'rejected'>('all');
   const [clientFilter, setClientFilter] = useState<string>('all');
+  const [agentFilter, setAgentFilter] = useState<string>('all');
+  const [agents, setAgents] = useState<any[]>([]);
 
   const uniqueClients = useMemo(() => {
     const clientsMap = new Map();
@@ -68,6 +70,10 @@ function PropostasPage() {
 
     if (clientFilter !== 'all') {
       result = result.filter(p => p.contact_id === clientFilter);
+    }
+
+    if (agentFilter !== 'all') {
+      result = result.filter(p => p.agent_id === agentFilter);
     }
 
     if (debouncedSearch) {
@@ -106,18 +112,32 @@ function PropostasPage() {
       const dateB = new Date(b.created_at).getTime();
       return sortOrder === 'newest' ? dateB - dateA : dateA - dateB;
     });
-  }, [proposals, debouncedSearch, sortOrder, statusFilter, clientFilter]);
+  }, [proposals, debouncedSearch, sortOrder, statusFilter, clientFilter, agentFilter]);
 
   useEffect(() => {
     fetchProposals();
+    fetchAgents();
   }, []);
+
+  async function fetchAgents() {
+    try {
+      const { data, error } = await supabase
+        .from('agents')
+        .select('user_id, name')
+        .order('name');
+      if (error) throw error;
+      setAgents(data || []);
+    } catch (err) {
+      console.error('Erro ao buscar vendedores:', err);
+    }
+  }
 
   async function fetchProposals() {
     setLoadingProposals(true);
     try {
       const { data, error } = await supabase
         .from('proposals')
-        .select('*, contact:contact_id(*)')
+        .select('*, contact:contact_id(*), agent:agent_id(*)')
         .order('created_at', { ascending: false });
       if (error) throw error;
       setProposals(data || []);
@@ -323,7 +343,18 @@ function PropostasPage() {
                 >
                   <option value="all">Todos os Clientes</option>
                   {uniqueClients.map(client => (
-                    <option key={client.id} value={client.id}>{client.name}</option>
+                  <option key={client.id} value={client.id}>{client.name}</option>
+                  ))}
+                </select>
+
+                <select
+                  value={agentFilter}
+                  onChange={(e) => setAgentFilter(e.target.value)}
+                  className="bg-[#151821] border border-[#1F232E] rounded-xl px-3 py-2 text-xs font-medium text-zinc-300 focus:outline-none focus:border-cyan-500/50 transition-colors max-w-[200px]"
+                >
+                  <option value="all">Todos os Vendedores</option>
+                  {agents.map(agent => (
+                    <option key={agent.user_id} value={agent.user_id}>{agent.name}</option>
                   ))}
                 </select>
 
@@ -539,9 +570,16 @@ function PropostasPage() {
                     </div>
                     
                     <h3 className="font-bold text-white mb-1 truncate pr-16">{prop.contact?.name || 'Cliente'}</h3>
-                    <p className="text-[10px] text-zinc-500 uppercase font-bold tracking-wider mb-4">
-                      {new Date(prop.created_at).toLocaleDateString()}
-                    </p>
+                    <div className="flex items-center justify-between mb-4">
+                      <p className="text-[10px] text-zinc-500 uppercase font-bold tracking-wider">
+                        {new Date(prop.created_at).toLocaleDateString()}
+                      </p>
+                      {prop.agent?.name && (
+                        <div className="flex items-center gap-1 text-[9px] text-zinc-600 font-bold uppercase bg-white/5 px-2 py-0.5 rounded" title={`Vendedor: ${prop.agent.name}`}>
+                          <User className="h-2.5 w-2.5" /> {prop.agent.name}
+                        </div>
+                      )}
+                    </div>
 
                     <div className="flex justify-between items-center pt-4 border-t border-[#1F232E]">
                       <div className="flex flex-col">
