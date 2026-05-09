@@ -15,6 +15,7 @@ import { Route as AtendimentoRouteImport } from './routes/atendimento'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AtendimentoIndexRouteImport } from './routes/atendimento.index'
 import { Route as AtendimentoWhatsappRouteImport } from './routes/atendimento.whatsapp'
+import { Route as AtendimentoUsuariosRouteImport } from './routes/atendimento.usuarios'
 import { Route as AtendimentoTreinamentoRouteImport } from './routes/atendimento.treinamento'
 import { Route as AtendimentoRespostasRouteImport } from './routes/atendimento.respostas'
 import { Route as AtendimentoPropostasRouteImport } from './routes/atendimento.propostas'
@@ -52,6 +53,11 @@ const AtendimentoIndexRoute = AtendimentoIndexRouteImport.update({
 const AtendimentoWhatsappRoute = AtendimentoWhatsappRouteImport.update({
   id: '/whatsapp',
   path: '/whatsapp',
+  getParentRoute: () => AtendimentoRoute,
+} as any)
+const AtendimentoUsuariosRoute = AtendimentoUsuariosRouteImport.update({
+  id: '/usuarios',
+  path: '/usuarios',
   getParentRoute: () => AtendimentoRoute,
 } as any)
 const AtendimentoTreinamentoRoute = AtendimentoTreinamentoRouteImport.update({
@@ -108,6 +114,7 @@ export interface FileRoutesByFullPath {
   '/atendimento/propostas': typeof AtendimentoPropostasRoute
   '/atendimento/respostas': typeof AtendimentoRespostasRoute
   '/atendimento/treinamento': typeof AtendimentoTreinamentoRoute
+  '/atendimento/usuarios': typeof AtendimentoUsuariosRoute
   '/atendimento/whatsapp': typeof AtendimentoWhatsappRoute
   '/atendimento/': typeof AtendimentoIndexRoute
   '/api/public/process-scheduled': typeof ApiPublicProcessScheduledRoute
@@ -123,6 +130,7 @@ export interface FileRoutesByTo {
   '/atendimento/propostas': typeof AtendimentoPropostasRoute
   '/atendimento/respostas': typeof AtendimentoRespostasRoute
   '/atendimento/treinamento': typeof AtendimentoTreinamentoRoute
+  '/atendimento/usuarios': typeof AtendimentoUsuariosRoute
   '/atendimento/whatsapp': typeof AtendimentoWhatsappRoute
   '/atendimento': typeof AtendimentoIndexRoute
   '/api/public/process-scheduled': typeof ApiPublicProcessScheduledRoute
@@ -140,6 +148,7 @@ export interface FileRoutesById {
   '/atendimento/propostas': typeof AtendimentoPropostasRoute
   '/atendimento/respostas': typeof AtendimentoRespostasRoute
   '/atendimento/treinamento': typeof AtendimentoTreinamentoRoute
+  '/atendimento/usuarios': typeof AtendimentoUsuariosRoute
   '/atendimento/whatsapp': typeof AtendimentoWhatsappRoute
   '/atendimento/': typeof AtendimentoIndexRoute
   '/api/public/process-scheduled': typeof ApiPublicProcessScheduledRoute
@@ -158,6 +167,7 @@ export interface FileRouteTypes {
     | '/atendimento/propostas'
     | '/atendimento/respostas'
     | '/atendimento/treinamento'
+    | '/atendimento/usuarios'
     | '/atendimento/whatsapp'
     | '/atendimento/'
     | '/api/public/process-scheduled'
@@ -173,6 +183,7 @@ export interface FileRouteTypes {
     | '/atendimento/propostas'
     | '/atendimento/respostas'
     | '/atendimento/treinamento'
+    | '/atendimento/usuarios'
     | '/atendimento/whatsapp'
     | '/atendimento'
     | '/api/public/process-scheduled'
@@ -189,6 +200,7 @@ export interface FileRouteTypes {
     | '/atendimento/propostas'
     | '/atendimento/respostas'
     | '/atendimento/treinamento'
+    | '/atendimento/usuarios'
     | '/atendimento/whatsapp'
     | '/atendimento/'
     | '/api/public/process-scheduled'
@@ -244,6 +256,13 @@ declare module '@tanstack/react-router' {
       path: '/whatsapp'
       fullPath: '/atendimento/whatsapp'
       preLoaderRoute: typeof AtendimentoWhatsappRouteImport
+      parentRoute: typeof AtendimentoRoute
+    }
+    '/atendimento/usuarios': {
+      id: '/atendimento/usuarios'
+      path: '/usuarios'
+      fullPath: '/atendimento/usuarios'
+      preLoaderRoute: typeof AtendimentoUsuariosRouteImport
       parentRoute: typeof AtendimentoRoute
     }
     '/atendimento/treinamento': {
@@ -313,6 +332,7 @@ interface AtendimentoRouteChildren {
   AtendimentoPropostasRoute: typeof AtendimentoPropostasRoute
   AtendimentoRespostasRoute: typeof AtendimentoRespostasRoute
   AtendimentoTreinamentoRoute: typeof AtendimentoTreinamentoRoute
+  AtendimentoUsuariosRoute: typeof AtendimentoUsuariosRoute
   AtendimentoWhatsappRoute: typeof AtendimentoWhatsappRoute
   AtendimentoIndexRoute: typeof AtendimentoIndexRoute
 }
@@ -325,6 +345,7 @@ const AtendimentoRouteChildren: AtendimentoRouteChildren = {
   AtendimentoPropostasRoute: AtendimentoPropostasRoute,
   AtendimentoRespostasRoute: AtendimentoRespostasRoute,
   AtendimentoTreinamentoRoute: AtendimentoTreinamentoRoute,
+  AtendimentoUsuariosRoute: AtendimentoUsuariosRoute,
   AtendimentoWhatsappRoute: AtendimentoWhatsappRoute,
   AtendimentoIndexRoute: AtendimentoIndexRoute,
 }

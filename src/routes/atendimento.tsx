@@ -1,4 +1,4 @@
-import { createFileRoute, Outlet, useNavigate, Link, useLocation } from '@tanstack/react-router';
+import { createFileRoute, Outlet, useNavigate, Link, useLocation, redirect } from '@tanstack/react-router';
 import { useEffect } from 'react';
 import { useCrmAuth } from '@/hooks/useCrmAuth';
 import { useNotifications } from '@/hooks/useNotifications';
@@ -16,9 +16,34 @@ import {
   Loader2,
   FileText,
   GraduationCap,
+  ShieldCheck,
 } from 'lucide-react';
 
 export const Route = createFileRoute('/atendimento')({
+  beforeLoad: async ({ location }) => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) throw redirect({ to: '/login' });
+
+    const { data: roles } = await supabase
+      .from('user_roles')
+      .select('role')
+      .eq('user_id', session.user.id);
+    
+    const userRoles = (roles ?? []).map(r => r.role as string);
+    const path = location.pathname;
+
+    if (path.includes('/dashboard') || path.includes('/whatsapp')) {
+      if (!userRoles.includes('admin') && !userRoles.includes('supervisor')) {
+        throw redirect({ to: '/atendimento' });
+      }
+    }
+
+    if (path.includes('/config') || path.includes('/usuarios')) {
+      if (!userRoles.includes('admin')) {
+        throw redirect({ to: '/atendimento' });
+      }
+    }
+  },
   component: AtendimentoLayout,
   head: () => ({ meta: [{ title: 'HCB CRM — Atendimento' }] }),
 });
@@ -96,6 +121,7 @@ function Sidebar({ email, role }: { email: string; role?: string }) {
     { to: '/atendimento/whatsapp', icon: Smartphone, label: 'WhatsApp', ready: true, roles: ['admin', 'supervisor'] },
     { to: '/atendimento/dashboard', icon: BarChart3, label: 'Dashboard', ready: true, roles: ['admin', 'supervisor'] },
     { to: '/atendimento/treinamento', icon: GraduationCap, label: 'Treinamento', ready: true },
+    { to: '/atendimento/usuarios', icon: ShieldCheck, label: 'Usuários', ready: true, roles: ['admin'] },
     { to: '/atendimento/config', icon: Settings, label: 'Configurações', ready: true, roles: ['admin'] },
   ];
 
