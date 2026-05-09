@@ -15,6 +15,7 @@ import {
   LogOut,
   Loader2,
   FileText,
+  GraduationCap,
 } from 'lucide-react';
 
 export const Route = createFileRoute('/atendimento')({
