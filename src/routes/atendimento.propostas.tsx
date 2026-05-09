@@ -32,8 +32,28 @@ function PropostasPage() {
   const [isSaving, setIsSaving] = useState(false);
   const [proposals, setProposals] = useState<any[]>([]);
   const [loadingProposals, setLoadingProposals] = useState(true);
+  const [search, setSearch] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
 
   const subtotal = useMemo(() => items.reduce((acc, item) => acc + (item.quantity * item.price), 0), [items]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(search);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [search]);
+
+  const filteredProposals = useMemo(() => {
+    if (!debouncedSearch) return proposals;
+    const s = debouncedSearch.toLowerCase();
+    return proposals.filter(p => 
+      p.proposal_number.toLowerCase().includes(s) ||
+      (p.contact?.name || '').toLowerCase().includes(s) ||
+      (p.contact?.vehicle_brand || '').toLowerCase().includes(s) ||
+      (p.contact?.vehicle_model || '').toLowerCase().includes(s)
+    );
+  }, [proposals, debouncedSearch]);
 
   useEffect(() => {
     fetchProposals();
