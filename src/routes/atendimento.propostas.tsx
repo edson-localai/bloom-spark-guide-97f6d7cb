@@ -570,9 +570,16 @@ function PropostasPage() {
                     </div>
                     
                     <h3 className="font-bold text-white mb-1 truncate pr-16">{prop.contact?.name || 'Cliente'}</h3>
-                    <p className="text-[10px] text-zinc-500 uppercase font-bold tracking-wider mb-4">
-                      {new Date(prop.created_at).toLocaleDateString()}
-                    </p>
+                    <div className="flex items-center justify-between mb-4">
+                      <p className="text-[10px] text-zinc-500 uppercase font-bold tracking-wider">
+                        {new Date(prop.created_at).toLocaleDateString()}
+                      </p>
+                      {prop.agent?.name && (
+                        <div className="flex items-center gap-1 text-[9px] text-zinc-600 font-bold uppercase bg-white/5 px-2 py-0.5 rounded" title={`Vendedor: ${prop.agent.name}`}>
+                          <User className="h-2.5 w-2.5" /> {prop.agent.name}
+                        </div>
+                      )}
+                    </div>
 
                     <div className="flex justify-between items-center pt-4 border-t border-[#1F232E]">
                       <div className="flex flex-col">
