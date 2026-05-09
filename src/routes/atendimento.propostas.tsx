@@ -317,6 +317,17 @@ function PropostasPage() {
 
               <div className="flex items-center gap-2">
                 <select
+                  value={clientFilter}
+                  onChange={(e) => setClientFilter(e.target.value)}
+                  className="bg-[#151821] border border-[#1F232E] rounded-xl px-3 py-2 text-xs font-medium text-zinc-300 focus:outline-none focus:border-cyan-500/50 transition-colors max-w-[200px]"
+                >
+                  <option value="all">Todos os Clientes</option>
+                  {uniqueClients.map(client => (
+                    <option key={client.id} value={client.id}>{client.name}</option>
+                  ))}
+                </select>
+
+                <select
                   value={statusFilter}
                   onChange={(e) => setStatusFilter(e.target.value as any)}
                   className="bg-[#151821] border border-[#1F232E] rounded-xl px-3 py-2 text-xs font-medium text-zinc-300 focus:outline-none focus:border-cyan-500/50 transition-colors"
