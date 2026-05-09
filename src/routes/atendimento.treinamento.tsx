@@ -461,18 +461,50 @@ function TreinamentoPage() {
               {/* Progress Summary */}
               <div className="bg-[#0F1117] border border-[#1F232E] rounded-3xl p-6">
                 <h4 className="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-4">Seu Progresso na Trilha</h4>
-                <div className="space-y-4">
-                  <div className="flex justify-between text-xs mb-1">
-                    <span className="text-zinc-400">Total Concluído</span>
-                    <span className="text-cyan-500 font-bold">{progressPercent}%</span>
+                <div className="space-y-6">
+                  <div>
+                    <div className="flex justify-between text-xs mb-1">
+                      <span className="text-zinc-400">Total Concluído</span>
+                      <span className="text-cyan-500 font-bold">{progressPercent}%</span>
+                    </div>
+                    <div className="h-2 w-full bg-zinc-800 rounded-full overflow-hidden">
+                      <motion.div 
+                        initial={{ width: 0 }}
+                        animate={{ width: `${progressPercent}%` }}
+                        className="h-full bg-cyan-500 transition-all duration-500" 
+                      />
+                    </div>
                   </div>
-                  <div className="h-2 w-full bg-zinc-800 rounded-full overflow-hidden">
-                    <motion.div 
-                      initial={{ width: 0 }}
-                      animate={{ width: `${progressPercent}%` }}
-                      className="h-full bg-cyan-500 transition-all duration-500" 
-                    />
-                  </div>
+
+                  {Object.keys(quizResults).length > 0 && (
+                    <div className="space-y-3 pt-4 border-t border-[#1F232E]">
+                      <h5 className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider">Últimos Resultados</h5>
+                      {Object.entries(quizResults).slice(-3).map(([id, result]) => {
+                        const lesson = allLessons.find(l => l.id === id);
+                        if (!lesson) return null;
+                        const scorePercent = Math.round((result.score / result.total) * 100);
+                        return (
+                          <div key={id} className="flex items-center justify-between gap-3">
+                            <div className="flex-1 min-w-0">
+                              <p className="text-[10px] text-zinc-300 truncate font-semibold">{lesson.title}</p>
+                              <div className="flex items-center gap-1 mt-0.5">
+                                <div className="h-1 flex-1 bg-zinc-800 rounded-full overflow-hidden">
+                                  <div 
+                                    className={`h-full ${scorePercent >= 70 ? 'bg-emerald-500' : 'bg-amber-500'}`}
+                                    style={{ width: `${scorePercent}%` }}
+                                  />
+                                </div>
+                              </div>
+                            </div>
+                            <span className={`text-[10px] font-black ${scorePercent >= 70 ? 'text-emerald-500' : 'text-amber-500'}`}>
+                              {result.score}/{result.total}
+                            </span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+
                   <div className="flex items-center gap-2 text-[10px] text-zinc-600 font-bold uppercase tracking-wider">
                     <ChevronRight className="h-3 w-3" />
                     {progressPercent === 100 ? 'Parabéns! Você é um HCB Expert!' : 'Continue para ganhar seu selo'}
