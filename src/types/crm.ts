@@ -99,3 +99,31 @@ export interface QuickReply {
   use_count: number;
   created_at: string;
 }
+
+export interface ScheduledMessage {
+  id: string;
+  conversation_id: string;
+  agent_id: string | null;
+  content: string;
+  scheduled_for: string;
+  sent_at: string | null;
+  status: 'pending' | 'sent' | 'cancelled';
+  created_at: string;
+}
+
+export interface Proposal {
+  id: string;
+  conversation_id: string | null;
+  contact_id: string;
+  agent_id: string | null;
+  proposal_number: string;
+  items: any[];
+  subtotal: number;
+  discount: number;
+  total: number;
+  notes: string | null;
+  status: 'draft' | 'sent' | 'accepted' | 'rejected';
+  valid_until: string | null;
+  created_at: string;
+  updated_at: string;
+}
