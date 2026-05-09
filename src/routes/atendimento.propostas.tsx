@@ -108,18 +108,32 @@ function PropostasPage() {
       const dateB = new Date(b.created_at).getTime();
       return sortOrder === 'newest' ? dateB - dateA : dateA - dateB;
     });
-  }, [proposals, debouncedSearch, sortOrder, statusFilter, clientFilter]);
+  }, [proposals, debouncedSearch, sortOrder, statusFilter, clientFilter, agentFilter]);
 
   useEffect(() => {
     fetchProposals();
+    fetchAgents();
   }, []);
+
+  async function fetchAgents() {
+    try {
+      const { data, error } = await supabase
+        .from('agents')
+        .select('user_id, name')
+        .order('name');
+      if (error) throw error;
+      setAgents(data || []);
+    } catch (err) {
+      console.error('Erro ao buscar vendedores:', err);
+    }
+  }
 
   async function fetchProposals() {
     setLoadingProposals(true);
     try {
       const { data, error } = await supabase
         .from('proposals')
-        .select('*, contact:contact_id(*)')
+        .select('*, contact:contact_id(*), agent:agent_id(*)')
         .order('created_at', { ascending: false });
       if (error) throw error;
       setProposals(data || []);
