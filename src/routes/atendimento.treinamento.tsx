@@ -255,9 +255,26 @@ function TreinamentoPage() {
                         <CheckCircle2 className="h-4 w-4 shrink-0" />
                         Aprenda na prática como otimizar seu tempo.
                       </div>
-                      <button className="w-full bg-cyan-500 hover:bg-cyan-400 text-black font-bold py-3 rounded-xl transition-colors mt-4">
-                        Marcar como Concluído
+                      <button 
+                        onClick={() => toggleComplete(selectedLesson.id)}
+                        className={`w-full font-bold py-3 rounded-xl transition-all border ${
+                          completedLessons.includes(selectedLesson.id)
+                            ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20'
+                            : 'bg-cyan-500 hover:bg-cyan-400 text-black border-transparent'
+                        }`}
+                      >
+                        {completedLessons.includes(selectedLesson.id) ? 'Aula Concluída' : 'Marcar como Concluído'}
                       </button>
+                      
+                      {completedLessons.includes(selectedLesson.id) && allLessons.findIndex(l => l.id === selectedLesson.id) < allLessons.length - 1 && (
+                        <button 
+                          onClick={nextLesson}
+                          className="w-full bg-white/5 hover:bg-white/10 text-white font-semibold py-3 rounded-xl transition-all flex items-center justify-center gap-2"
+                        >
+                          Próxima Aula
+                          <ChevronRight className="h-4 w-4" />
+                        </button>
+                      )}
                     </div>
                   </div>
                 </motion.div>
@@ -275,18 +292,22 @@ function TreinamentoPage() {
 
               {/* Progress Summary */}
               <div className="bg-[#0F1117] border border-[#1F232E] rounded-3xl p-6">
-                <h4 className="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-4">Seu Progresso</h4>
+                <h4 className="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-4">Seu Progresso na Trilha</h4>
                 <div className="space-y-4">
                   <div className="flex justify-between text-xs mb-1">
                     <span className="text-zinc-400">Total Concluído</span>
-                    <span className="text-cyan-500 font-bold">0%</span>
+                    <span className="text-cyan-500 font-bold">{progressPercent}%</span>
                   </div>
                   <div className="h-2 w-full bg-zinc-800 rounded-full overflow-hidden">
-                    <div className="h-full bg-cyan-500 w-0 transition-all duration-1000" />
+                    <motion.div 
+                      initial={{ width: 0 }}
+                      animate={{ width: `${progressPercent}%` }}
+                      className="h-full bg-cyan-500 transition-all duration-500" 
+                    />
                   </div>
                   <div className="flex items-center gap-2 text-[10px] text-zinc-600 font-bold uppercase tracking-wider">
                     <ChevronRight className="h-3 w-3" />
-                    Complete as aulas para ganhar o selo HCB Expert
+                    {progressPercent === 100 ? 'Parabéns! Você é um HCB Expert!' : 'Continue para ganhar seu selo'}
                   </div>
                 </div>
               </div>
