@@ -145,11 +145,19 @@ export function ChatWindow({ conversation }: ChatWindowProps) {
             return (
               <div key={msg.id} className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}>
                 <div className={`max-w-[70%] space-y-1`}>
+                  {msg.is_internal && (
+                    <div className="flex items-center gap-1.5 px-2 py-0.5 rounded bg-amber-500/10 border border-amber-500/20 text-[9px] font-bold text-amber-500 uppercase tracking-widest w-fit ml-auto mb-1">
+                      <StickyNote className="h-2.5 w-2.5" />
+                      Nota Interna
+                    </div>
+                  )}
                   <div
                     className={`px-4 py-2 rounded-2xl text-sm ${
-                      isMe 
-                        ? 'bg-cyan-500 text-black font-medium rounded-tr-none shadow-[0_0_15px_rgba(0,204,238,0.2)]' 
-                        : 'bg-[#151821] text-zinc-200 border border-[#1F232E] rounded-tl-none'
+                      msg.is_internal
+                        ? 'bg-amber-500/10 text-amber-200 border border-amber-500/30 italic'
+                        : isMe 
+                          ? 'bg-cyan-500 text-black font-medium rounded-tr-none shadow-[0_0_15px_rgba(0,204,238,0.2)]' 
+                          : 'bg-[#151821] text-zinc-200 border border-[#1F232E] rounded-tl-none'
                     }`}
                   >
                     {msg.content}
