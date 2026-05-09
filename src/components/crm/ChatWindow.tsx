@@ -346,6 +346,24 @@ export function ChatWindow({ conversation }: ChatWindowProps) {
                   </button>
                 );
               })}
+              
+              {/* Botão de Fila de Espera */}
+              <button
+                onClick={handleTransferToQueue}
+                className={`flex flex-col items-center gap-2 p-3 rounded-xl bg-amber-500/5 border-2 border-dashed transition-all min-w-[100px] ${
+                  onlineAgents.length === 0 ? 'border-amber-500/40 hover:bg-amber-500/10' : 'border-zinc-700/40 opacity-60 cursor-not-allowed'
+                }`}
+                disabled={onlineAgents.length > 0}
+                title={onlineAgents.length > 0 ? 'Use somente quando não houver agentes online' : 'Adicionar à fila'}
+              >
+                <div className="h-10 w-10 rounded-full bg-amber-500/10 flex items-center justify-center text-amber-400 border border-amber-500/30">
+                  <Clock className="h-5 w-5" />
+                </div>
+                <span className="text-[10px] text-zinc-300 font-medium truncate w-full text-center">Fila de Espera</span>
+                <span className="text-[8px] uppercase font-bold tracking-tighter text-amber-400">
+                  Auto
+                </span>
+              </button>
             </div>
           </motion.div>
         )}
