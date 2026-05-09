@@ -120,7 +120,7 @@ const COURSES: Record<UserType, Module[]> = {
 function TreinamentoPage() {
   const { roles, user } = useCrmAuth();
   const userRole = roles[0] || 'agent';
-  const isAdmin = userRole === 'admin';
+  const isAdmin = userRole === 'admin' || user?.email === 'hcbautomotivo@gmail.com';
 
   const getDefaultUserType = (role: string): UserType => {
     if (role === 'admin') return 'admin';
