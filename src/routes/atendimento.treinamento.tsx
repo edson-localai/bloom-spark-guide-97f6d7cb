@@ -82,8 +82,22 @@ const COURSES: Record<UserType, Module[]> = {
 };
 
 function TreinamentoPage() {
-  const [activeUserType, setActiveUserType] = useState<UserType>('vendedor');
+  const { roles } = useCrmAuth();
+  const userRole = roles[0] || 'agent';
+  const isAdmin = userRole === 'admin';
+
+  const getDefaultUserType = (role: string): UserType => {
+    if (role === 'admin') return 'admin';
+    if (role === 'supervisor') return 'gerente';
+    return 'vendedor';
+  };
+
+  const [activeUserType, setActiveUserType] = useState<UserType>(getDefaultUserType(userRole));
   const [selectedLesson, setSelectedLesson] = useState<Lesson | null>(null);
+
+  useEffect(() => {
+    setActiveUserType(getDefaultUserType(userRole));
+  }, [userRole]);
 
   return (
     <div className="h-full flex flex-col bg-[#0A0A0F]">
@@ -95,30 +109,39 @@ function TreinamentoPage() {
           </div>
           <h1 className="text-2xl font-bold text-white">Centro de Treinamento HCB</h1>
         </div>
-        <p className="text-zinc-500 text-sm">Cursos especializados para cada função no sistema.</p>
+        <p className="text-zinc-500 text-sm">Cursos especializados para sua função de <span className="text-cyan-400 font-bold uppercase">{userRole}</span>.</p>
       </div>
 
-      {/* Role Selector */}
+      {/* Role Selector - Only visible/interactive for Admins */}
       <div className="px-8 mb-8">
         <div className="flex gap-4 p-1 bg-[#151821] rounded-2xl w-fit border border-[#1F232E]">
-          <RoleTab 
-            active={activeUserType === 'vendedor'} 
-            onClick={() => setActiveUserType('vendedor')}
-            icon={UserRound}
-            label="Vendedor"
-          />
-          <RoleTab 
-            active={activeUserType === 'gerente'} 
-            onClick={() => setActiveUserType('gerente')}
-            icon={Users}
-            label="Gerente"
-          />
-          <RoleTab 
-            active={activeUserType === 'admin'} 
-            onClick={() => setActiveUserType('admin')}
-            icon={ShieldCheck}
-            label="Administrador"
-          />
+          {(isAdmin || activeUserType === 'vendedor') && (
+            <RoleTab 
+              active={activeUserType === 'vendedor'} 
+              onClick={() => isAdmin && setActiveUserType('vendedor')}
+              icon={UserRound}
+              label="Vendedor"
+              disabled={!isAdmin}
+            />
+          )}
+          {(isAdmin || activeUserType === 'gerente') && (
+            <RoleTab 
+              active={activeUserType === 'gerente'} 
+              onClick={() => isAdmin && setActiveUserType('gerente')}
+              icon={Users}
+              label="Gerente"
+              disabled={!isAdmin}
+            />
+          )}
+          {(isAdmin || activeUserType === 'admin') && (
+            <RoleTab 
+              active={activeUserType === 'admin'} 
+              onClick={() => isAdmin && setActiveUserType('admin')}
+              icon={ShieldCheck}
+              label="Administrador"
+              disabled={!isAdmin}
+            />
+          )}
         </div>
       </div>
 
