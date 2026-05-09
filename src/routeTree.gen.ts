@@ -19,6 +19,7 @@ import { Route as AtendimentoRespostasRouteImport } from './routes/atendimento.r
 import { Route as AtendimentoKanbanRouteImport } from './routes/atendimento.kanban'
 import { Route as AtendimentoDashboardRouteImport } from './routes/atendimento.dashboard'
 import { Route as AtendimentoContatosRouteImport } from './routes/atendimento.contatos'
+import { Route as AtendimentoConfigRouteImport } from './routes/atendimento.config'
 
 const PropostaRoute = PropostaRouteImport.update({
   id: '/proposta',
@@ -70,12 +71,18 @@ const AtendimentoContatosRoute = AtendimentoContatosRouteImport.update({
   path: '/contatos',
   getParentRoute: () => AtendimentoRoute,
 } as any)
+const AtendimentoConfigRoute = AtendimentoConfigRouteImport.update({
+  id: '/config',
+  path: '/config',
+  getParentRoute: () => AtendimentoRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/atendimento': typeof AtendimentoRouteWithChildren
   '/login': typeof LoginRoute
   '/proposta': typeof PropostaRoute
+  '/atendimento/config': typeof AtendimentoConfigRoute
   '/atendimento/contatos': typeof AtendimentoContatosRoute
   '/atendimento/dashboard': typeof AtendimentoDashboardRoute
   '/atendimento/kanban': typeof AtendimentoKanbanRoute
@@ -87,6 +94,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/proposta': typeof PropostaRoute
+  '/atendimento/config': typeof AtendimentoConfigRoute
   '/atendimento/contatos': typeof AtendimentoContatosRoute
   '/atendimento/dashboard': typeof AtendimentoDashboardRoute
   '/atendimento/kanban': typeof AtendimentoKanbanRoute
@@ -100,6 +108,7 @@ export interface FileRoutesById {
   '/atendimento': typeof AtendimentoRouteWithChildren
   '/login': typeof LoginRoute
   '/proposta': typeof PropostaRoute
+  '/atendimento/config': typeof AtendimentoConfigRoute
   '/atendimento/contatos': typeof AtendimentoContatosRoute
   '/atendimento/dashboard': typeof AtendimentoDashboardRoute
   '/atendimento/kanban': typeof AtendimentoKanbanRoute
@@ -114,6 +123,7 @@ export interface FileRouteTypes {
     | '/atendimento'
     | '/login'
     | '/proposta'
+    | '/atendimento/config'
     | '/atendimento/contatos'
     | '/atendimento/dashboard'
     | '/atendimento/kanban'
@@ -125,6 +135,7 @@ export interface FileRouteTypes {
     | '/'
     | '/login'
     | '/proposta'
+    | '/atendimento/config'
     | '/atendimento/contatos'
     | '/atendimento/dashboard'
     | '/atendimento/kanban'
@@ -137,6 +148,7 @@ export interface FileRouteTypes {
     | '/atendimento'
     | '/login'
     | '/proposta'
+    | '/atendimento/config'
     | '/atendimento/contatos'
     | '/atendimento/dashboard'
     | '/atendimento/kanban'
@@ -224,10 +236,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AtendimentoContatosRouteImport
       parentRoute: typeof AtendimentoRoute
     }
+    '/atendimento/config': {
+      id: '/atendimento/config'
+      path: '/config'
+      fullPath: '/atendimento/config'
+      preLoaderRoute: typeof AtendimentoConfigRouteImport
+      parentRoute: typeof AtendimentoRoute
+    }
   }
 }
 
 interface AtendimentoRouteChildren {
+  AtendimentoConfigRoute: typeof AtendimentoConfigRoute
   AtendimentoContatosRoute: typeof AtendimentoContatosRoute
   AtendimentoDashboardRoute: typeof AtendimentoDashboardRoute
   AtendimentoKanbanRoute: typeof AtendimentoKanbanRoute
@@ -237,6 +257,7 @@ interface AtendimentoRouteChildren {
 }
 
 const AtendimentoRouteChildren: AtendimentoRouteChildren = {
+  AtendimentoConfigRoute: AtendimentoConfigRoute,
   AtendimentoContatosRoute: AtendimentoContatosRoute,
   AtendimentoDashboardRoute: AtendimentoDashboardRoute,
   AtendimentoKanbanRoute: AtendimentoKanbanRoute,
