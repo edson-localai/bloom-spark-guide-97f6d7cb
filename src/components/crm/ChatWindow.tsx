@@ -1,7 +1,8 @@
 import { useState, useRef, useEffect } from 'react';
-import { Send, User, Bot, Paperclip, MoreVertical, ShieldCheck, Clock, Sparkles, Loader2, Smile, Zap, Hammer, StickyNote, MessageCircle, CalendarClock, Image as ImageIcon, File as FileIcon, X } from 'lucide-react';
+import { Send, User, Bot, Paperclip, MoreVertical, ShieldCheck, Clock, Sparkles, Loader2, Smile, Zap, Hammer, StickyNote, MessageCircle, CalendarClock, Image as ImageIcon, File as FileIcon, X, UserPlus } from 'lucide-react';
 import { Message, Conversation, Contact } from '@/types/crm';
 import { useMessages } from '@/hooks/useMessages';
+import { useAgents } from '@/hooks/useAgents';
 import { getAiSuggestions, AiSuggestions } from '@/services/aiService';
 import { extractContactData } from '@/lib/ai.functions';
 import { supabase } from '@/integrations/supabase/client';
