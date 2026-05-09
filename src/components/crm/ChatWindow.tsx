@@ -172,8 +172,9 @@ export function ChatWindow({ conversation }: ChatWindowProps) {
               <button
                 type="button"
                 onClick={handleAiSuggest}
-                disabled={isAiLoading || !conversation}
-                className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 text-[10px] font-bold uppercase tracking-wider hover:bg-cyan-500/20 transition-all disabled:opacity-50"
+                disabled={isAiLoading || !conversation || messages.length === 0}
+                className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 text-[10px] font-bold uppercase tracking-wider hover:bg-cyan-500/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                title={messages.length === 0 ? "Aguardando primeira mensagem do cliente" : "Pedir opções para a Clara"}
               >
                 {isAiLoading ? <Loader2 className="h-3 w-3 animate-spin" /> : <Sparkles className="h-3 w-3" />}
                 Opções da Clara
