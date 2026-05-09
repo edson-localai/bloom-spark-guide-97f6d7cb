@@ -1,30 +1,27 @@
-Fase 4: Inteligência Artificial (Clara) e Dashboard de Métricas.
+Fase 5: Automação de Fluxo e Notificações (Pós-Venda e Lembretes).
 
 ## Mudanças Propostas
 
-### 1. Integração com IA (Clara)
-- Implementação do motor de IA utilizando o **Lovable AI Gateway**.
-- **Resumo Automático:** A Clara gerará resumos das conversas ao serem arquivadas/resolvidas.
-- **Detecção de Intenção:** Identificação automática se o cliente quer comprar, agendar ou tirar dúvidas.
-- **Sugestão de Respostas:** Sugestões baseadas no contexto da conversa para o atendente.
+### 1. Automações de Pós-Venda
+- **Trigger de Finalização:** Quando um card é movido para "Finalizado" no Kanban, a Clara agenda uma mensagem de agradecimento automática para 24h depois.
+- **NPS/Satisfação:** Envio automático de pesquisa de satisfação após 7 dias da conclusão do serviço.
 
-### 2. Dashboard de Performance (`/atendimento/dashboard`)
-- Gráficos de volume de mensagens por período.
-- Métricas chave: Tempo médio de resposta, conversas iniciadas vs. resolvidas.
-- Status dos agentes (Online/Ocupado).
+### 2. Sistema de Notificações
+- **Alertas de Ociosidade:** Notificar agentes se uma conversa na "Fila" estiver sem resposta por mais de 5 minutos.
+- **Notificações no Navegador:** Alertas visuais e sonoros para novas mensagens quando a aba não estiver em foco.
 
-### 3. Configurações Avançadas (`/atendimento/config`)
-- Editor de Prompt do Sistema (ajuste da personalidade da Clara).
-- Configurações de horários de funcionamento.
-- Gerenciamento de chaves de API e provedores de IA.
+### 3. Histórico de Auditoria
+- **Log de Eventos:** Registro de quem moveu cada card, quem alterou configurações e logs de acesso.
+- **Visualização de Timeline:** Exibir no painel lateral do contato uma linha do tempo de todas as interações e mudanças de status.
 
-### 4. Interatividade no Kanban
-- Implementação de Drag & Drop para mover cards entre colunas.
-- Atualização automática do status da conversa/lead ao mover o card.
+### 4. Melhorias na Clara (IA)
+- **Extração Automática de Dados:** Se o cliente mencionar marca/modelo no chat, a Clara atualiza automaticamente o cadastro do contato sem intervenção humana.
+- **Tradutor Integrado:** Opção de tradução em tempo real para atendimentos internacionais (se necessário).
 
 ### Detalhes Técnicos
-- Utilização de `ai_gateway` para chamadas de LLM.
-- Persistência de `ai_summary` e `ai_intent` na tabela `conversations`.
-- Criação de uma Edge Function `process-message` para lidar com a lógica da Clara em background.
+- Criação da tabela `audit_logs` para rastreabilidade.
+- Utilização de `window.Notification` API para alertas locais.
+- Implementação de um `useNotifications` hook.
+- Lógica de agendamento via Edge Functions (Cron jobs ou triggers retardados).
 
-Esta fase transformará o CRM em um sistema "Smart", reduzindo a carga de trabalho manual dos atendentes.
+Esta fase finaliza a jornada de excelência, garantindo que nenhum cliente seja esquecido e que o processo seja 100% rastreável.
