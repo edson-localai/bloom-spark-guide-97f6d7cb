@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { 
   PlayCircle, 
   BookOpen, 
@@ -14,16 +14,27 @@ import {
   BarChart3,
   Smartphone,
   Settings,
-  GraduationCap
+  GraduationCap,
+  Trophy,
+  AlertCircle
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useCrmAuth } from '@/hooks/useCrmAuth';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
 export const Route = createFileRoute('/atendimento/treinamento')({
   component: TreinamentoPage,
 });
 
 type UserType = 'vendedor' | 'gerente' | 'admin';
+
+interface Question {
+  id: string;
+  question: string;
+  options: string[];
+  correctAnswer: number;
+}
 
 interface Lesson {
   id: string;
@@ -32,6 +43,7 @@ interface Lesson {
   duration: string;
   type: 'video' | 'text' | 'practical';
   icon: any;
+  quiz?: Question[];
 }
 
 interface Module {

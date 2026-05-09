@@ -473,6 +473,33 @@ export type Database = {
           },
         ]
       }
+      quiz_results: {
+        Row: {
+          completed_at: string
+          id: string
+          lesson_id: string
+          score: number
+          total_questions: number
+          user_id: string
+        }
+        Insert: {
+          completed_at?: string
+          id?: string
+          lesson_id: string
+          score: number
+          total_questions: number
+          user_id: string
+        }
+        Update: {
+          completed_at?: string
+          id?: string
+          lesson_id?: string
+          score?: number
+          total_questions?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
       scheduled_messages: {
         Row: {
           agent_id: string | null
