@@ -1,0 +1,237 @@
+import { createFileRoute } from '@tanstack/react-router';
+import { useState, useEffect } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import { useCrmAuth } from '@/hooks/useCrmAuth';
+import { 
+  Users, 
+  ShieldCheck, 
+  ShieldAlert, 
+  Loader2, 
+  Search, 
+  MoreVertical,
+  UserPlus,
+  Shield,
+  CheckCircle2,
+  XCircle,
+  Mail,
+  Smartphone
+} from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { toast } from 'sonner';
+
+export const Route = createFileRoute('/atendimento/usuarios')({
+  component: UsuariosPage,
+});
+
+interface UserProfile {
+  id: string;
+  email: string;
+  name: string;
+  role: 'admin' | 'supervisor' | 'agent';
+  user_id: string | null;
+  status: string;
+}
+
+function UsuariosPage() {
+  const { roles, loading: authLoading } = useCrmAuth();
+  const isAdmin = roles.includes('admin');
+  
+  const [loading, setLoading] = useState(true);
+  const [users, setUsers] = useState<UserProfile[]>([]);
+  const [search, setSearch] = useState('');
+
+  useEffect(() => {
+    if (isAdmin) {
+      fetchUsers();
+    }
+  }, [isAdmin]);
+
+  async function fetchUsers() {
+    setLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from('agents')
+        .select('*')
+        .order('name');
+      
+      if (error) throw error;
+      setUsers(data as UserProfile[]);
+    } catch (err) {
+      console.error('Erro ao buscar usuários:', err);
+      toast.error('Não foi possível carregar a lista de usuários.');
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  const updateUserRole = async (userId: string, newRole: 'admin' | 'supervisor' | 'agent') => {
+    try {
+      // 1. Update user_roles table
+      const { error: roleErr } = await supabase
+        .from('user_roles')
+        .update({ role: newRole })
+        .eq('user_id', userId);
+      
+      if (roleErr) throw roleErr;
+
+      // 2. Update agents table
+      const { error: agentErr } = await supabase
+        .from('agents')
+        .update({ role: newRole })
+        .eq('user_id', userId);
+      
+      if (agentErr) throw agentErr;
+
+      setUsers(prev => prev.map(u => u.user_id === userId ? { ...u, role: newRole } : u));
+      toast.success('Permissão atualizada com sucesso!');
+    } catch (err) {
+      console.error('Erro ao atualizar papel:', err);
+      toast.error('Falha ao atualizar permissões.');
+    }
+  };
+
+  const filteredUsers = users.filter(u => 
+    u.name.toLowerCase().includes(search.toLowerCase()) || 
+    u.email.toLowerCase().includes(search.toLowerCase())
+  );
+
+  if (authLoading || (isAdmin && loading)) {
+    return (
+      <div className="h-full flex items-center justify-center bg-[#0A0A0F]">
+        <Loader2 className="h-8 w-8 animate-spin text-cyan-400" />
+      </div>
+    );
+  }
+
+  if (!isAdmin) {
+    return (
+      <div className="h-full flex items-center justify-center p-8 bg-[#0A0A0F]">
+        <div className="max-w-md text-center bg-[#0F1117] border border-[#1F232E] rounded-3xl p-12">
+          <div className="h-16 w-16 bg-red-500/10 rounded-2xl flex items-center justify-center text-red-500 mx-auto mb-6">
+            <ShieldAlert className="h-8 w-8" />
+          </div>
+          <h2 className="text-xl font-bold text-white mb-2">Acesso Negado</h2>
+          <p className="text-zinc-500 text-sm leading-relaxed">
+            Você não tem permissão para gerenciar usuários. Este módulo é restrito apenas a administradores.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="h-full flex flex-col bg-[#0A0A0F]">
+      <div className="p-8 pb-4 flex justify-between items-center">
+        <div>
+          <h1 className="text-2xl font-bold text-white flex items-center gap-3">
+            <ShieldCheck className="h-6 w-6 text-cyan-500" />
+            Controle de Acessos
+          </h1>
+          <p className="text-zinc-500 text-sm">Gerencie permissões e funções da equipe.</p>
+        </div>
+        <button className="flex items-center gap-2 bg-cyan-500 hover:bg-cyan-400 text-black px-4 py-2.5 rounded-xl font-bold text-sm transition-all">
+          <UserPlus className="h-4 w-4" />
+          Novo Usuário
+        </button>
+      </div>
+
+      <div className="px-8 py-4">
+        <div className="relative max-w-md">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
+          <input
+            type="text"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Buscar por nome ou email..."
+            className="w-full bg-[#151821] border border-[#1F232E] rounded-xl py-2.5 pl-10 pr-4 text-sm text-zinc-300 focus:outline-none focus:border-cyan-500/50 transition-colors"
+          />
+        </div>
+      </div>
+
+      <div className="flex-1 overflow-auto p-8 pt-4 custom-scrollbar">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filteredUsers.map((user) => (
+            <motion.div
+              layout
+              key={user.id}
+              className="bg-[#0F1117] border border-[#1F232E] rounded-3xl p-6 hover:border-cyan-500/20 transition-all group"
+            >
+              <div className="flex justify-between items-start mb-6">
+                <div className="h-12 w-12 rounded-2xl bg-zinc-800 flex items-center justify-center text-xl font-bold text-cyan-500 border border-[#1F232E]">
+                  {user.name.charAt(0)}
+                </div>
+                <div className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest ${
+                  user.role === 'admin' ? 'bg-cyan-500/10 text-cyan-500' :
+                  user.role === 'supervisor' ? 'bg-purple-500/10 text-purple-500' :
+                  'bg-zinc-500/10 text-zinc-500'
+                }`}>
+                  {user.role}
+                </div>
+              </div>
+
+              <div className="space-y-4 mb-6">
+                <div>
+                  <h3 className="font-bold text-white truncate">{user.name}</h3>
+                  <div className="flex items-center gap-2 text-zinc-500 text-xs mt-1">
+                    <Mail className="h-3 w-3" />
+                    {user.email}
+                  </div>
+                </div>
+                
+                <div className="flex items-center gap-4 py-3 border-y border-[#1F232E]">
+                  <div className="flex-1">
+                    <p className="text-[10px] text-zinc-600 font-bold uppercase tracking-widest mb-1">Status</p>
+                    <div className="flex items-center gap-1.5">
+                      <div className={`h-1.5 w-1.5 rounded-full ${user.status === 'online' ? 'bg-emerald-500' : 'bg-zinc-600'}`} />
+                      <span className="text-xs text-zinc-400 capitalize">{user.status}</span>
+                    </div>
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-[10px] text-zinc-600 font-bold uppercase tracking-widest mb-1">ID</p>
+                    <p className="text-xs text-zinc-400 font-mono">#{user.id.split('-')[0]}</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest">Alterar Nível de Acesso</p>
+                <div className="grid grid-cols-3 gap-2">
+                  <RoleButton 
+                    active={user.role === 'agent'} 
+                    onClick={() => user.user_id && updateUserRole(user.user_id, 'agent')}
+                    label="Agente"
+                  />
+                  <RoleButton 
+                    active={user.role === 'supervisor'} 
+                    onClick={() => user.user_id && updateUserRole(user.user_id, 'supervisor')}
+                    label="Sup"
+                  />
+                  <RoleButton 
+                    active={user.role === 'admin'} 
+                    onClick={() => user.user_id && updateUserRole(user.user_id, 'admin')}
+                    label="Admin"
+                  />
+                </div>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function RoleButton({ active, onClick, label }: { active: boolean; onClick: () => void; label: string }) {
+  return (
+    <button
+      onClick={onClick}
+      className={`py-2 rounded-xl text-[10px] font-bold uppercase transition-all border ${
+        active 
+          ? 'bg-cyan-500 border-cyan-500 text-black shadow-lg shadow-cyan-500/20' 
+          : 'bg-[#151821] border-[#1F232E] text-zinc-500 hover:text-zinc-300 hover:border-zinc-700'
+      }`}
+    >
+      {label}
+    </button>
+  );
+}
