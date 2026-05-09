@@ -18,7 +18,7 @@ export function ChatWindow({ conversation }: ChatWindowProps) {
   const [input, setInput] = useState('');
   const [isInternal, setIsInternal] = useState(false);
   const [isAiLoading, setIsAiLoading] = useState(false);
-  const [isUploading, setIsAiUploading] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
   const [suggestions, setSuggestions] = useState<AiSuggestions | null>(null);
   const [showSchedule, setShowSchedule] = useState(false);
   const [scheduledDate, setScheduledDate] = useState('');
@@ -33,13 +33,14 @@ export function ChatWindow({ conversation }: ChatWindowProps) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
     setSuggestions(null);
+    setShowSchedule(false);
   }, [messages, conversation?.id]);
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file || !conversation) return;
 
-    setIsAiUploading(true);
+    setIsUploading(true);
     try {
       const fileExt = file.name.split('.').pop();
       const fileName = `${Math.random()}.${fileExt}`;
@@ -57,18 +58,23 @@ export function ChatWindow({ conversation }: ChatWindowProps) {
 
       await sendMessage(file.name, file.type.startsWith('image/') ? 'image' : 'document', false);
       
-      // Update the last message to include media info
-      await supabase.from('messages').update({
-        media_url: publicUrl,
-        media_mime: file.type
-      } as any).eq('content', file.name).eq('conversation_id', conversation.id).order('created_at', { ascending: false }).limit(1);
+      // Update the last message to include media info (heurística simples para MVP)
+      await supabase.from('messages')
+        .update({
+          media_url: publicUrl,
+          media_mime: file.type
+        } as any)
+        .eq('content', file.name)
+        .eq('conversation_id', conversation.id)
+        .order('created_at', { ascending: false })
+        .limit(1);
 
       toast.success('Arquivo enviado!');
     } catch (error) {
       console.error(error);
       toast.error('Erro ao enviar arquivo.');
     } finally {
-      setIsAiUploading(false);
+      setIsUploading(false);
     }
   };
 
@@ -120,7 +126,6 @@ export function ChatWindow({ conversation }: ChatWindowProps) {
     if (internal) setIsInternal(false);
     await sendMessage(content, 'text', internal);
     
-    // Auto-extração a cada 3 mensagens (simples heuristic)
     if (conversation && messages.length % 3 === 0) {
       extractContactData({ 
         data: {
@@ -191,7 +196,6 @@ export function ChatWindow({ conversation }: ChatWindowProps) {
                 
                 if (!error) {
                   toast.success(newValue ? 'Auto-resposta ativada para este chat' : 'Auto-resposta desativada para este chat');
-                  // Forçar atualização local se necessário, mas o realtime deve cuidar disso se configurado
                 }
               }}
               className={`h-5 w-9 rounded-full relative transition-colors ${conversation.auto_reply_enabled ? 'bg-cyan-500' : 'bg-zinc-700'}`}
@@ -247,6 +251,17 @@ export function ChatWindow({ conversation }: ChatWindowProps) {
                           : 'bg-[#151821] text-zinc-200 border border-[#1F232E] rounded-tl-none'
                     }`}
                   >
+                    {msg.content_type === 'image' && msg.media_url && (
+                      <div className="mb-2 rounded-lg overflow-hidden border border-white/10 cursor-pointer">
+                        <img src={msg.media_url} alt="Mídia" className="max-w-full h-auto hover:scale-[1.02] transition-transform" />
+                      </div>
+                    )}
+                    {msg.content_type === 'document' && msg.media_url && (
+                      <a href={msg.media_url} target="_blank" rel="noreferrer" className="flex items-center gap-2 mb-2 p-2 rounded-lg bg-black/20 hover:bg-black/40 transition-colors">
+                        <FileIcon className="h-4 w-4 text-cyan-400" />
+                        <span className="text-xs truncate">{msg.content}</span>
+                      </a>
+                    )}
                     {msg.content}
                   </div>
                   <div className={`flex items-center gap-1 ${isMe ? 'justify-end' : 'justify-start'}`}>
@@ -277,7 +292,16 @@ export function ChatWindow({ conversation }: ChatWindowProps) {
                 {isAiLoading ? <Loader2 className="h-3 w-3 animate-spin" /> : <Sparkles className="h-3 w-3" />}
                 Opções da Clara
               </button>
-              <span className="text-[10px] text-zinc-600 font-medium">Extraia o melhor tom para este cliente</span>
+              <button
+                type="button"
+                onClick={() => setShowSchedule(!showSchedule)}
+                className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border text-[10px] font-bold uppercase tracking-wider transition-all ${
+                  showSchedule ? 'bg-amber-500/20 border-amber-500/40 text-amber-400' : 'bg-zinc-500/10 border-zinc-500/20 text-zinc-500 hover:bg-zinc-500/20'
+                }`}
+              >
+                <CalendarClock className="h-3 w-3" />
+                Agendar
+              </button>
             </div>
 
             <AnimatePresence>
@@ -308,6 +332,42 @@ export function ChatWindow({ conversation }: ChatWindowProps) {
                   />
                 </motion.div>
               )}
+
+              {showSchedule && (
+                <motion.div 
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  className="bg-[#151821] border border-amber-500/20 rounded-xl p-4 flex flex-col md:flex-row gap-4 items-end"
+                >
+                  <div className="flex-1 space-y-2">
+                    <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Data</label>
+                    <input 
+                      type="date" 
+                      value={scheduledDate}
+                      onChange={(e) => setScheduledDate(e.target.value)}
+                      className="w-full bg-black/20 border border-[#1F232E] rounded-lg p-2 text-sm text-white" 
+                    />
+                  </div>
+                  <div className="flex-1 space-y-2">
+                    <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Hora</label>
+                    <input 
+                      type="time" 
+                      value={scheduledTime}
+                      onChange={(e) => setScheduledTime(e.target.value)}
+                      className="w-full bg-black/20 border border-[#1F232E] rounded-lg p-2 text-sm text-white" 
+                    />
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleScheduleMessage}
+                    disabled={!scheduledDate || !scheduledTime || !input.trim()}
+                    className="bg-amber-500 text-black font-bold text-xs px-4 py-2.5 rounded-lg hover:bg-amber-400 disabled:opacity-50 transition-colors"
+                  >
+                    Confirmar Agendamento
+                  </button>
+                </motion.div>
+              )}
             </AnimatePresence>
           </div>
 
@@ -330,9 +390,23 @@ export function ChatWindow({ conversation }: ChatWindowProps) {
                 <StickyNote className="h-4 w-4" />
               </button>
             </div>
-            <button type="button" className="p-2 text-zinc-500 hover:text-cyan-400 transition-colors">
-              <Paperclip className="h-5 w-5" />
+            
+            <input 
+              type="file" 
+              className="hidden" 
+              ref={fileInputRef} 
+              onChange={handleFileUpload} 
+              accept="image/*,application/pdf"
+            />
+            <button 
+              type="button" 
+              onClick={() => fileInputRef.current?.click()}
+              disabled={isUploading}
+              className="p-2 text-zinc-500 hover:text-cyan-400 transition-colors disabled:opacity-50"
+            >
+              {isUploading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Paperclip className="h-5 w-5" />}
             </button>
+
             <div className="flex-1 relative">
               <input
                 type="text"
