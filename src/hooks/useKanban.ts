@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Conversation, Contact } from '@/types/crm';
+import { logAudit } from '@/services/auditService';
 
 export function useKanban() {
   const [items, setItems] = useState<(Conversation & { contact: Contact | null })[]>([]);
