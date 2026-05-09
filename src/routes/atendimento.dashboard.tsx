@@ -34,8 +34,8 @@ function DashboardPage() {
 
       if (data && data.length > 0) {
         const totalMs = data.reduce((acc, c) => {
-          const created = new Date(c.created_at).getTime();
-          const assigned = new Date(c.updated_at).getTime();
+          const created = new Date(c.created_at!).getTime();
+          const assigned = new Date(c.updated_at!).getTime();
           return acc + Math.max(0, assigned - created);
         }, 0);
         
