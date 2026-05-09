@@ -44,38 +44,42 @@ const COURSES: Record<UserType, Module[]> = {
   vendedor: [
     {
       id: 'v-1',
-      title: 'Primeiros Passos',
+      title: 'Trilha do Atendente HCB',
       lessons: [
-        { id: 'l1', title: 'Visão Geral do Inbox', description: 'Aprenda a navegar pelas conversas e responder clientes.', duration: '5 min', type: 'video', icon: MessageSquare },
-        { id: 'l2', title: 'Atendimento via WhatsApp', description: 'Como usar a integração oficial para falar com clientes.', duration: '8 min', type: 'video', icon: Smartphone },
+        { id: 'v-l1', title: '1. Domine o Inbox', description: 'Aprenda a organizar suas conversas e nunca deixar um cliente esperando.', duration: '5 min', type: 'video', icon: MessageSquare },
+        { id: 'v-l2', title: '2. WhatsApp Profissional', description: 'Como usar as ferramentas de automação e respostas rápidas.', duration: '8 min', type: 'video', icon: Smartphone },
+        { id: 'v-l3', title: '3. Gestão de Contatos', description: 'Cadastrando veículos e informações vitais do cliente.', duration: '7 min', type: 'video', icon: Users },
       ]
     },
     {
       id: 'v-2',
-      title: 'Vendas & Orçamentos',
+      title: 'Trilha do Consultor de Vendas',
       lessons: [
-        { id: 'l3', title: 'Gerando Propostas Profissionais', description: 'Passo a passo para criar e enviar PDFs de orçamentos.', duration: '10 min', type: 'video', icon: FileText },
-        { id: 'l4', title: 'Gestão de Kanban', description: 'Como organizar seu funil de vendas e não perder leads.', duration: '6 min', type: 'video', icon: Kanban },
+        { id: 'v-l4', title: '1. O Poder do Kanban', description: 'Como mover leads pelo funil até o fechamento.', duration: '10 min', type: 'video', icon: Kanban },
+        { id: 'v-l5', title: '2. Propostas Imbatíveis', description: 'Criando orçamentos profissionais em PDF que vendem por você.', duration: '12 min', type: 'video', icon: FileText },
+        { id: 'v-l6', title: '3. Técnicas de Fechamento', description: 'Como usar o histórico do CRM para converter mais.', duration: '8 min', type: 'video', icon: CheckCircle2 },
       ]
     }
   ],
   gerente: [
     {
       id: 'g-1',
-      title: 'Gestão de Equipe',
+      title: 'Trilha de Liderança e Performance',
       lessons: [
-        { id: 'g-l1', title: 'Monitoramento em Tempo Real', description: 'Como supervisionar as conversas e dar suporte aos vendedores.', duration: '7 min', type: 'video', icon: Users },
-        { id: 'g-l2', title: 'Análise de Dashboard', description: 'Interpretando métricas de conversão e tempo de resposta.', duration: '12 min', type: 'video', icon: BarChart3 },
+        { id: 'g-l1', title: '1. Supervisão de Atendimento', description: 'Como monitorar a qualidade e o tom de voz da equipe.', duration: '10 min', type: 'video', icon: Users },
+        { id: 'g-l2', title: '2. Análise de Funil', description: 'Identificando gargalos no Kanban da equipe.', duration: '15 min', type: 'video', icon: BarChart3 },
+        { id: 'g-l3', title: '3. Relatórios Estratégicos', description: 'Extraindo dados para tomada de decisão.', duration: '12 min', type: 'video', icon: FileText },
       ]
     }
   ],
   admin: [
     {
       id: 'a-1',
-      title: 'Configurações Avançadas',
+      title: 'Trilha de Gestor de Sistema',
       lessons: [
-        { id: 'a-l1', title: 'Gestão de Usuários', description: 'Como criar contas e definir permissões de acesso.', duration: '5 min', type: 'video', icon: ShieldCheck },
-        { id: 'a-l2', title: 'Configuração da Instância', description: 'Conectando números e ajustando webhooks.', duration: '15 min', type: 'video', icon: Settings },
+        { id: 'a-l1', title: '1. Segurança e Acesso', description: 'Gerenciando usuários, senhas e níveis de permissão.', duration: '7 min', type: 'video', icon: ShieldCheck },
+        { id: 'a-l2', title: '2. Conectividade WhatsApp', description: 'Manutenção de instâncias e estabilidade do sistema.', duration: '15 min', type: 'video', icon: Settings },
+        { id: 'a-l3', title: '3. Automações Globais', description: 'Configurando respostas automáticas e fluxos do CRM.', duration: '20 min', type: 'video', icon: Smartphone },
       ]
     }
   ]
@@ -94,10 +98,32 @@ function TreinamentoPage() {
 
   const [activeUserType, setActiveUserType] = useState<UserType>(getDefaultUserType(userRole));
   const [selectedLesson, setSelectedLesson] = useState<Lesson | null>(null);
+  const [completedLessons, setCompletedLessons] = useState<string[]>([]);
+
+  const currentCourse = COURSES[activeUserType];
+  const allLessons = currentCourse.flatMap(m => m.lessons);
+  const progressPercent = allLessons.length > 0 
+    ? Math.round((completedLessons.filter(id => allLessons.some(l => l.id === id)).length / allLessons.length) * 100)
+    : 0;
 
   useEffect(() => {
     setActiveUserType(getDefaultUserType(userRole));
+    // Reset selected lesson when role changes unless it's an admin browsing
   }, [userRole]);
+
+  const toggleComplete = (lessonId: string) => {
+    setCompletedLessons(prev => 
+      prev.includes(lessonId) ? prev.filter(id => id !== lessonId) : [...prev, lessonId]
+    );
+  };
+
+  const nextLesson = () => {
+    if (!selectedLesson) return;
+    const currentIndex = allLessons.findIndex(l => l.id === selectedLesson.id);
+    if (currentIndex < allLessons.length - 1) {
+      setSelectedLesson(allLessons[currentIndex + 1]);
+    }
+  };
 
   return (
     <div className="h-full flex flex-col bg-[#0A0A0F]">
@@ -158,34 +184,45 @@ function TreinamentoPage() {
                   {module.title}
                 </h2>
                 <div className="grid gap-3">
-                  {module.lessons.map((lesson) => (
-                    <button
-                      key={lesson.id}
-                      onClick={() => setSelectedLesson(lesson)}
-                      className={`flex items-center gap-4 p-4 rounded-2xl border transition-all text-left group ${
-                        selectedLesson?.id === lesson.id 
-                          ? 'bg-cyan-500/5 border-cyan-500/30' 
-                          : 'bg-[#0F1117] border-[#1F232E] hover:border-zinc-700'
-                      }`}
-                    >
-                      <div className={`h-12 w-12 rounded-xl flex items-center justify-center transition-colors ${
-                        selectedLesson?.id === lesson.id ? 'bg-cyan-500 text-black' : 'bg-zinc-800 text-zinc-400 group-hover:bg-zinc-700'
-                      }`}>
-                        <lesson.icon className="h-6 w-6" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <h3 className="font-semibold text-white mb-0.5">{lesson.title}</h3>
-                        <p className="text-xs text-zinc-500 truncate">{lesson.description}</p>
-                      </div>
-                      <div className="text-right shrink-0">
-                        <span className="text-[10px] font-bold text-zinc-600 block mb-1 uppercase tracking-wider">{lesson.duration}</span>
-                        <div className="flex items-center gap-1 text-cyan-500 text-xs font-semibold">
-                          <PlayCircle className="h-3 w-3" />
-                          Assistir
+                  {module.lessons.map((lesson) => {
+                    const isCompleted = completedLessons.includes(lesson.id);
+                    return (
+                      <button
+                        key={lesson.id}
+                        onClick={() => setSelectedLesson(lesson)}
+                        className={`flex items-center gap-4 p-4 rounded-2xl border transition-all text-left group ${
+                          selectedLesson?.id === lesson.id 
+                            ? 'bg-cyan-500/5 border-cyan-500/30' 
+                            : 'bg-[#0F1117] border-[#1F232E] hover:border-zinc-700'
+                        }`}
+                      >
+                        <div className={`h-12 w-12 rounded-xl flex items-center justify-center transition-colors relative ${
+                          selectedLesson?.id === lesson.id ? 'bg-cyan-500 text-black' : 'bg-zinc-800 text-zinc-400 group-hover:bg-zinc-700'
+                        }`}>
+                          <lesson.icon className="h-6 w-6" />
+                          {isCompleted && (
+                            <div className="absolute -top-1 -right-1 bg-emerald-500 text-white rounded-full p-0.5 border-2 border-[#0A0A0F]">
+                              <CheckCircle2 className="h-2.5 w-2.5" />
+                            </div>
+                          )}
                         </div>
-                      </div>
-                    </button>
-                  ))}
+                        <div className="flex-1 min-w-0">
+                          <h3 className={`font-semibold mb-0.5 ${isCompleted ? 'text-zinc-400' : 'text-white'}`}>
+                            {lesson.title}
+                            {isCompleted && <span className="ml-2 text-[9px] text-emerald-500 bg-emerald-500/10 px-1.5 py-0.5 rounded">Concluído</span>}
+                          </h3>
+                          <p className="text-xs text-zinc-500 truncate">{lesson.description}</p>
+                        </div>
+                        <div className="text-right shrink-0">
+                          <span className="text-[10px] font-bold text-zinc-600 block mb-1 uppercase tracking-wider">{lesson.duration}</span>
+                          <div className="flex items-center gap-1 text-cyan-500 text-xs font-semibold">
+                            <PlayCircle className="h-3 w-3" />
+                            {selectedLesson?.id === lesson.id ? 'Assistindo' : 'Assistir'}
+                          </div>
+                        </div>
+                      </button>
+                    );
+                  })}
                 </div>
               </section>
             ))}
@@ -218,9 +255,26 @@ function TreinamentoPage() {
                         <CheckCircle2 className="h-4 w-4 shrink-0" />
                         Aprenda na prática como otimizar seu tempo.
                       </div>
-                      <button className="w-full bg-cyan-500 hover:bg-cyan-400 text-black font-bold py-3 rounded-xl transition-colors mt-4">
-                        Marcar como Concluído
+                      <button 
+                        onClick={() => toggleComplete(selectedLesson.id)}
+                        className={`w-full font-bold py-3 rounded-xl transition-all border ${
+                          completedLessons.includes(selectedLesson.id)
+                            ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20'
+                            : 'bg-cyan-500 hover:bg-cyan-400 text-black border-transparent'
+                        }`}
+                      >
+                        {completedLessons.includes(selectedLesson.id) ? 'Aula Concluída' : 'Marcar como Concluído'}
                       </button>
+                      
+                      {completedLessons.includes(selectedLesson.id) && allLessons.findIndex(l => l.id === selectedLesson.id) < allLessons.length - 1 && (
+                        <button 
+                          onClick={nextLesson}
+                          className="w-full bg-white/5 hover:bg-white/10 text-white font-semibold py-3 rounded-xl transition-all flex items-center justify-center gap-2"
+                        >
+                          Próxima Aula
+                          <ChevronRight className="h-4 w-4" />
+                        </button>
+                      )}
                     </div>
                   </div>
                 </motion.div>
@@ -238,18 +292,22 @@ function TreinamentoPage() {
 
               {/* Progress Summary */}
               <div className="bg-[#0F1117] border border-[#1F232E] rounded-3xl p-6">
-                <h4 className="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-4">Seu Progresso</h4>
+                <h4 className="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-4">Seu Progresso na Trilha</h4>
                 <div className="space-y-4">
                   <div className="flex justify-between text-xs mb-1">
                     <span className="text-zinc-400">Total Concluído</span>
-                    <span className="text-cyan-500 font-bold">0%</span>
+                    <span className="text-cyan-500 font-bold">{progressPercent}%</span>
                   </div>
                   <div className="h-2 w-full bg-zinc-800 rounded-full overflow-hidden">
-                    <div className="h-full bg-cyan-500 w-0 transition-all duration-1000" />
+                    <motion.div 
+                      initial={{ width: 0 }}
+                      animate={{ width: `${progressPercent}%` }}
+                      className="h-full bg-cyan-500 transition-all duration-500" 
+                    />
                   </div>
                   <div className="flex items-center gap-2 text-[10px] text-zinc-600 font-bold uppercase tracking-wider">
                     <ChevronRight className="h-3 w-3" />
-                    Complete as aulas para ganhar o selo HCB Expert
+                    {progressPercent === 100 ? 'Parabéns! Você é um HCB Expert!' : 'Continue para ganhar seu selo'}
                   </div>
                 </div>
               </div>
