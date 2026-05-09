@@ -2,6 +2,86 @@ import { createServerFn } from "@tanstack/react-start";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import { z } from "zod";
 
+export const handleAutoReply = createServerFn({ method: "POST" })
+  .inputValidator((data) => z.object({ 
+    conversationId: z.string(),
+    content: z.string()
+  }).parse(data))
+  .handler(async ({ data: { conversationId, content } }) => {
+    try {
+      // 1. Verifica se auto-reply está ativo
+      const { data: settings } = await supabaseAdmin
+        .from('app_settings')
+        .select('value')
+        .eq('key', 'auto_reply_active')
+        .single();
+
+      if (settings?.value !== 'true') return { handled: false };
+
+      // 2. Verifica status da conversa
+      const { data: conv } = await supabaseAdmin
+        .from('conversations')
+        .select('status, bot_active, contact_id')
+        .eq('id', conversationId)
+        .single();
+
+      if (!conv || conv.status !== 'bot' || !conv.bot_active) return { handled: false };
+
+      // 3. Busca histórico e prompt
+      const { data: promptSetting } = await supabaseAdmin
+        .from('app_settings')
+        .select('value')
+        .eq('key', 'system_prompt')
+        .single();
+
+      const { data: messages } = await supabaseAdmin
+        .from('messages')
+        .select('content, sender_type')
+        .eq('conversation_id', conversationId)
+        .order('created_at', { ascending: false })
+        .limit(10);
+
+      const history = (messages || [])
+        .reverse()
+        .map(m => `${m.sender_type}: ${m.content}`)
+        .join('\n');
+
+      // 4. Chama IA
+      const aiResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${process.env.LOVABLE_API_KEY}`,
+        },
+        body: JSON.stringify({
+          model: 'google/gemini-2.0-flash-exp',
+          messages: [
+            { role: 'system', content: promptSetting?.value || 'Você é a Clara.' },
+            { role: 'user', content: `Histórico:\n${history}\n\nResponda ao cliente:` }
+          ]
+        })
+      });
+
+      const aiData = await aiResponse.json();
+      const replyContent = aiData.choices[0].message.content;
+
+      // 5. Insere resposta
+      await supabaseAdmin.from('messages').insert({
+        conversation_id: conversationId,
+        content: replyContent,
+        sender_type: 'bot',
+      });
+
+      // 6. Tenta extrair dados simultaneamente (reutilizando lógica)
+      // (Poderia chamar extractContactData aqui se fosse exportável sem createServerFn wrapper)
+
+      return { handled: true, reply: replyContent };
+    } catch (error) {
+      console.error('Auto reply failed:', error);
+      return { handled: false };
+    }
+  });
+
 export const extractContactData = createServerFn({ method: "POST" })
   .inputValidator((data) => z.object({ 
     conversationId: z.string(),
