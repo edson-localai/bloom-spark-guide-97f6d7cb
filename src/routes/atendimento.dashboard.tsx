@@ -1,16 +1,55 @@
 import { createFileRoute } from '@tanstack/react-router';
-import { BarChart3, Users, MessageSquare, Clock, TrendingUp, ArrowUpRight, ArrowDownRight } from 'lucide-react';
+import { BarChart3, Users, MessageSquare, Clock, TrendingUp, ArrowUpRight, ArrowDownRight, Download } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
 export const Route = createFileRoute('/atendimento/dashboard')({
   component: DashboardPage,
 });
 
 function DashboardPage() {
+  const exportContacts = async () => {
+    try {
+      const { data } = await supabase.from('contacts').select('*');
+      if (!data) return;
+
+      const headers = ['Nome', 'Telefone', 'Veículo', 'Ano', 'Tags'];
+      const rows = data.map(c => [
+        c.name || '',
+        c.phone,
+        `${c.vehicle_brand || ''} ${c.vehicle_model || ''}`,
+        c.vehicle_year || '',
+        c.tags?.join(', ') || ''
+      ]);
+
+      const csvContent = [headers, ...rows].map(e => e.join(',')).join('\n');
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.setAttribute('href', url);
+      link.setAttribute('download', `contatos_hcb_${new Date().toISOString().split('T')[0]}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      toast.success('Relatório de contatos exportado!');
+    } catch (error) {
+      toast.error('Erro ao exportar relatório.');
+    }
+  };
   return (
     <div className="h-full flex flex-col overflow-auto custom-scrollbar" style={{ background: '#0A0A0F' }}>
-      <div className="p-8 pb-4">
-        <h1 className="text-2xl font-bold text-white">Dashboard de Performance</h1>
-        <p className="text-zinc-500 text-sm">Visão geral do atendimento e produtividade da equipe.</p>
+      <div className="p-8 pb-4 flex justify-between items-center">
+        <div>
+          <h1 className="text-2xl font-bold text-white">Dashboard de Performance</h1>
+          <p className="text-zinc-500 text-sm">Visão geral do atendimento e produtividade da equipe.</p>
+        </div>
+        <button 
+          onClick={exportContacts}
+          className="flex items-center gap-2 bg-[#151821] border border-[#1F232E] text-zinc-300 hover:text-white px-4 py-2 rounded-xl text-sm font-semibold transition-all"
+        >
+          <Download className="h-4 w-4" />
+          Exportar CSV
+        </button>
       </div>
 
       <div className="p-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">

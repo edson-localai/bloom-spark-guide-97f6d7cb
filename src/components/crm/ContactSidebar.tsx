@@ -1,5 +1,8 @@
-import { User, Car, Tag, MapPin, Calendar, FileText, ChevronRight } from 'lucide-react';
+import { User, Car, Tag, MapPin, Calendar, FileText, ChevronRight, Clock, History } from 'lucide-react';
 import { Contact } from '@/types/crm';
+import { useTimeline } from '@/hooks/useTimeline';
+import { formatDistanceToNow } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
 
 interface ContactSidebarProps {
   contact: Contact | null;
@@ -67,18 +70,17 @@ export function ContactSidebar({ contact }: ContactSidebarProps) {
         </div>
       </div>
 
-      {/* Notes Section */}
-      <div className="px-6 py-4 border-t border-[#1F232E] space-y-3">
-        <h4 className="text-[10px] uppercase font-bold tracking-widest text-zinc-500">Observações</h4>
-        <div className="bg-[#151821] rounded-lg p-3 border border-[#1F232E]">
-          <p className="text-xs text-zinc-400 leading-relaxed italic">
-            {contact.notes || 'Sem observações registradas...'}
-          </p>
+      {/* Timeline Section */}
+      <div className="px-6 py-4 border-t border-[#1F232E] space-y-4 flex-1 overflow-hidden flex flex-col">
+        <div className="flex items-center justify-between">
+          <h4 className="text-[10px] uppercase font-bold tracking-widest text-zinc-500">Linha do Tempo</h4>
+          <History className="h-3 w-3 text-zinc-500" />
         </div>
+        <Timeline contactId={contact.id} />
       </div>
 
       {/* Quick Actions */}
-      <div className="mt-auto p-6 space-y-2">
+      <div className="p-6 space-y-2 border-t border-[#1F232E]">
         <button className="w-full flex items-center justify-between px-4 py-2.5 rounded-xl bg-[#151821] border border-[#1F232E] text-sm text-zinc-300 hover:border-cyan-500/30 hover:text-white transition-all group">
           <div className="flex items-center gap-3">
             <FileText className="h-4 w-4 text-cyan-500" />
@@ -87,6 +89,39 @@ export function ContactSidebar({ contact }: ContactSidebarProps) {
           <ChevronRight className="h-4 w-4 text-zinc-600 group-hover:text-cyan-500 transition-colors" />
         </button>
       </div>
+    </div>
+  );
+}
+
+function Timeline({ contactId }: { contactId: string }) {
+  const { events, loading } = useTimeline(contactId);
+
+  if (loading) return <div className="text-[10px] text-zinc-600 animate-pulse">Carregando eventos...</div>;
+
+  return (
+    <div className="space-y-4 overflow-y-auto pr-2 custom-scrollbar">
+      {events.map((ev) => (
+        <div key={ev.id} className="relative pl-4 border-l border-[#1F232E]">
+          <div className="absolute -left-1 top-1 h-2 w-2 rounded-full bg-cyan-500/40" />
+          <p className="text-[11px] text-zinc-300 font-medium">
+            {ev.action === 'kanban.move' ? 'Status alterado' : ev.action}
+          </p>
+          <div className="flex items-center gap-1.5 mt-0.5">
+            <Clock className="h-3 w-3 text-zinc-600" />
+            <span className="text-[9px] text-zinc-600">
+              {formatDistanceToNow(new Date(ev.created_at), { addSuffix: true, locale: ptBR })}
+            </span>
+          </div>
+          {ev.new_data?.status && (
+            <p className="text-[9px] text-zinc-500 mt-1 uppercase font-bold tracking-widest">
+              Para: {ev.new_data.status}
+            </p>
+          )}
+        </div>
+      ))}
+      {events.length === 0 && (
+        <p className="text-[10px] text-zinc-600 italic">Nenhuma atividade recente.</p>
+      )}
     </div>
   );
 }
