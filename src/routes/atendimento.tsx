@@ -79,8 +79,8 @@ function Sidebar({ email, role }: { email: string; role?: string }) {
     { to: '/atendimento/contatos', icon: Users, label: 'Contatos', ready: true },
     { to: '/atendimento/respostas', icon: MessageSquare, label: 'Respostas', ready: true },
     { to: '/atendimento/whatsapp', icon: Smartphone, label: 'WhatsApp', ready: true },
-    { to: '/atendimento/dashboard', icon: BarChart3, label: 'Dashboard' },
-    { to: '/atendimento/config', icon: Settings, label: 'Configurações' },
+    { to: '/atendimento/dashboard', icon: BarChart3, label: 'Dashboard', ready: true },
+    { to: '/atendimento/config', icon: Settings, label: 'Configurações', ready: true },
   ];
 
   return (
