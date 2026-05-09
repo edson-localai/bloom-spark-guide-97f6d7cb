@@ -35,6 +35,7 @@ function PropostasPage() {
   const [search, setSearch] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
   const [sortOrder, setSortOrder] = useState<'newest' | 'oldest'>('newest');
+  const [statusFilter, setStatusFilter] = useState<'all' | 'draft' | 'sent' | 'accepted' | 'rejected'>('all');
 
   const subtotal = useMemo(() => items.reduce((acc, item) => acc + (item.quantity * item.price), 0), [items]);
 
@@ -47,6 +48,11 @@ function PropostasPage() {
 
   const filteredProposals = useMemo(() => {
     let result = proposals;
+    
+    if (statusFilter !== 'all') {
+      result = result.filter(p => p.status === statusFilter);
+    }
+
     if (debouncedSearch) {
       const s = debouncedSearch.toLowerCase();
       const normalizedSearch = s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]/g, "");
@@ -83,7 +89,7 @@ function PropostasPage() {
       const dateB = new Date(b.created_at).getTime();
       return sortOrder === 'newest' ? dateB - dateA : dateA - dateB;
     });
-  }, [proposals, debouncedSearch, sortOrder]);
+  }, [proposals, debouncedSearch, sortOrder, statusFilter]);
 
   useEffect(() => {
     fetchProposals();
@@ -292,27 +298,41 @@ function PropostasPage() {
                 />
               </div>
 
-              <div className="flex items-center gap-2 bg-[#151821] border border-[#1F232E] rounded-xl p-1">
-                <button
-                  onClick={() => setSortOrder('newest')}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
-                    sortOrder === 'newest' 
-                      ? 'bg-cyan-500/10 text-cyan-500 border border-cyan-500/20' 
-                      : 'text-zinc-500 hover:text-zinc-300'
-                  }`}
+              <div className="flex items-center gap-2">
+                <select
+                  value={statusFilter}
+                  onChange={(e) => setStatusFilter(e.target.value as any)}
+                  className="bg-[#151821] border border-[#1F232E] rounded-xl px-3 py-2 text-xs font-medium text-zinc-300 focus:outline-none focus:border-cyan-500/50 transition-colors"
                 >
-                  Mais Recentes
-                </button>
-                <button
-                  onClick={() => setSortOrder('oldest')}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
-                    sortOrder === 'oldest' 
-                      ? 'bg-cyan-500/10 text-cyan-500 border border-cyan-500/20' 
-                      : 'text-zinc-500 hover:text-zinc-300'
-                  }`}
-                >
-                  Mais Antigas
-                </button>
+                  <option value="all">Todos os Status</option>
+                  <option value="draft">Rascunho</option>
+                  <option value="sent">Enviada</option>
+                  <option value="accepted">Aprovada</option>
+                  <option value="rejected">Rejeitada</option>
+                </select>
+
+                <div className="flex items-center gap-2 bg-[#151821] border border-[#1F232E] rounded-xl p-1">
+                  <button
+                    onClick={() => setSortOrder('newest')}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                      sortOrder === 'newest' 
+                        ? 'bg-cyan-500/10 text-cyan-500 border border-cyan-500/20' 
+                        : 'text-zinc-500 hover:text-zinc-300'
+                    }`}
+                  >
+                    Mais Recentes
+                  </button>
+                  <button
+                    onClick={() => setSortOrder('oldest')}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                      sortOrder === 'oldest' 
+                        ? 'bg-cyan-500/10 text-cyan-500 border border-cyan-500/20' 
+                        : 'text-zinc-500 hover:text-zinc-300'
+                    }`}
+                  >
+                    Mais Antigas
+                  </button>
+                </div>
               </div>
             </div>
           </motion.div>
