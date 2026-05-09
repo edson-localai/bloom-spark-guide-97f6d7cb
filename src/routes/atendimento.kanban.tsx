@@ -1,9 +1,9 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { KanbanSquare, Plus, MoreHorizontal, User, Clock, AlertCircle, Loader2 } from 'lucide-react';
 import { useKanban } from '@/hooks/useKanban';
-import { DndContext, closestCorners, DragOverlay, defaultDropAnimationSideEffects } from '@dnd-kit/core';
-import { SortableContext, verticalListSortingStrategy, arrayMove } from '@dnd-kit/sortable';
-import { useState } from 'react';
+import { DndContext, closestCorners } from '@dnd-kit/core';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useDraggable } from '@dnd-kit/core';
 
 export const Route = createFileRoute('/atendimento/kanban')({
   component: KanbanPage,
@@ -98,7 +98,7 @@ function KanbanColumn({ column, cards }: any) {
   );
 }
 
-import { useDraggable } from '@dnd-kit/core';
+// useDraggable import moved to top
 
 function KanbanCard({ card }: any) {
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
@@ -112,13 +112,19 @@ function KanbanCard({ card }: any) {
   } : undefined;
 
   return (
-    <div 
+    <motion.div 
+      layout
+      initial={{ opacity: 0, scale: 0.9 }}
+      animate={{ opacity: 1, scale: 1 }}
+      exit={{ opacity: 0, scale: 0.9 }}
+      whileHover={{ y: -4, borderColor: 'rgba(0, 204, 238, 0.4)', boxShadow: '0 0 20px rgba(0, 204, 238, 0.1)' }}
       ref={setNodeRef} 
       style={style} 
       {...listeners} 
       {...attributes}
-      className="bg-[#151821] border border-[#1F232E] rounded-xl p-4 hover:border-cyan-500/30 transition-all cursor-grab active:cursor-grabbing group"
+      className="bg-[#151821] border border-[#1F232E] rounded-xl p-4 hover:border-cyan-500/30 transition-all cursor-grab active:cursor-grabbing group relative overflow-hidden"
     >
+      <div className="absolute top-0 left-0 w-1 h-full bg-cyan-500/20" />
       <div className="flex justify-between items-start mb-3">
         <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 uppercase">
           {card.channel}
@@ -141,6 +147,6 @@ function KanbanCard({ card }: any) {
           {card.contact?.name?.substring(0, 2) || 'WC'}
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }

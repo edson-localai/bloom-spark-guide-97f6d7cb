@@ -1,10 +1,11 @@
 import { useState, useRef, useEffect } from 'react';
-import { Send, User, Bot, Paperclip, MoreVertical, ShieldCheck, Clock, Sparkles, Loader2 } from 'lucide-react';
+import { Send, User, Bot, Paperclip, MoreVertical, ShieldCheck, Clock, Sparkles, Loader2, Smile, Zap, Hammer } from 'lucide-react';
 import { Message, Conversation, Contact } from '@/types/crm';
 import { useMessages } from '@/hooks/useMessages';
-import { getAiSuggestion } from '@/services/aiService';
+import { getAiSuggestions, AiSuggestions } from '@/services/aiService';
 import { extractContactData } from '@/lib/ai.functions';
 import { toast } from 'sonner';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface ChatWindowProps {
   conversation: (Conversation & { contact: Contact | null }) | null;
@@ -13,6 +14,7 @@ interface ChatWindowProps {
 export function ChatWindow({ conversation }: ChatWindowProps) {
   const [input, setInput] = useState('');
   const [isAiLoading, setIsAiLoading] = useState(false);
+  const [suggestions, setSuggestions] = useState<AiSuggestions | null>(null);
   const { messages, loading, sendMessage } = useMessages(conversation?.id ?? null);
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -20,16 +22,19 @@ export function ChatWindow({ conversation }: ChatWindowProps) {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
-  }, [messages]);
+    // Limpa sugestões ao mudar de conversa
+    setSuggestions(null);
+  }, [messages, conversation?.id]);
 
   const handleAiSuggest = async () => {
     if (!conversation || messages.length === 0) return;
     setIsAiLoading(true);
+    setSuggestions(null);
     try {
-      const suggestion = await getAiSuggestion(conversation.id, messages);
-      if (suggestion) {
-        setInput(suggestion);
-        toast.success('Clara sugeriu uma resposta!');
+      const data = await getAiSuggestions(conversation.id, messages);
+      if (data) {
+        setSuggestions(data);
+        toast.success('Clara gerou três opções de resposta!');
       }
     } catch (error) {
       toast.error('Erro ao buscar sugestão da Clara.');
@@ -162,17 +167,49 @@ export function ChatWindow({ conversation }: ChatWindowProps) {
       {/* Input Area */}
       <div className="p-4 border-t border-[#1F232E]" style={{ background: '#0F1117' }}>
         <form onSubmit={handleSend} className="flex flex-col gap-3">
-          <div className="flex items-center gap-2 mb-1">
-            <button
-              type="button"
-              onClick={handleAiSuggest}
-              disabled={isAiLoading || !conversation}
-              className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 text-[10px] font-bold uppercase tracking-wider hover:bg-cyan-500/20 transition-all disabled:opacity-50"
-            >
-              {isAiLoading ? <Loader2 className="h-3 w-3 animate-spin" /> : <Sparkles className="h-3 w-3" />}
-              Sugestão da Clara
-            </button>
-            <span className="text-[10px] text-zinc-600 font-medium">Use IA para responder mais rápido</span>
+          <div className="flex flex-col gap-2">
+            <div className="flex items-center gap-2 mb-1">
+              <button
+                type="button"
+                onClick={handleAiSuggest}
+                disabled={isAiLoading || !conversation}
+                className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 text-[10px] font-bold uppercase tracking-wider hover:bg-cyan-500/20 transition-all disabled:opacity-50"
+              >
+                {isAiLoading ? <Loader2 className="h-3 w-3 animate-spin" /> : <Sparkles className="h-3 w-3" />}
+                Opções da Clara
+              </button>
+              <span className="text-[10px] text-zinc-600 font-medium">Extraia o melhor tom para este cliente</span>
+            </div>
+
+            <AnimatePresence>
+              {suggestions && (
+                <motion.div 
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 10 }}
+                  className="grid grid-cols-1 md:grid-cols-3 gap-2"
+                >
+                  <SuggestionButton 
+                    icon={Smile} 
+                    label="Amigável" 
+                    text={suggestions.friendly} 
+                    onClick={() => { setInput(suggestions.friendly); setSuggestions(null); }} 
+                  />
+                  <SuggestionButton 
+                    icon={Zap} 
+                    label="Direto" 
+                    text={suggestions.direct} 
+                    onClick={() => { setInput(suggestions.direct); setSuggestions(null); }} 
+                  />
+                  <SuggestionButton 
+                    icon={Hammer} 
+                    label="Técnico" 
+                    text={suggestions.technical} 
+                    onClick={() => { setInput(suggestions.technical); setSuggestions(null); }} 
+                  />
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
 
           <div className="flex items-center gap-3">
@@ -199,5 +236,21 @@ export function ChatWindow({ conversation }: ChatWindowProps) {
         </form>
       </div>
     </div>
+  );
+}
+
+function SuggestionButton({ icon: Icon, label, text, onClick }: { icon: any, label: string, text: string, onClick: () => void }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="flex flex-col text-left p-2.5 rounded-xl bg-[#151821] border border-[#1F232E] hover:border-cyan-500/40 hover:bg-cyan-500/5 transition-all group"
+    >
+      <div className="flex items-center gap-1.5 mb-1.5">
+        <Icon className="h-3 w-3 text-cyan-400" />
+        <span className="text-[9px] uppercase font-bold tracking-widest text-zinc-500 group-hover:text-cyan-400">{label}</span>
+      </div>
+      <p className="text-[11px] text-zinc-400 line-clamp-2 leading-relaxed group-hover:text-zinc-200">{text}</p>
+    </button>
   );
 }

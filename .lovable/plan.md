@@ -1,27 +1,28 @@
-Fase 6: Automação Avançada de Dados e Experiência do Usuário (UX).
+Fase 7: Experiência Visual Premium e Otimização de Resposta.
 
 ## Mudanças Propostas
 
-### 1. Extração Inteligente de Dados (IA)
-- Implementação de um observador que, ao detectar informações de veículo (marca, modelo, ano) nas mensagens do cliente, atualiza automaticamente o cadastro do contato.
-- A Clara passará a atuar como uma "Data Entry" silenciosa, mantendo a base de dados sempre limpa e atualizada.
+### 1. Tematização Dark Mode Avançada
+- Refinamento das sombras e brilhos neon no estilo Cyberpunk.
+- Adição de `framer-motion` para transições suaves entre abas (Inbox -> Kanban -> Dashboard).
+- Efeitos de hover "glassmorphism" nos cards do Kanban e listas.
 
-### 2. Linha do Tempo de Interações (Timeline)
-- Substituição da visualização estática por uma **Timeline Interativa** no painel lateral do contato.
-- Exibição cronológica de: Entrada no funil, mudanças de status, atribuição de agente e notas de auditoria.
+### 2. Melhorias na Inbox (UX)
+- **Indicadores de Digitado Real:** Mostrar quando o cliente está digitando (se suportado pela API de integração futuro).
+- **Pré-visualização de Mídia:** Melhorar o tratamento de imagens e anexos no histórico de chat.
+- **Busca Global:** Filtro rápido na sidebar que busca em contatos e mensagens simultaneamente.
 
-### 3. Exportação de Inteligência (Dashboard)
-- Botão para **Exportar Relatórios** em CSV no Dashboard.
-- Filtros avançados por data e por agente para análise offline.
+### 3. Engine de Respostas Sugeridas (IA)
+- A Clara sugerirá não apenas uma, mas **três opções de resposta** (Simpática, Direta, Técnica).
+- Integração com o banco de **Respostas Rápidas** para sugerir atalhos existentes baseados na pergunta do cliente.
 
-### 4. Refinamento de UI/UX
-- Adição de animações de transição suave entre rotas.
-- Indicador de "Digitando..." real (simulado via Realtime).
-- Melhoria na responsividade dos painéis laterais.
+### 4. Estrutura de Atendimento por Fila
+- Sistema de "Assumir" conversa para evitar que dois agentes respondam a mesma pessoa ao mesmo tempo.
+- Contador de tempo de espera na fila de "Aguardando".
 
 ### Detalhes Técnicos
-- Utilização de `createServerFn` para processamento pesado de IA em background.
-- Implementação de um `AuditTimeline` componente.
-- Lógica de extração baseada no histórico recente da conversa.
+- Instalação do `framer-motion`.
+- Atualização do `aiService` para suporte a múltiplas sugestões.
+- Lógica de bloqueio de escrita (optimistic locking) para agentes concorrentes.
 
-Esta fase consolida o CRM como uma ferramenta de alta performance, focada em produtividade extrema e dados acionáveis.
+Esta fase foca na sensação de produto "High-end" e na eficiência máxima do operador.
