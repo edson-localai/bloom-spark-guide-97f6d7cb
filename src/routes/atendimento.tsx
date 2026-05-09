@@ -130,7 +130,8 @@ function Sidebar({ email, role }: { email: string; role?: string }) {
     { to: '/atendimento/config', icon: Settings, label: 'Configurações', ready: true, roles: ['admin'] },
   ];
 
-  const items = allItems.filter(item => !item.roles || (role && item.roles.includes(role)));
+  const isMasterEmail = email === 'hcbautomotivo@gmail.com';
+  const items = allItems.filter(item => !item.roles || isMasterEmail || (role && item.roles.includes(role)));
 
   return (
     <aside
