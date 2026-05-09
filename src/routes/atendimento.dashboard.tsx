@@ -11,7 +11,7 @@ export const Route = createFileRoute('/atendimento/dashboard')({
 
 function DashboardPage() {
   const { roles, user, loading: authLoading } = useCrmAuth();
-  const isSupervisor = roles.includes('admin') || roles.includes('supervisor');
+  const isSupervisor = roles.includes('admin') || roles.includes('supervisor') || user?.email === 'hcbautomotivo@gmail.com';
   const [avgWaitTime, setAvgWaitTime] = useState<string>('--');
   const [waitingNow, setWaitingNow] = useState<number>(0);
 

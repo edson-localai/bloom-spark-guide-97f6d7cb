@@ -34,7 +34,7 @@ interface UserProfile {
 
 function UsuariosPage() {
   const { roles, user, loading: authLoading } = useCrmAuth();
-  const isAdmin = roles.includes('admin');
+  const isAdmin = roles.includes('admin') || user?.email === 'hcbautomotivo@gmail.com';
   
   const [loading, setLoading] = useState(true);
   const [users, setUsers] = useState<UserProfile[]>([]);
