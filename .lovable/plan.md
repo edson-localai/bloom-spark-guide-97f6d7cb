@@ -1,23 +1,29 @@
-Fase 2 focada na interface de Atendimento (Inbox) com suporte a tempo real, listagem de conversas e chat ativo.
+Fase 3: Implementação dos módulos complementares (Gestão de Contatos, Respostas Rápidas e Integração WhatsApp).
 
 ## Mudanças Propostas
 
-### 1. Componentes de UI (Novos)
-- `src/components/crm/ConversationList.tsx`: Lista de conversas com busca, filtros (Minhas, Fila, Resolvidas) e indicadores de status.
-- `src/components/crm/ChatWindow.tsx`: Janela de chat com histórico de mensagens, campo de entrada e alternância entre Chat e Notas Internas.
-- `src/components/crm/ContactSidebar.tsx`: Painel lateral direito com detalhes do contato (veículo, tags, histórico).
+### 1. Gestão de Contatos (`/atendimento/contatos`)
+- Tabela de contatos com filtros por veículo (marca/modelo) e tags.
+- Modal para edição de detalhes do contato.
+- Histórico resumido de atendimentos por contato.
 
-### 2. Hooks e Estado (Novos)
-- `src/hooks/useConversations.ts`: Gerenciamento da lista de conversas com filtros e Realtime.
-- `src/hooks/useMessages.ts`: Gerenciamento das mensagens de uma conversa específica com Realtime e envio.
+### 2. Respostas Rápidas (`/atendimento/respostas`)
+- Listagem de templates de resposta com atalhos.
+- CRUD de respostas (Título, Conteúdo, Atalho).
+- Integração: As respostas serão utilizáveis via atalho `/` no chat.
 
-### 3. Rotas (Novas/Editadas)
-- `src/routes/atendimento.index.tsx`: Transformada na Inbox principal combinando os novos componentes.
-- `src/routes/atendimento.tsx`: Atualização da sidebar para habilitar os links da Fase 2.
+### 3. Gerenciamento de WhatsApp (`/atendimento/whatsapp`)
+- Listagem das instâncias configuradas no banco.
+- Exibição de status (Conectado/Desconectado).
+- Mock do QR Code para simular conexão (a conexão real depende de uma API externa como Evolution API).
+
+### 4. Kanban de Negociações (Fase 4 - Visualização Inicial)
+- Estruturação das colunas: Novo, Orçamento, Aguardando Peça, Finalizado.
+- Cards integrados aos contatos.
 
 ### Detalhes Técnicos
-- Utilização de `supabase-js` Realtime para atualizações instantâneas de novas mensagens e mudança de status de conversas.
-- Estilização seguindo o padrão Dark/Cyberpunk já estabelecido (Cores: `#0A0A0F`, `#00CCEE`, `#1F232E`).
-- Filtros de atendimento: "Minhas" (atribuídas ao agente logado), "Aguardando" (fila), "Todas".
+- Persistência direta no Supabase para Contatos e Respostas Rápidas.
+- Reutilização dos componentes de estilo (Cyberpunk Dark).
+- Implementação de um `useContacts` hook.
 
-O objetivo é entregar um terminal de atendimento funcional onde o agente pode ver quem está chamando, assumir o chat e responder.
+A Fase 3 tornará o sistema uma ferramenta completa de CRM, não apenas um chat.
