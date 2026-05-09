@@ -87,17 +87,19 @@ function AtendimentoLayout() {
 function Sidebar({ email, role }: { email: string; role?: string }) {
   const location = useLocation();
 
-  const items: { to: string; icon: typeof Inbox; label: string; exact?: boolean; ready?: boolean }[] = [
+  const allItems: { to: string; icon: typeof Inbox; label: string; exact?: boolean; ready?: boolean; roles?: string[] }[] = [
     { to: '/atendimento', icon: Inbox, label: 'Inbox', exact: true, ready: true },
     { to: '/atendimento/kanban', icon: KanbanSquare, label: 'Kanban', ready: true },
     { to: '/atendimento/contatos', icon: Users, label: 'Contatos', ready: true },
     { to: '/atendimento/propostas', icon: FileText, label: 'Propostas', ready: true },
     { to: '/atendimento/respostas', icon: MessageSquare, label: 'Respostas', ready: true },
-    { to: '/atendimento/whatsapp', icon: Smartphone, label: 'WhatsApp', ready: true },
-    { to: '/atendimento/dashboard', icon: BarChart3, label: 'Dashboard', ready: true },
+    { to: '/atendimento/whatsapp', icon: Smartphone, label: 'WhatsApp', ready: true, roles: ['admin', 'supervisor'] },
+    { to: '/atendimento/dashboard', icon: BarChart3, label: 'Dashboard', ready: true, roles: ['admin', 'supervisor'] },
     { to: '/atendimento/treinamento', icon: GraduationCap, label: 'Treinamento', ready: true },
-    { to: '/atendimento/config', icon: Settings, label: 'Configurações', ready: true },
+    { to: '/atendimento/config', icon: Settings, label: 'Configurações', ready: true, roles: ['admin'] },
   ];
+
+  const items = allItems.filter(item => !item.roles || (role && item.roles.includes(role)));
 
   return (
     <aside
