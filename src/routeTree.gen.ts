@@ -10,11 +10,24 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as PropostaRouteImport } from './routes/proposta'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as AtendimentoRouteImport } from './routes/atendimento'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AtendimentoIndexRouteImport } from './routes/atendimento.index'
 
 const PropostaRoute = PropostaRouteImport.update({
   id: '/proposta',
   path: '/proposta',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AtendimentoRoute = AtendimentoRouteImport.update({
+  id: '/atendimento',
+  path: '/atendimento',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -22,30 +35,51 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AtendimentoIndexRoute = AtendimentoIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AtendimentoRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/atendimento': typeof AtendimentoRouteWithChildren
+  '/login': typeof LoginRoute
   '/proposta': typeof PropostaRoute
+  '/atendimento/': typeof AtendimentoIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/login': typeof LoginRoute
   '/proposta': typeof PropostaRoute
+  '/atendimento': typeof AtendimentoIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/atendimento': typeof AtendimentoRouteWithChildren
+  '/login': typeof LoginRoute
   '/proposta': typeof PropostaRoute
+  '/atendimento/': typeof AtendimentoIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/proposta'
+  fullPaths: '/' | '/atendimento' | '/login' | '/proposta' | '/atendimento/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/proposta'
-  id: '__root__' | '/' | '/proposta'
+  to: '/' | '/login' | '/proposta' | '/atendimento'
+  id:
+    | '__root__'
+    | '/'
+    | '/atendimento'
+    | '/login'
+    | '/proposta'
+    | '/atendimento/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AtendimentoRoute: typeof AtendimentoRouteWithChildren
+  LoginRoute: typeof LoginRoute
   PropostaRoute: typeof PropostaRoute
 }
 
@@ -58,6 +92,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PropostaRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/atendimento': {
+      id: '/atendimento'
+      path: '/atendimento'
+      fullPath: '/atendimento'
+      preLoaderRoute: typeof AtendimentoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -65,11 +113,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/atendimento/': {
+      id: '/atendimento/'
+      path: '/'
+      fullPath: '/atendimento/'
+      preLoaderRoute: typeof AtendimentoIndexRouteImport
+      parentRoute: typeof AtendimentoRoute
+    }
   }
 }
 
+interface AtendimentoRouteChildren {
+  AtendimentoIndexRoute: typeof AtendimentoIndexRoute
+}
+
+const AtendimentoRouteChildren: AtendimentoRouteChildren = {
+  AtendimentoIndexRoute: AtendimentoIndexRoute,
+}
+
+const AtendimentoRouteWithChildren = AtendimentoRoute._addFileChildren(
+  AtendimentoRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AtendimentoRoute: AtendimentoRouteWithChildren,
+  LoginRoute: LoginRoute,
   PropostaRoute: PropostaRoute,
 }
 export const routeTree = rootRouteImport
