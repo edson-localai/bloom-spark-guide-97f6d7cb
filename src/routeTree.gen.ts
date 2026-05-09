@@ -17,6 +17,7 @@ import { Route as AtendimentoIndexRouteImport } from './routes/atendimento.index
 import { Route as AtendimentoWhatsappRouteImport } from './routes/atendimento.whatsapp'
 import { Route as AtendimentoRespostasRouteImport } from './routes/atendimento.respostas'
 import { Route as AtendimentoKanbanRouteImport } from './routes/atendimento.kanban'
+import { Route as AtendimentoDashboardRouteImport } from './routes/atendimento.dashboard'
 import { Route as AtendimentoContatosRouteImport } from './routes/atendimento.contatos'
 
 const PropostaRoute = PropostaRouteImport.update({
@@ -59,6 +60,11 @@ const AtendimentoKanbanRoute = AtendimentoKanbanRouteImport.update({
   path: '/kanban',
   getParentRoute: () => AtendimentoRoute,
 } as any)
+const AtendimentoDashboardRoute = AtendimentoDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => AtendimentoRoute,
+} as any)
 const AtendimentoContatosRoute = AtendimentoContatosRouteImport.update({
   id: '/contatos',
   path: '/contatos',
@@ -71,6 +77,7 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/proposta': typeof PropostaRoute
   '/atendimento/contatos': typeof AtendimentoContatosRoute
+  '/atendimento/dashboard': typeof AtendimentoDashboardRoute
   '/atendimento/kanban': typeof AtendimentoKanbanRoute
   '/atendimento/respostas': typeof AtendimentoRespostasRoute
   '/atendimento/whatsapp': typeof AtendimentoWhatsappRoute
@@ -81,6 +88,7 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/proposta': typeof PropostaRoute
   '/atendimento/contatos': typeof AtendimentoContatosRoute
+  '/atendimento/dashboard': typeof AtendimentoDashboardRoute
   '/atendimento/kanban': typeof AtendimentoKanbanRoute
   '/atendimento/respostas': typeof AtendimentoRespostasRoute
   '/atendimento/whatsapp': typeof AtendimentoWhatsappRoute
@@ -93,6 +101,7 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/proposta': typeof PropostaRoute
   '/atendimento/contatos': typeof AtendimentoContatosRoute
+  '/atendimento/dashboard': typeof AtendimentoDashboardRoute
   '/atendimento/kanban': typeof AtendimentoKanbanRoute
   '/atendimento/respostas': typeof AtendimentoRespostasRoute
   '/atendimento/whatsapp': typeof AtendimentoWhatsappRoute
@@ -106,6 +115,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/proposta'
     | '/atendimento/contatos'
+    | '/atendimento/dashboard'
     | '/atendimento/kanban'
     | '/atendimento/respostas'
     | '/atendimento/whatsapp'
@@ -116,6 +126,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/proposta'
     | '/atendimento/contatos'
+    | '/atendimento/dashboard'
     | '/atendimento/kanban'
     | '/atendimento/respostas'
     | '/atendimento/whatsapp'
@@ -127,6 +138,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/proposta'
     | '/atendimento/contatos'
+    | '/atendimento/dashboard'
     | '/atendimento/kanban'
     | '/atendimento/respostas'
     | '/atendimento/whatsapp'
@@ -198,6 +210,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AtendimentoKanbanRouteImport
       parentRoute: typeof AtendimentoRoute
     }
+    '/atendimento/dashboard': {
+      id: '/atendimento/dashboard'
+      path: '/dashboard'
+      fullPath: '/atendimento/dashboard'
+      preLoaderRoute: typeof AtendimentoDashboardRouteImport
+      parentRoute: typeof AtendimentoRoute
+    }
     '/atendimento/contatos': {
       id: '/atendimento/contatos'
       path: '/contatos'
@@ -210,6 +229,7 @@ declare module '@tanstack/react-router' {
 
 interface AtendimentoRouteChildren {
   AtendimentoContatosRoute: typeof AtendimentoContatosRoute
+  AtendimentoDashboardRoute: typeof AtendimentoDashboardRoute
   AtendimentoKanbanRoute: typeof AtendimentoKanbanRoute
   AtendimentoRespostasRoute: typeof AtendimentoRespostasRoute
   AtendimentoWhatsappRoute: typeof AtendimentoWhatsappRoute
@@ -218,6 +238,7 @@ interface AtendimentoRouteChildren {
 
 const AtendimentoRouteChildren: AtendimentoRouteChildren = {
   AtendimentoContatosRoute: AtendimentoContatosRoute,
+  AtendimentoDashboardRoute: AtendimentoDashboardRoute,
   AtendimentoKanbanRoute: AtendimentoKanbanRoute,
   AtendimentoRespostasRoute: AtendimentoRespostasRoute,
   AtendimentoWhatsappRoute: AtendimentoWhatsappRoute,
@@ -237,3 +258,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
