@@ -360,25 +360,83 @@ function TreinamentoPage() {
                     <p className="text-sm text-zinc-400 leading-relaxed mb-6">
                       {selectedLesson.description}
                     </p>
-                    <div className="space-y-3">
-                      <div className="flex items-center gap-3 p-3 rounded-xl bg-emerald-500/5 border border-emerald-500/10 text-emerald-400 text-xs">
-                        <CheckCircle2 className="h-4 w-4 shrink-0" />
-                        Aprenda na prática como otimizar seu tempo.
-                      </div>
-                      <button 
-                        onClick={() => toggleComplete(selectedLesson.id)}
-                        className={`w-full font-bold py-3 rounded-xl transition-all border ${
-                          completedLessons.includes(selectedLesson.id)
-                            ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20'
-                            : 'bg-cyan-500 hover:bg-cyan-400 text-black border-transparent'
-                        }`}
-                      >
-                        {completedLessons.includes(selectedLesson.id) ? 'Aula Concluída' : 'Marcar como Concluído'}
-                      </button>
+                    
+                    <div className="space-y-4">
+                      {selectedLesson.quiz && !activeQuiz && (
+                        <div className="p-4 rounded-2xl bg-cyan-500/5 border border-cyan-500/10">
+                          <div className="flex items-center gap-2 text-cyan-400 font-bold text-xs uppercase tracking-widest mb-2">
+                            <Trophy className="h-4 w-4" /> Desafio Final
+                          </div>
+                          <p className="text-xs text-zinc-500 mb-4">Complete o quiz para confirmar seu aprendizado nesta aula.</p>
+                          <button 
+                            onClick={startQuiz}
+                            className="w-full bg-cyan-500 hover:bg-cyan-400 text-black font-bold py-2.5 rounded-xl transition-all"
+                          >
+                            Iniciar Quiz
+                          </button>
+                        </div>
+                      )}
+
+                      {activeQuiz && !showQuizResult && (
+                        <div className="p-5 rounded-2xl bg-[#151821] border border-[#1F232E]">
+                          <div className="flex justify-between items-center mb-4">
+                            <span className="text-[10px] font-bold text-zinc-500 uppercase">Questão {currentQuestionIndex + 1}/{activeQuiz.length}</span>
+                            <div className="h-1.5 w-24 bg-zinc-800 rounded-full overflow-hidden">
+                              <div 
+                                className="h-full bg-cyan-500 transition-all" 
+                                style={{ width: `${((currentQuestionIndex + 1) / activeQuiz.length) * 100}%` }}
+                              />
+                            </div>
+                          </div>
+                          <h4 className="text-white font-bold mb-4">{activeQuiz[currentQuestionIndex].question}</h4>
+                          <div className="space-y-2">
+                            {activeQuiz[currentQuestionIndex].options.map((option, idx) => (
+                              <button
+                                key={idx}
+                                onClick={() => handleQuizAnswer(idx)}
+                                className="w-full p-3 rounded-xl border border-[#1F232E] bg-black/20 text-left text-sm text-zinc-400 hover:border-cyan-500/50 hover:text-white transition-all"
+                              >
+                                {option}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {showQuizResult && (
+                        <motion.div 
+                          initial={{ opacity: 0, scale: 0.9 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          className="p-6 rounded-2xl bg-[#151821] border border-cyan-500/20 text-center"
+                        >
+                          <Trophy className="h-12 w-12 text-cyan-500 mx-auto mb-4" />
+                          <h4 className="text-white font-bold text-lg mb-1">Quiz Concluído!</h4>
+                          <p className="text-sm text-zinc-400 mb-4">Você acertou {quizScore} de {activeQuiz?.length} questões.</p>
+                          <button 
+                            onClick={() => setActiveQuiz(null)}
+                            className="w-full bg-white/5 hover:bg-white/10 text-white font-bold py-2.5 rounded-xl transition-all"
+                          >
+                            Fechar
+                          </button>
+                        </motion.div>
+                      )}
+
+                      {!selectedLesson.quiz && (
+                        <button 
+                          onClick={() => toggleComplete(selectedLesson.id)}
+                          className={`w-full font-bold py-3 rounded-xl transition-all border ${
+                            completedLessons.includes(selectedLesson.id)
+                              ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20'
+                              : 'bg-cyan-500 hover:bg-cyan-400 text-black border-transparent'
+                          }`}
+                        >
+                          {completedLessons.includes(selectedLesson.id) ? 'Aula Concluída' : 'Marcar como Concluído'}
+                        </button>
+                      )}
                       
                       {completedLessons.includes(selectedLesson.id) && allLessons.findIndex(l => l.id === selectedLesson.id) < allLessons.length - 1 && (
                         <button 
-                          onClick={nextLesson}
+                          onClick={() => { setSelectedLesson(allLessons[allLessons.findIndex(l => l.id === selectedLesson.id) + 1]); setActiveQuiz(null); }}
                           className="w-full bg-white/5 hover:bg-white/10 text-white font-semibold py-3 rounded-xl transition-all flex items-center justify-center gap-2"
                         >
                           Próxima Aula
