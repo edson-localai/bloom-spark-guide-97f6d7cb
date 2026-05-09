@@ -3,7 +3,7 @@ import { Conversation, Contact } from '@/types/crm';
 import { formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 interface ConversationListProps {
   conversations: (Conversation & { contact: Contact | null })[];
@@ -13,13 +13,21 @@ interface ConversationListProps {
 
 export function ConversationList({ conversations, selectedId, onSelect }: ConversationListProps) {
   const [search, setSearch] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
   const [filter, setFilter] = useState<'all' | 'queue' | 'resolved'>('all');
 
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(search);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [search]);
+
   const filteredConversations = conversations.filter(conv => {
-    const matchesSearch = !search || 
-      (conv.contact?.name?.toLowerCase().includes(search.toLowerCase())) ||
-      (conv.whatsapp_chat_id.includes(search)) ||
-      (conv.last_message?.toLowerCase().includes(search.toLowerCase()));
+    const matchesSearch = !debouncedSearch || 
+      (conv.contact?.name?.toLowerCase().includes(debouncedSearch.toLowerCase())) ||
+      (conv.whatsapp_chat_id.includes(debouncedSearch)) ||
+      (conv.last_message?.toLowerCase().includes(debouncedSearch.toLowerCase()));
     
     const matchesFilter = filter === 'all' 
       ? (conv.status !== 'resolved')

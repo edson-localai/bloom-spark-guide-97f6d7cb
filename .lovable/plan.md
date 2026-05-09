@@ -1,28 +1,22 @@
-Fase 7: Experiência Visual Premium e Otimização de Resposta.
+Fase 8: Estabilidade, Refinamento de Dados e Finalização.
 
 ## Mudanças Propostas
 
-### 1. Tematização Dark Mode Avançada
-- Refinamento das sombras e brilhos neon no estilo Cyberpunk.
-- Adição de `framer-motion` para transições suaves entre abas (Inbox -> Kanban -> Dashboard).
-- Efeitos de hover "glassmorphism" nos cards do Kanban e listas.
+### 1. Refinamento de Tipos e Segurança
+- Ajustar os tipos TypeScript no `src/types/crm.ts` para refletir as colunas reais do banco de dados (ex: `last_automated_msg_at`).
+- Garantir que todas as chamadas `createServerFn` tenham tratamento de erro robusto.
 
-### 2. Melhorias na Inbox (UX)
-- **Indicadores de Digitado Real:** Mostrar quando o cliente está digitando (se suportado pela API de integração futuro).
-- **Pré-visualização de Mídia:** Melhorar o tratamento de imagens e anexos no histórico de chat.
-- **Busca Global:** Filtro rápido na sidebar que busca em contatos e mensagens simultaneamente.
+### 2. Melhorias de UI (Acessibilidade e Feedback)
+- Adicionar Tooltips explicativos em ícones menos óbvios.
+- Melhorar o contraste de cores em elementos críticos.
+- Adicionar estados de "vazio" (Empty States) mais amigáveis em todas as telas.
 
-### 3. Engine de Respostas Sugeridas (IA)
-- A Clara sugerirá não apenas uma, mas **três opções de resposta** (Simpática, Direta, Técnica).
-- Integração com o banco de **Respostas Rápidas** para sugerir atalhos existentes baseados na pergunta do cliente.
+### 3. Otimização de Busca e Performance
+- Implementar debounce na busca da lista de conversas para economizar processamento.
+- Otimizar o carregamento inicial da rota `/atendimento` garantindo que os dados essenciais venham em paralelo.
 
-### 4. Estrutura de Atendimento por Fila
-- Sistema de "Assumir" conversa para evitar que dois agentes respondam a mesma pessoa ao mesmo tempo.
-- Contador de tempo de espera na fila de "Aguardando".
+### 4. Preparação para Produção
+- Revisão de logs de console (remover logs desnecessários).
+- Verificação final de RLS (Row Level Security) em todas as tabelas.
 
-### Detalhes Técnicos
-- Instalação do `framer-motion`.
-- Atualização do `aiService` para suporte a múltiplas sugestões.
-- Lógica de bloqueio de escrita (optimistic locking) para agentes concorrentes.
-
-Esta fase foca na sensação de produto "High-end" e na eficiência máxima do operador.
+Esta fase finaliza o projeto garantindo que ele seja robusto, seguro e performático para o uso diário na HCB.

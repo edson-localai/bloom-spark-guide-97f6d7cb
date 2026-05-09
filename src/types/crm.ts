@@ -64,6 +64,7 @@ export interface Conversation {
   last_message: string | null;
   last_message_at: string;
   resolved_at: string | null;
+  last_automated_msg_at: string | null;
   created_at: string;
   updated_at: string;
 }
