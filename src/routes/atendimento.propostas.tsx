@@ -106,7 +106,7 @@ function PropostasPage() {
       const dateB = new Date(b.created_at).getTime();
       return sortOrder === 'newest' ? dateB - dateA : dateA - dateB;
     });
-  }, [proposals, debouncedSearch, sortOrder, statusFilter]);
+  }, [proposals, debouncedSearch, sortOrder, statusFilter, clientFilter]);
 
   useEffect(() => {
     fetchProposals();
