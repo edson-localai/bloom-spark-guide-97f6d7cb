@@ -14,6 +14,7 @@ import {
   Smartphone,
   LogOut,
   Loader2,
+  FileText,
 } from 'lucide-react';
 
 export const Route = createFileRoute('/atendimento')({
