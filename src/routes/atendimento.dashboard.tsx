@@ -38,9 +38,18 @@ function DashboardPage() {
   };
   return (
     <div className="h-full flex flex-col overflow-auto custom-scrollbar" style={{ background: '#0A0A0F' }}>
-      <div className="p-8 pb-4">
-        <h1 className="text-2xl font-bold text-white">Dashboard de Performance</h1>
-        <p className="text-zinc-500 text-sm">Visão geral do atendimento e produtividade da equipe.</p>
+      <div className="p-8 pb-4 flex justify-between items-center">
+        <div>
+          <h1 className="text-2xl font-bold text-white">Dashboard de Performance</h1>
+          <p className="text-zinc-500 text-sm">Visão geral do atendimento e produtividade da equipe.</p>
+        </div>
+        <button 
+          onClick={exportContacts}
+          className="flex items-center gap-2 bg-[#151821] border border-[#1F232E] text-zinc-300 hover:text-white px-4 py-2 rounded-xl text-sm font-semibold transition-all"
+        >
+          <Download className="h-4 w-4" />
+          Exportar CSV
+        </button>
       </div>
 
       <div className="p-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
