@@ -3,6 +3,7 @@ import { useEffect } from 'react';
 import { useCrmAuth } from '@/hooks/useCrmAuth';
 import { useNotifications } from '@/hooks/useNotifications';
 import { supabase } from '@/integrations/supabase/client';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   Inbox,
   KanbanSquare,
