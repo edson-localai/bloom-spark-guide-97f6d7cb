@@ -21,6 +21,8 @@ import {
 
 export const Route = createFileRoute('/atendimento')({
   beforeLoad: async ({ location }) => {
+    if (typeof window === 'undefined') return;
+
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) throw redirect({ to: '/login' });
 
@@ -32,7 +34,9 @@ export const Route = createFileRoute('/atendimento')({
     const userRoles = (roles ?? []).map(r => r.role as string);
     const path = location.pathname;
 
-    const hasAdmin = userRoles.includes('admin');
+    // Hardcoded bypass for the master account to ensure access
+    const isMasterEmail = session.user.email === 'hcbautomotivo@gmail.com';
+    const hasAdmin = userRoles.includes('admin') || isMasterEmail;
     const hasSupervisor = userRoles.includes('supervisor') || hasAdmin;
 
     if (path.includes('/dashboard') || path.includes('/whatsapp')) {
@@ -128,7 +132,8 @@ function Sidebar({ email, role }: { email: string; role?: string }) {
     { to: '/atendimento/config', icon: Settings, label: 'Configurações', ready: true, roles: ['admin'] },
   ];
 
-  const items = allItems.filter(item => !item.roles || (role && item.roles.includes(role)));
+  const isMasterEmail = email === 'hcbautomotivo@gmail.com';
+  const items = allItems.filter(item => !item.roles || isMasterEmail || (role && item.roles.includes(role)));
 
   return (
     <aside
