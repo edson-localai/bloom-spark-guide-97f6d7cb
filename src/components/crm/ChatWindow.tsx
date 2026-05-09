@@ -77,6 +77,7 @@ export function ChatWindow({ conversation }: ChatWindowProps) {
   
   const { messages, loading, sendMessage } = useMessages(conversation?.id ?? null);
   const { agents, onlineAgents } = useAgents();
+  const { addToQueue } = useWaitingQueue();
   const scrollRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
