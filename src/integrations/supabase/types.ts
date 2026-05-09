@@ -535,6 +535,48 @@ export type Database = {
         }
         Relationships: []
       }
+      waiting_queue: {
+        Row: {
+          contact_id: string | null
+          conversation_id: string
+          entered_at: string | null
+          id: string
+          metadata: Json | null
+          priority: string | null
+        }
+        Insert: {
+          contact_id?: string | null
+          conversation_id: string
+          entered_at?: string | null
+          id?: string
+          metadata?: Json | null
+          priority?: string | null
+        }
+        Update: {
+          contact_id?: string | null
+          conversation_id?: string
+          entered_at?: string | null
+          id?: string
+          metadata?: Json | null
+          priority?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "waiting_queue_contact_id_fkey"
+            columns: ["contact_id"]
+            isOneToOne: false
+            referencedRelation: "contacts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "waiting_queue_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: true
+            referencedRelation: "conversations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       whatsapp_instances: {
         Row: {
           created_at: string | null
