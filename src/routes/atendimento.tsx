@@ -97,6 +97,7 @@ function Sidebar({ email, role }: { email: string; role?: string }) {
     { to: '/atendimento/whatsapp', icon: Smartphone, label: 'WhatsApp', ready: true, roles: ['admin', 'supervisor'] },
     { to: '/atendimento/dashboard', icon: BarChart3, label: 'Dashboard', ready: true, roles: ['admin', 'supervisor'] },
     { to: '/atendimento/treinamento', icon: GraduationCap, label: 'Treinamento', ready: true },
+    { to: '/atendimento/usuarios', icon: ShieldCheck, label: 'Usuários', ready: true, roles: ['admin'] },
     { to: '/atendimento/config', icon: Settings, label: 'Configurações', ready: true, roles: ['admin'] },
   ];
 
