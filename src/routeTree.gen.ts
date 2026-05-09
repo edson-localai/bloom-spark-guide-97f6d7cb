@@ -21,6 +21,7 @@ import { Route as AtendimentoKanbanRouteImport } from './routes/atendimento.kanb
 import { Route as AtendimentoDashboardRouteImport } from './routes/atendimento.dashboard'
 import { Route as AtendimentoContatosRouteImport } from './routes/atendimento.contatos'
 import { Route as AtendimentoConfigRouteImport } from './routes/atendimento.config'
+import { Route as ApiPublicProcessScheduledRouteImport } from './routes/api/public/process-scheduled'
 
 const PropostaRoute = PropostaRouteImport.update({
   id: '/proposta',
@@ -82,6 +83,12 @@ const AtendimentoConfigRoute = AtendimentoConfigRouteImport.update({
   path: '/config',
   getParentRoute: () => AtendimentoRoute,
 } as any)
+const ApiPublicProcessScheduledRoute =
+  ApiPublicProcessScheduledRouteImport.update({
+    id: '/api/public/process-scheduled',
+    path: '/api/public/process-scheduled',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -96,6 +103,7 @@ export interface FileRoutesByFullPath {
   '/atendimento/respostas': typeof AtendimentoRespostasRoute
   '/atendimento/whatsapp': typeof AtendimentoWhatsappRoute
   '/atendimento/': typeof AtendimentoIndexRoute
+  '/api/public/process-scheduled': typeof ApiPublicProcessScheduledRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -109,6 +117,7 @@ export interface FileRoutesByTo {
   '/atendimento/respostas': typeof AtendimentoRespostasRoute
   '/atendimento/whatsapp': typeof AtendimentoWhatsappRoute
   '/atendimento': typeof AtendimentoIndexRoute
+  '/api/public/process-scheduled': typeof ApiPublicProcessScheduledRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -124,6 +133,7 @@ export interface FileRoutesById {
   '/atendimento/respostas': typeof AtendimentoRespostasRoute
   '/atendimento/whatsapp': typeof AtendimentoWhatsappRoute
   '/atendimento/': typeof AtendimentoIndexRoute
+  '/api/public/process-scheduled': typeof ApiPublicProcessScheduledRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -140,6 +150,7 @@ export interface FileRouteTypes {
     | '/atendimento/respostas'
     | '/atendimento/whatsapp'
     | '/atendimento/'
+    | '/api/public/process-scheduled'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -153,6 +164,7 @@ export interface FileRouteTypes {
     | '/atendimento/respostas'
     | '/atendimento/whatsapp'
     | '/atendimento'
+    | '/api/public/process-scheduled'
   id:
     | '__root__'
     | '/'
@@ -167,6 +179,7 @@ export interface FileRouteTypes {
     | '/atendimento/respostas'
     | '/atendimento/whatsapp'
     | '/atendimento/'
+    | '/api/public/process-scheduled'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -174,6 +187,7 @@ export interface RootRouteChildren {
   AtendimentoRoute: typeof AtendimentoRouteWithChildren
   LoginRoute: typeof LoginRoute
   PropostaRoute: typeof PropostaRoute
+  ApiPublicProcessScheduledRoute: typeof ApiPublicProcessScheduledRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -262,6 +276,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AtendimentoConfigRouteImport
       parentRoute: typeof AtendimentoRoute
     }
+    '/api/public/process-scheduled': {
+      id: '/api/public/process-scheduled'
+      path: '/api/public/process-scheduled'
+      fullPath: '/api/public/process-scheduled'
+      preLoaderRoute: typeof ApiPublicProcessScheduledRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -296,7 +317,18 @@ const rootRouteChildren: RootRouteChildren = {
   AtendimentoRoute: AtendimentoRouteWithChildren,
   LoginRoute: LoginRoute,
   PropostaRoute: PropostaRoute,
+  ApiPublicProcessScheduledRoute: ApiPublicProcessScheduledRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
