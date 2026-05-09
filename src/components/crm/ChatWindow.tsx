@@ -1,12 +1,15 @@
 import { useState, useRef, useEffect } from 'react';
-import { Send, User, Bot, Paperclip, MoreVertical, ShieldCheck, Clock, Sparkles, Loader2, Smile, Zap, Hammer, StickyNote, MessageCircle } from 'lucide-react';
+import { Send, User, Bot, Paperclip, MoreVertical, ShieldCheck, Clock, Sparkles, Loader2, Smile, Zap, Hammer, StickyNote, MessageCircle, CalendarClock, Image as ImageIcon, File as FileIcon, X, UserPlus } from 'lucide-react';
 import { Message, Conversation, Contact } from '@/types/crm';
 import { useMessages } from '@/hooks/useMessages';
+import { useAgents } from '@/hooks/useAgents';
 import { getAiSuggestions, AiSuggestions } from '@/services/aiService';
 import { extractContactData } from '@/lib/ai.functions';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';
+import { format } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
 
 interface ChatWindowProps {
   conversation: (Conversation & { contact: Contact | null }) | null;
@@ -16,17 +19,112 @@ export function ChatWindow({ conversation }: ChatWindowProps) {
   const [input, setInput] = useState('');
   const [isInternal, setIsInternal] = useState(false);
   const [isAiLoading, setIsAiLoading] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
   const [suggestions, setSuggestions] = useState<AiSuggestions | null>(null);
+  const [showSchedule, setShowSchedule] = useState(false);
+  const [showTransfer, setShowTransfer] = useState(false);
+  const [scheduledDate, setScheduledDate] = useState('');
+  const [scheduledTime, setScheduledTime] = useState('');
+  
   const { messages, loading, sendMessage } = useMessages(conversation?.id ?? null);
+  const { agents } = useAgents();
   const scrollRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
-    // Limpa sugestões ao mudar de conversa
     setSuggestions(null);
+    setShowSchedule(false);
+    setShowTransfer(false);
   }, [messages, conversation?.id]);
+
+  const handleTransfer = async (agentId: string) => {
+    if (!conversation) return;
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      const { error } = await supabase
+        .from('conversations')
+        .update({ 
+          agent_id: agentId,
+          transferred_from: user?.id as any,
+          transferred_at: new Date().toISOString()
+        } as any)
+        .eq('id', conversation.id);
+
+      if (error) throw error;
+
+      toast.success('Chat transferido com sucesso!');
+      setShowTransfer(false);
+    } catch (err) {
+      toast.error('Erro ao transferir chat.');
+    }
+  };
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !conversation) return;
+
+    setIsUploading(true);
+    try {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${Math.random()}.${fileExt}`;
+      const filePath = `${conversation.id}/${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('crm_media')
+        .upload(filePath, file);
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('crm_media')
+        .getPublicUrl(filePath);
+
+      await sendMessage(file.name, file.type.startsWith('image/') ? 'image' : 'document', false);
+      
+      // Update the last message to include media info (heurística simples para MVP)
+      await supabase.from('messages')
+        .update({
+          media_url: publicUrl,
+          media_mime: file.type
+        } as any)
+        .eq('content', file.name)
+        .eq('conversation_id', conversation.id)
+        .order('created_at', { ascending: false })
+        .limit(1);
+
+      toast.success('Arquivo enviado!');
+    } catch (error) {
+      console.error(error);
+      toast.error('Erro ao enviar arquivo.');
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const handleScheduleMessage = async () => {
+    if (!input.trim() || !scheduledDate || !scheduledTime || !conversation) return;
+    
+    const dateTime = new Date(`${scheduledDate}T${scheduledTime}`);
+    
+    try {
+      const { error } = await supabase.from('scheduled_messages').insert({
+        conversation_id: conversation.id,
+        content: input,
+        scheduled_for: dateTime.toISOString(),
+      });
+
+      if (error) throw error;
+
+      toast.success(`Mensagem agendada para ${format(dateTime, "dd/MM 'às' HH:mm", { locale: ptBR })}`);
+      setInput('');
+      setShowSchedule(false);
+    } catch (error) {
+      toast.error('Erro ao agendar mensagem.');
+    }
+  };
 
   const handleAiSuggest = async () => {
     if (!conversation || messages.length === 0) return;
@@ -54,7 +152,6 @@ export function ChatWindow({ conversation }: ChatWindowProps) {
     if (internal) setIsInternal(false);
     await sendMessage(content, 'text', internal);
     
-    // Auto-extração a cada 3 mensagens (simples heuristic)
     if (conversation && messages.length % 3 === 0) {
       extractContactData({ 
         data: {
@@ -125,7 +222,6 @@ export function ChatWindow({ conversation }: ChatWindowProps) {
                 
                 if (!error) {
                   toast.success(newValue ? 'Auto-resposta ativada para este chat' : 'Auto-resposta desativada para este chat');
-                  // Forçar atualização local se necessário, mas o realtime deve cuidar disso se configurado
                 }
               }}
               className={`h-5 w-9 rounded-full relative transition-colors ${conversation.auto_reply_enabled ? 'bg-cyan-500' : 'bg-zinc-700'}`}
@@ -133,6 +229,13 @@ export function ChatWindow({ conversation }: ChatWindowProps) {
               <div className={`h-3 w-3 rounded-full bg-white absolute top-1 transition-all ${conversation.auto_reply_enabled ? 'right-1' : 'left-1'}`} />
             </button>
           </div>
+          <button 
+            onClick={() => setShowTransfer(!showTransfer)}
+            className={`p-2 transition-colors ${showTransfer ? 'text-cyan-400' : 'text-zinc-400 hover:text-white'}`}
+            title="Transferir Atendimento"
+          >
+            <UserPlus className="h-5 w-5" />
+          </button>
           <button className="p-2 text-zinc-400 hover:text-white transition-colors">
             <ShieldCheck className="h-5 w-5" />
           </button>
@@ -141,6 +244,32 @@ export function ChatWindow({ conversation }: ChatWindowProps) {
           </button>
         </div>
       </div>
+
+      <AnimatePresence>
+        {showTransfer && (
+          <motion.div 
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            className="bg-[#151821] border-b border-[#1F232E] overflow-hidden"
+          >
+            <div className="p-4 flex gap-3 overflow-x-auto custom-scrollbar">
+              {agents.map(agent => (
+                <button
+                  key={agent.id}
+                  onClick={() => handleTransfer(agent.id)}
+                  className="flex flex-col items-center gap-2 p-3 rounded-xl bg-black/20 border border-[#1F232E] hover:border-cyan-500/30 transition-all min-w-[100px]"
+                >
+                  <div className="h-10 w-10 rounded-full bg-cyan-500/10 flex items-center justify-center text-cyan-500 font-bold">
+                    {agent.name.charAt(0)}
+                  </div>
+                  <span className="text-[10px] text-zinc-300 font-medium truncate w-full text-center">{agent.name}</span>
+                </button>
+              ))}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Messages Area */}
       <div className="flex-1 overflow-y-auto p-6 space-y-4 custom-scrollbar" ref={scrollRef}>
@@ -181,6 +310,17 @@ export function ChatWindow({ conversation }: ChatWindowProps) {
                           : 'bg-[#151821] text-zinc-200 border border-[#1F232E] rounded-tl-none'
                     }`}
                   >
+                    {msg.content_type === 'image' && msg.media_url && (
+                      <div className="mb-2 rounded-lg overflow-hidden border border-white/10 cursor-pointer">
+                        <img src={msg.media_url} alt="Mídia" className="max-w-full h-auto hover:scale-[1.02] transition-transform" />
+                      </div>
+                    )}
+                    {msg.content_type === 'document' && msg.media_url && (
+                      <a href={msg.media_url} target="_blank" rel="noreferrer" className="flex items-center gap-2 mb-2 p-2 rounded-lg bg-black/20 hover:bg-black/40 transition-colors">
+                        <FileIcon className="h-4 w-4 text-cyan-400" />
+                        <span className="text-xs truncate">{msg.content}</span>
+                      </a>
+                    )}
                     {msg.content}
                   </div>
                   <div className={`flex items-center gap-1 ${isMe ? 'justify-end' : 'justify-start'}`}>
@@ -211,7 +351,16 @@ export function ChatWindow({ conversation }: ChatWindowProps) {
                 {isAiLoading ? <Loader2 className="h-3 w-3 animate-spin" /> : <Sparkles className="h-3 w-3" />}
                 Opções da Clara
               </button>
-              <span className="text-[10px] text-zinc-600 font-medium">Extraia o melhor tom para este cliente</span>
+              <button
+                type="button"
+                onClick={() => setShowSchedule(!showSchedule)}
+                className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border text-[10px] font-bold uppercase tracking-wider transition-all ${
+                  showSchedule ? 'bg-amber-500/20 border-amber-500/40 text-amber-400' : 'bg-zinc-500/10 border-zinc-500/20 text-zinc-500 hover:bg-zinc-500/20'
+                }`}
+              >
+                <CalendarClock className="h-3 w-3" />
+                Agendar
+              </button>
             </div>
 
             <AnimatePresence>
@@ -242,6 +391,42 @@ export function ChatWindow({ conversation }: ChatWindowProps) {
                   />
                 </motion.div>
               )}
+
+              {showSchedule && (
+                <motion.div 
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  className="bg-[#151821] border border-amber-500/20 rounded-xl p-4 flex flex-col md:flex-row gap-4 items-end"
+                >
+                  <div className="flex-1 space-y-2">
+                    <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Data</label>
+                    <input 
+                      type="date" 
+                      value={scheduledDate}
+                      onChange={(e) => setScheduledDate(e.target.value)}
+                      className="w-full bg-black/20 border border-[#1F232E] rounded-lg p-2 text-sm text-white" 
+                    />
+                  </div>
+                  <div className="flex-1 space-y-2">
+                    <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Hora</label>
+                    <input 
+                      type="time" 
+                      value={scheduledTime}
+                      onChange={(e) => setScheduledTime(e.target.value)}
+                      className="w-full bg-black/20 border border-[#1F232E] rounded-lg p-2 text-sm text-white" 
+                    />
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleScheduleMessage}
+                    disabled={!scheduledDate || !scheduledTime || !input.trim()}
+                    className="bg-amber-500 text-black font-bold text-xs px-4 py-2.5 rounded-lg hover:bg-amber-400 disabled:opacity-50 transition-colors"
+                  >
+                    Confirmar Agendamento
+                  </button>
+                </motion.div>
+              )}
             </AnimatePresence>
           </div>
 
@@ -264,9 +449,23 @@ export function ChatWindow({ conversation }: ChatWindowProps) {
                 <StickyNote className="h-4 w-4" />
               </button>
             </div>
-            <button type="button" className="p-2 text-zinc-500 hover:text-cyan-400 transition-colors">
-              <Paperclip className="h-5 w-5" />
+            
+            <input 
+              type="file" 
+              className="hidden" 
+              ref={fileInputRef} 
+              onChange={handleFileUpload} 
+              accept="image/*,application/pdf"
+            />
+            <button 
+              type="button" 
+              onClick={() => fileInputRef.current?.click()}
+              disabled={isUploading}
+              className="p-2 text-zinc-500 hover:text-cyan-400 transition-colors disabled:opacity-50"
+            >
+              {isUploading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Paperclip className="h-5 w-5" />}
             </button>
+
             <div className="flex-1 relative">
               <input
                 type="text"
