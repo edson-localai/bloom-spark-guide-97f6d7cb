@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { Send, User, Bot, Paperclip, MoreVertical, ShieldCheck, Clock, Sparkles, Loader2, Smile, Zap, Hammer } from 'lucide-react';
+import { Send, User, Bot, Paperclip, MoreVertical, ShieldCheck, Clock, Sparkles, Loader2, Smile, Zap, Hammer, StickyNote, MessageCircle } from 'lucide-react';
 import { Message, Conversation, Contact } from '@/types/crm';
 import { useMessages } from '@/hooks/useMessages';
 import { getAiSuggestions, AiSuggestions } from '@/services/aiService';
@@ -13,6 +13,7 @@ interface ChatWindowProps {
 
 export function ChatWindow({ conversation }: ChatWindowProps) {
   const [input, setInput] = useState('');
+  const [isInternal, setIsInternal] = useState(false);
   const [isAiLoading, setIsAiLoading] = useState(false);
   const [suggestions, setSuggestions] = useState<AiSuggestions | null>(null);
   const { messages, loading, sendMessage } = useMessages(conversation?.id ?? null);
@@ -47,8 +48,10 @@ export function ChatWindow({ conversation }: ChatWindowProps) {
     e.preventDefault();
     if (!input.trim()) return;
     const content = input;
+    const internal = isInternal;
     setInput('');
-    await sendMessage(content);
+    if (internal) setIsInternal(false);
+    await sendMessage(content, 'text', internal);
     
     // Auto-extração a cada 3 mensagens (simples heuristic)
     if (conversation && messages.length % 3 === 0) {
@@ -142,11 +145,19 @@ export function ChatWindow({ conversation }: ChatWindowProps) {
             return (
               <div key={msg.id} className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}>
                 <div className={`max-w-[70%] space-y-1`}>
+                  {msg.is_internal && (
+                    <div className="flex items-center gap-1.5 px-2 py-0.5 rounded bg-amber-500/10 border border-amber-500/20 text-[9px] font-bold text-amber-500 uppercase tracking-widest w-fit ml-auto mb-1">
+                      <StickyNote className="h-2.5 w-2.5" />
+                      Nota Interna
+                    </div>
+                  )}
                   <div
                     className={`px-4 py-2 rounded-2xl text-sm ${
-                      isMe 
-                        ? 'bg-cyan-500 text-black font-medium rounded-tr-none shadow-[0_0_15px_rgba(0,204,238,0.2)]' 
-                        : 'bg-[#151821] text-zinc-200 border border-[#1F232E] rounded-tl-none'
+                      msg.is_internal
+                        ? 'bg-amber-500/10 text-amber-200 border border-amber-500/30 italic'
+                        : isMe 
+                          ? 'bg-cyan-500 text-black font-medium rounded-tr-none shadow-[0_0_15px_rgba(0,204,238,0.2)]' 
+                          : 'bg-[#151821] text-zinc-200 border border-[#1F232E] rounded-tl-none'
                     }`}
                   >
                     {msg.content}
@@ -214,6 +225,24 @@ export function ChatWindow({ conversation }: ChatWindowProps) {
           </div>
 
           <div className="flex items-center gap-3">
+            <div className="flex bg-[#151821] rounded-xl p-1 border border-[#1F232E]">
+              <button
+                type="button"
+                onClick={() => setIsInternal(false)}
+                className={`p-2 rounded-lg transition-all ${!isInternal ? 'bg-cyan-500 text-black' : 'text-zinc-500 hover:text-zinc-300'}`}
+                title="Mensagem Pública"
+              >
+                <MessageCircle className="h-4 w-4" />
+              </button>
+              <button
+                type="button"
+                onClick={() => setIsInternal(true)}
+                className={`p-2 rounded-lg transition-all ${isInternal ? 'bg-amber-500 text-black' : 'text-zinc-500 hover:text-zinc-300'}`}
+                title="Nota Interna"
+              >
+                <StickyNote className="h-4 w-4" />
+              </button>
+            </div>
             <button type="button" className="p-2 text-zinc-500 hover:text-cyan-400 transition-colors">
               <Paperclip className="h-5 w-5" />
             </button>
@@ -222,14 +251,20 @@ export function ChatWindow({ conversation }: ChatWindowProps) {
                 type="text"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                placeholder="Digite sua mensagem..."
-                className="w-full bg-[#151821] border border-[#1F232E] rounded-xl py-2.5 px-4 text-sm text-zinc-200 focus:outline-none focus:border-cyan-500/50 transition-colors"
+                placeholder={isInternal ? "Escrever nota interna..." : "Digite sua mensagem..."}
+                className={`w-full bg-[#151821] border rounded-xl py-2.5 px-4 text-sm transition-colors focus:outline-none ${
+                  isInternal 
+                    ? 'border-amber-500/50 text-amber-100 placeholder:text-amber-500/40' 
+                    : 'border-[#1F232E] text-zinc-200 focus:border-cyan-500/50'
+                }`}
               />
             </div>
             <button
               type="submit"
               disabled={!input.trim()}
-              className="h-10 w-10 flex items-center justify-center rounded-xl bg-cyan-500 text-black hover:bg-cyan-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className={`h-10 w-10 flex items-center justify-center rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
+                isInternal ? 'bg-amber-500 text-black hover:bg-amber-400' : 'bg-cyan-500 text-black hover:bg-cyan-400'
+              }`}
             >
               <Send className="h-5 w-5" />
             </button>

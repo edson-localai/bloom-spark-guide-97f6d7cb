@@ -149,7 +149,20 @@ function ConfigPage() {
                   className="w-full h-24 bg-[#151821] border border-[#1F232E] rounded-2xl p-4 text-sm text-zinc-300 focus:outline-none focus:border-cyan-500/50 transition-colors resize-none"
                 />
               </div>
-              <div className="p-4 bg-[#151821] rounded-2xl border border-[#1F232E] space-y-3">
+              <div className="p-4 bg-[#151821] rounded-2xl border border-[#1F232E] space-y-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-semibold text-white">Auto-Resposta (Bot)</p>
+                    <p className="text-[10px] text-zinc-500">Clara responde sozinha em 'Bot'</p>
+                  </div>
+                  <button
+                    onClick={() => updateSetting('auto_reply_active', getSetting('auto_reply_active') === 'true' ? 'false' : 'true')}
+                    className={`h-6 w-11 rounded-full relative transition-colors ${getSetting('auto_reply_active') === 'true' ? 'bg-cyan-500' : 'bg-zinc-700'}`}
+                  >
+                    <div className={`h-4 w-4 rounded-full bg-white absolute top-1 transition-all ${getSetting('auto_reply_active') === 'true' ? 'right-1' : 'left-1'}`} />
+                  </button>
+                </div>
+                <div className="h-px bg-[#1F232E]" />
                 <div className="flex items-center justify-between text-xs">
                   <span className="text-zinc-400 font-bold uppercase tracking-widest">Segunda a Sexta</span>
                   <span className="text-cyan-400 font-mono">08:00 — 18:00</span>

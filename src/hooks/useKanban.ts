@@ -26,7 +26,10 @@ export function useKanban() {
       const old = items.find(i => i.id === id);
       const { error } = await supabase
         .from('conversations')
-        .update({ status: newStatus as any })
+        .update({ 
+          status: newStatus as any,
+          resolved_at: newStatus === 'resolved' ? new Date().toISOString() : null 
+        })
         .eq('id', id);
       if (error) throw error;
       setItems(prev => prev.map(item => item.id === id ? { ...item, status: newStatus as any } : item));
@@ -38,6 +41,15 @@ export function useKanban() {
         oldData: { status: old?.status },
         newData: { status: newStatus },
       });
+
+      // Se resolvido, envia NPS automático
+      if (newStatus === 'resolved') {
+        await supabase.from('messages').insert({
+          conversation_id: id,
+          content: 'Obrigado por falar com a HCB! 🌟 Como você avalia nosso atendimento de 0 a 10?',
+          sender_type: 'bot'
+        });
+      }
     } catch (error) {
       console.error('Error moving card:', error);
     }

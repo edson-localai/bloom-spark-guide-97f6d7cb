@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Message } from '@/types/crm';
+import { handleAutoReply } from '@/lib/ai.functions';
 
 export function useMessages(conversationId: string | null) {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -25,7 +26,18 @@ export function useMessages(conversationId: string | null) {
           filter: `conversation_id=eq.${conversationId}`,
         },
         (payload) => {
-          setMessages((prev) => [...prev, payload.new as Message]);
+          const newMsg = payload.new as Message;
+          setMessages((prev) => [...prev, newMsg]);
+
+          // Trigger Auto-reply se for mensagem do contato
+          if (newMsg.sender_type === 'contact') {
+            handleAutoReply({ 
+              data: {
+                conversationId: conversationId, 
+                content: newMsg.content || '' 
+              } 
+            });
+          }
         }
       )
       .subscribe();
@@ -52,14 +64,15 @@ export function useMessages(conversationId: string | null) {
     }
   }
 
-  async function sendMessage(content: string, type: any = 'text') {
+  async function sendMessage(content: string, type: any = 'text', isInternal: boolean = false) {
     if (!conversationId) return;
     try {
       const { error } = await supabase.from('messages').insert({
         conversation_id: conversationId,
         content,
         content_type: type,
-        sender_type: 'agent', // Temporário: ideal vir do auth
+        sender_type: 'agent',
+        is_internal: isInternal,
       });
       if (error) throw error;
     } catch (err) {
