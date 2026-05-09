@@ -18,17 +18,81 @@ export function ChatWindow({ conversation }: ChatWindowProps) {
   const [input, setInput] = useState('');
   const [isInternal, setIsInternal] = useState(false);
   const [isAiLoading, setIsAiLoading] = useState(false);
+  const [isUploading, setIsAiUploading] = useState(false);
   const [suggestions, setSuggestions] = useState<AiSuggestions | null>(null);
+  const [showSchedule, setShowSchedule] = useState(false);
+  const [scheduledDate, setScheduledDate] = useState('');
+  const [scheduledTime, setScheduledTime] = useState('');
+  
   const { messages, loading, sendMessage } = useMessages(conversation?.id ?? null);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
-    // Limpa sugestões ao mudar de conversa
     setSuggestions(null);
   }, [messages, conversation?.id]);
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !conversation) return;
+
+    setIsAiUploading(true);
+    try {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${Math.random()}.${fileExt}`;
+      const filePath = `${conversation.id}/${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('crm_media')
+        .upload(filePath, file);
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('crm_media')
+        .getPublicUrl(filePath);
+
+      await sendMessage(file.name, file.type.startsWith('image/') ? 'image' : 'document', false);
+      
+      // Update the last message to include media info
+      await supabase.from('messages').update({
+        media_url: publicUrl,
+        media_mime: file.type
+      } as any).eq('content', file.name).eq('conversation_id', conversation.id).order('created_at', { ascending: false }).limit(1);
+
+      toast.success('Arquivo enviado!');
+    } catch (error) {
+      console.error(error);
+      toast.error('Erro ao enviar arquivo.');
+    } finally {
+      setIsAiUploading(false);
+    }
+  };
+
+  const handleScheduleMessage = async () => {
+    if (!input.trim() || !scheduledDate || !scheduledTime || !conversation) return;
+    
+    const dateTime = new Date(`${scheduledDate}T${scheduledTime}`);
+    
+    try {
+      const { error } = await supabase.from('scheduled_messages').insert({
+        conversation_id: conversation.id,
+        content: input,
+        scheduled_for: dateTime.toISOString(),
+      });
+
+      if (error) throw error;
+
+      toast.success(`Mensagem agendada para ${format(dateTime, "dd/MM 'às' HH:mm", { locale: ptBR })}`);
+      setInput('');
+      setShowSchedule(false);
+    } catch (error) {
+      toast.error('Erro ao agendar mensagem.');
+    }
+  };
 
   const handleAiSuggest = async () => {
     if (!conversation || messages.length === 0) return;
