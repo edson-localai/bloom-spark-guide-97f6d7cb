@@ -14,6 +14,7 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as AtendimentoRouteImport } from './routes/atendimento'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AtendimentoIndexRouteImport } from './routes/atendimento.index'
+import { Route as AtendimentoWhatsappRouteImport } from './routes/atendimento.whatsapp'
 import { Route as AtendimentoRespostasRouteImport } from './routes/atendimento.respostas'
 import { Route as AtendimentoKanbanRouteImport } from './routes/atendimento.kanban'
 import { Route as AtendimentoContatosRouteImport } from './routes/atendimento.contatos'
@@ -43,6 +44,11 @@ const AtendimentoIndexRoute = AtendimentoIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AtendimentoRoute,
 } as any)
+const AtendimentoWhatsappRoute = AtendimentoWhatsappRouteImport.update({
+  id: '/whatsapp',
+  path: '/whatsapp',
+  getParentRoute: () => AtendimentoRoute,
+} as any)
 const AtendimentoRespostasRoute = AtendimentoRespostasRouteImport.update({
   id: '/respostas',
   path: '/respostas',
@@ -67,6 +73,7 @@ export interface FileRoutesByFullPath {
   '/atendimento/contatos': typeof AtendimentoContatosRoute
   '/atendimento/kanban': typeof AtendimentoKanbanRoute
   '/atendimento/respostas': typeof AtendimentoRespostasRoute
+  '/atendimento/whatsapp': typeof AtendimentoWhatsappRoute
   '/atendimento/': typeof AtendimentoIndexRoute
 }
 export interface FileRoutesByTo {
@@ -76,6 +83,7 @@ export interface FileRoutesByTo {
   '/atendimento/contatos': typeof AtendimentoContatosRoute
   '/atendimento/kanban': typeof AtendimentoKanbanRoute
   '/atendimento/respostas': typeof AtendimentoRespostasRoute
+  '/atendimento/whatsapp': typeof AtendimentoWhatsappRoute
   '/atendimento': typeof AtendimentoIndexRoute
 }
 export interface FileRoutesById {
@@ -87,6 +95,7 @@ export interface FileRoutesById {
   '/atendimento/contatos': typeof AtendimentoContatosRoute
   '/atendimento/kanban': typeof AtendimentoKanbanRoute
   '/atendimento/respostas': typeof AtendimentoRespostasRoute
+  '/atendimento/whatsapp': typeof AtendimentoWhatsappRoute
   '/atendimento/': typeof AtendimentoIndexRoute
 }
 export interface FileRouteTypes {
@@ -99,6 +108,7 @@ export interface FileRouteTypes {
     | '/atendimento/contatos'
     | '/atendimento/kanban'
     | '/atendimento/respostas'
+    | '/atendimento/whatsapp'
     | '/atendimento/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -108,6 +118,7 @@ export interface FileRouteTypes {
     | '/atendimento/contatos'
     | '/atendimento/kanban'
     | '/atendimento/respostas'
+    | '/atendimento/whatsapp'
     | '/atendimento'
   id:
     | '__root__'
@@ -118,6 +129,7 @@ export interface FileRouteTypes {
     | '/atendimento/contatos'
     | '/atendimento/kanban'
     | '/atendimento/respostas'
+    | '/atendimento/whatsapp'
     | '/atendimento/'
   fileRoutesById: FileRoutesById
 }
@@ -165,6 +177,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AtendimentoIndexRouteImport
       parentRoute: typeof AtendimentoRoute
     }
+    '/atendimento/whatsapp': {
+      id: '/atendimento/whatsapp'
+      path: '/whatsapp'
+      fullPath: '/atendimento/whatsapp'
+      preLoaderRoute: typeof AtendimentoWhatsappRouteImport
+      parentRoute: typeof AtendimentoRoute
+    }
     '/atendimento/respostas': {
       id: '/atendimento/respostas'
       path: '/respostas'
@@ -193,6 +212,7 @@ interface AtendimentoRouteChildren {
   AtendimentoContatosRoute: typeof AtendimentoContatosRoute
   AtendimentoKanbanRoute: typeof AtendimentoKanbanRoute
   AtendimentoRespostasRoute: typeof AtendimentoRespostasRoute
+  AtendimentoWhatsappRoute: typeof AtendimentoWhatsappRoute
   AtendimentoIndexRoute: typeof AtendimentoIndexRoute
 }
 
@@ -200,6 +220,7 @@ const AtendimentoRouteChildren: AtendimentoRouteChildren = {
   AtendimentoContatosRoute: AtendimentoContatosRoute,
   AtendimentoKanbanRoute: AtendimentoKanbanRoute,
   AtendimentoRespostasRoute: AtendimentoRespostasRoute,
+  AtendimentoWhatsappRoute: AtendimentoWhatsappRoute,
   AtendimentoIndexRoute: AtendimentoIndexRoute,
 }
 
