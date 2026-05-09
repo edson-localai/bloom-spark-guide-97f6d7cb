@@ -354,16 +354,12 @@ export function ChatWindow({ conversation }: ChatWindowProps) {
                           : 'bg-[#151821] text-zinc-200 border border-[#1F232E] rounded-tl-none'
                     }`}
                   >
-                    {msg.content_type === 'image' && msg.media_url && (
-                      <div className="mb-2 rounded-lg overflow-hidden border border-white/10 cursor-pointer">
-                        <img src={msg.media_url} alt="Mídia" className="max-w-full h-auto hover:scale-[1.02] transition-transform" />
-                      </div>
-                    )}
-                    {msg.content_type === 'document' && msg.media_url && (
-                      <a href={msg.media_url} target="_blank" rel="noreferrer" className="flex items-center gap-2 mb-2 p-2 rounded-lg bg-black/20 hover:bg-black/40 transition-colors">
-                        <FileIcon className="h-4 w-4 text-cyan-400" />
-                        <span className="text-xs truncate">{msg.content}</span>
-                      </a>
+                    {msg.media_url && (
+                      <MediaPreview 
+                        path={msg.media_url} 
+                        type={msg.content_type} 
+                        name={msg.content || 'Arquivo'} 
+                      />
                     )}
                     {msg.content}
                   </div>
