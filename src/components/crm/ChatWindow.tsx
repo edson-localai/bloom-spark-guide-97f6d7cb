@@ -87,8 +87,19 @@ export function ChatWindow({ conversation }: ChatWindowProps) {
           <div>
             <p className="text-sm font-semibold text-white">{conversation.contact?.name || conversation.whatsapp_chat_id}</p>
             <div className="flex items-center gap-1.5">
-              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
-              <p className="text-[10px] text-emerald-500 uppercase font-bold tracking-wider">Online</p>
+              {isAiLoading ? (
+                <div className="flex gap-0.5 items-center">
+                  <span className="h-1 w-1 rounded-full bg-cyan-400 animate-bounce" style={{ animationDelay: '0s' }}></span>
+                  <span className="h-1 w-1 rounded-full bg-cyan-400 animate-bounce" style={{ animationDelay: '0.2s' }}></span>
+                  <span className="h-1 w-1 rounded-full bg-cyan-400 animate-bounce" style={{ animationDelay: '0.4s' }}></span>
+                  <p className="text-[10px] text-cyan-400 ml-1 font-bold uppercase tracking-wider">Clara pensando...</p>
+                </div>
+              ) : (
+                <>
+                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
+                  <p className="text-[10px] text-emerald-500 uppercase font-bold tracking-wider">Online</p>
+                </>
+              )}
             </div>
           </div>
         </div>
