@@ -1,14 +1,17 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { useEffect, useState } from 'react';
-import { BarChart3, Users, MessageSquare, Clock, TrendingUp, ArrowUpRight, ArrowDownRight, Download, Hourglass } from 'lucide-react';
+import { BarChart3, Users, MessageSquare, Clock, TrendingUp, ArrowUpRight, ArrowDownRight, Download, Hourglass, ShieldAlert } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { useCrmAuth } from '@/hooks/useCrmAuth';
 
 export const Route = createFileRoute('/atendimento/dashboard')({
   component: DashboardPage,
 });
 
 function DashboardPage() {
+  const { roles, loading: authLoading } = useCrmAuth();
+  const isSupervisor = roles.includes('admin') || roles.includes('supervisor');
   const [avgWaitTime, setAvgWaitTime] = useState<string>('--');
   const [waitingNow, setWaitingNow] = useState<number>(0);
 
