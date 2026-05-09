@@ -218,6 +218,20 @@ function ConfigPage() {
                   <div className="h-4 w-4 rounded-full bg-white absolute right-0.5 top-0.5 shadow-sm" />
                 </div>
               </div>
+
+              <div className="pt-4 space-y-4">
+                 <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest px-2">Links Rápidos</p>
+                 <a 
+                   href="/atendimento/usuarios" 
+                   className="flex items-center justify-between p-4 bg-cyan-500/5 hover:bg-cyan-500/10 rounded-2xl border border-cyan-500/20 transition-all group"
+                 >
+                    <div className="flex items-center gap-3">
+                      <Users className="h-4 w-4 text-cyan-400" />
+                      <span className="text-sm text-cyan-100 font-semibold">Gerenciar Usuários & Roles</span>
+                    </div>
+                    <ChevronRight className="h-4 w-4 text-cyan-500 group-hover:translate-x-1 transition-transform" />
+                 </a>
+              </div>
             </div>
           </div>
         </div>
