@@ -11,7 +11,7 @@ interface ContactSidebarProps {
   conversationId?: string | null;
 }
 
-export function ContactSidebar({ contact }: ContactSidebarProps) {
+export function ContactSidebar({ contact, conversationId }: ContactSidebarProps) {
   if (!contact) return null;
 
   return (
