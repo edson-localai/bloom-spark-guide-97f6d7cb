@@ -23,6 +23,8 @@ export const Route = createFileRoute('/atendimento')({
 function AtendimentoLayout() {
   const { loading, isAuthenticated, hasAnyRole, user, roles } = useCrmAuth();
   const navigate = useNavigate();
+  
+  useNotifications(isAuthenticated && hasAnyRole);
 
   useEffect(() => {
     if (!loading && !isAuthenticated) navigate({ to: '/login' });
