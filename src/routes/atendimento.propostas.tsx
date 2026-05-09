@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { useState, useMemo, useEffect } from 'react';
-import { FileText, Plus, Trash2, Send, Download, Loader2, User, ChevronRight, Calculator, X, Edit2, CheckCircle2, SendHorizonal, Clock } from 'lucide-react';
+import { FileText, Plus, Trash2, Send, Download, Loader2, User, ChevronRight, Calculator, X, Edit2, CheckCircle2, SendHorizonal, Clock, Search, SearchX } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useContacts } from '@/hooks/useContacts';
 import { toast } from 'sonner';
