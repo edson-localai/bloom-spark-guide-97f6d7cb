@@ -48,8 +48,10 @@ export function ChatWindow({ conversation }: ChatWindowProps) {
     // Auto-extração a cada 3 mensagens (simples heuristic)
     if (conversation && messages.length % 3 === 0) {
       extractContactData({ 
-        conversationId: conversation.id, 
-        contactId: conversation.contact_id! 
+        data: {
+          conversationId: conversation.id, 
+          contactId: conversation.contact_id!
+        }
       }).then(res => {
         if (res && 'updated' in res && res.updated) {
           toast.info('Clara atualizou dados do veículo!', {
