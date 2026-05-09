@@ -167,17 +167,49 @@ export function ChatWindow({ conversation }: ChatWindowProps) {
       {/* Input Area */}
       <div className="p-4 border-t border-[#1F232E]" style={{ background: '#0F1117' }}>
         <form onSubmit={handleSend} className="flex flex-col gap-3">
-          <div className="flex items-center gap-2 mb-1">
-            <button
-              type="button"
-              onClick={handleAiSuggest}
-              disabled={isAiLoading || !conversation}
-              className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 text-[10px] font-bold uppercase tracking-wider hover:bg-cyan-500/20 transition-all disabled:opacity-50"
-            >
-              {isAiLoading ? <Loader2 className="h-3 w-3 animate-spin" /> : <Sparkles className="h-3 w-3" />}
-              Sugestão da Clara
-            </button>
-            <span className="text-[10px] text-zinc-600 font-medium">Use IA para responder mais rápido</span>
+          <div className="flex flex-col gap-2">
+            <div className="flex items-center gap-2 mb-1">
+              <button
+                type="button"
+                onClick={handleAiSuggest}
+                disabled={isAiLoading || !conversation}
+                className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 text-[10px] font-bold uppercase tracking-wider hover:bg-cyan-500/20 transition-all disabled:opacity-50"
+              >
+                {isAiLoading ? <Loader2 className="h-3 w-3 animate-spin" /> : <Sparkles className="h-3 w-3" />}
+                Opções da Clara
+              </button>
+              <span className="text-[10px] text-zinc-600 font-medium">Extraia o melhor tom para este cliente</span>
+            </div>
+
+            <AnimatePresence>
+              {suggestions && (
+                <motion.div 
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 10 }}
+                  className="grid grid-cols-1 md:grid-cols-3 gap-2"
+                >
+                  <SuggestionButton 
+                    icon={Smile} 
+                    label="Amigável" 
+                    text={suggestions.friendly} 
+                    onClick={() => { setInput(suggestions.friendly); setSuggestions(null); }} 
+                  />
+                  <SuggestionButton 
+                    icon={Zap} 
+                    label="Direto" 
+                    text={suggestions.direct} 
+                    onClick={() => { setInput(suggestions.direct); setSuggestions(null); }} 
+                  />
+                  <SuggestionButton 
+                    icon={Hammer} 
+                    label="Técnico" 
+                    text={suggestions.technical} 
+                    onClick={() => { setInput(suggestions.technical); setSuggestions(null); }} 
+                  />
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
 
           <div className="flex items-center gap-3">
