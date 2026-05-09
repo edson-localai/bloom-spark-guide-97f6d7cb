@@ -225,6 +225,24 @@ export function ChatWindow({ conversation }: ChatWindowProps) {
           </div>
 
           <div className="flex items-center gap-3">
+            <div className="flex bg-[#151821] rounded-xl p-1 border border-[#1F232E]">
+              <button
+                type="button"
+                onClick={() => setIsInternal(false)}
+                className={`p-2 rounded-lg transition-all ${!isInternal ? 'bg-cyan-500 text-black' : 'text-zinc-500 hover:text-zinc-300'}`}
+                title="Mensagem Pública"
+              >
+                <MessageCircle className="h-4 w-4" />
+              </button>
+              <button
+                type="button"
+                onClick={() => setIsInternal(true)}
+                className={`p-2 rounded-lg transition-all ${isInternal ? 'bg-amber-500 text-black' : 'text-zinc-500 hover:text-zinc-300'}`}
+                title="Nota Interna"
+              >
+                <StickyNote className="h-4 w-4" />
+              </button>
+            </div>
             <button type="button" className="p-2 text-zinc-500 hover:text-cyan-400 transition-colors">
               <Paperclip className="h-5 w-5" />
             </button>
@@ -233,14 +251,20 @@ export function ChatWindow({ conversation }: ChatWindowProps) {
                 type="text"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                placeholder="Digite sua mensagem..."
-                className="w-full bg-[#151821] border border-[#1F232E] rounded-xl py-2.5 px-4 text-sm text-zinc-200 focus:outline-none focus:border-cyan-500/50 transition-colors"
+                placeholder={isInternal ? "Escrever nota interna..." : "Digite sua mensagem..."}
+                className={`w-full bg-[#151821] border rounded-xl py-2.5 px-4 text-sm transition-colors focus:outline-none ${
+                  isInternal 
+                    ? 'border-amber-500/50 text-amber-100 placeholder:text-amber-500/40' 
+                    : 'border-[#1F232E] text-zinc-200 focus:border-cyan-500/50'
+                }`}
               />
             </div>
             <button
               type="submit"
               disabled={!input.trim()}
-              className="h-10 w-10 flex items-center justify-center rounded-xl bg-cyan-500 text-black hover:bg-cyan-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className={`h-10 w-10 flex items-center justify-center rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
+                isInternal ? 'bg-amber-500 text-black hover:bg-amber-400' : 'bg-cyan-500 text-black hover:bg-cyan-400'
+              }`}
             >
               <Send className="h-5 w-5" />
             </button>
