@@ -1,9 +1,9 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { KanbanSquare, Plus, MoreHorizontal, User, Clock, AlertCircle, Loader2 } from 'lucide-react';
 import { useKanban } from '@/hooks/useKanban';
-import { DndContext, closestCorners, DragOverlay, defaultDropAnimationSideEffects } from '@dnd-kit/core';
-import { SortableContext, verticalListSortingStrategy, arrayMove } from '@dnd-kit/sortable';
-import { useState } from 'react';
+import { DndContext, closestCorners } from '@dnd-kit/core';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useDraggable } from '@dnd-kit/core';
 
 export const Route = createFileRoute('/atendimento/kanban')({
   component: KanbanPage,
