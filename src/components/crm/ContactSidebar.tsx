@@ -73,6 +73,15 @@ export function ContactSidebar({ contact, conversationId }: ContactSidebarProps)
         </div>
       </div>
 
+      {/* Scheduled Messages Section */}
+      <div className="px-6 py-4 border-t border-[#1F232E] space-y-4 max-h-60 flex flex-col">
+        <div className="flex items-center justify-between">
+          <h4 className="text-[10px] uppercase font-bold tracking-widest text-zinc-500">Agendamentos</h4>
+          <CalendarClock className="h-3 w-3 text-zinc-500" />
+        </div>
+        <ScheduledList conversationId={conversationId} />
+      </div>
+
       {/* Timeline Section */}
       <div className="px-6 py-4 border-t border-[#1F232E] space-y-4 flex-1 overflow-hidden flex flex-col">
         <div className="flex items-center justify-between">
