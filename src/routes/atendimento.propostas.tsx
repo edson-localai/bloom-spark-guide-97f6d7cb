@@ -72,6 +72,10 @@ function PropostasPage() {
       result = result.filter(p => p.contact_id === clientFilter);
     }
 
+    if (agentFilter !== 'all') {
+      result = result.filter(p => p.agent_id === agentFilter);
+    }
+
     if (debouncedSearch) {
       const s = debouncedSearch.toLowerCase();
       const normalizedSearch = s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]/g, "");
