@@ -13,6 +13,7 @@ interface ChatWindowProps {
 
 export function ChatWindow({ conversation }: ChatWindowProps) {
   const [input, setInput] = useState('');
+  const [isInternal, setIsInternal] = useState(false);
   const [isAiLoading, setIsAiLoading] = useState(false);
   const [suggestions, setSuggestions] = useState<AiSuggestions | null>(null);
   const { messages, loading, sendMessage } = useMessages(conversation?.id ?? null);
