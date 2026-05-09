@@ -40,10 +40,23 @@ export function useCrmAuth(): CrmAuthState {
     });
 
     async function fetchRoles(userId: string) {
-      const { data } = await supabase
+      // Prefer RPC (security definer) — bypasses any RLS oddities and is the
+      // canonical way to fetch the current user's roles.
+      const rpc = await supabase.rpc('get_my_roles');
+      if (!rpc.error && rpc.data) {
+        setRoles((rpc.data as { role?: AppRole }[] | AppRole[]).map((r: any) =>
+          (typeof r === 'string' ? r : r.role) as AppRole,
+        ));
+        return;
+      }
+      if (rpc.error) {
+        console.warn('[useCrmAuth] get_my_roles RPC failed, falling back', rpc.error);
+      }
+      const { data, error } = await supabase
         .from('user_roles')
         .select('role')
         .eq('user_id', userId);
+      if (error) console.error('[useCrmAuth] user_roles select failed', error);
       setRoles((data ?? []).map((r) => r.role as AppRole));
     }
 
