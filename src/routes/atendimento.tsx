@@ -1,6 +1,7 @@
 import { createFileRoute, Outlet, useNavigate, Link, useLocation } from '@tanstack/react-router';
 import { useEffect } from 'react';
 import { useCrmAuth } from '@/hooks/useCrmAuth';
+import { useNotifications } from '@/hooks/useNotifications';
 import { supabase } from '@/integrations/supabase/client';
 import {
   Inbox,
@@ -22,6 +23,8 @@ export const Route = createFileRoute('/atendimento')({
 function AtendimentoLayout() {
   const { loading, isAuthenticated, hasAnyRole, user, roles } = useCrmAuth();
   const navigate = useNavigate();
+  
+  useNotifications(isAuthenticated && hasAnyRole);
 
   useEffect(() => {
     if (!loading && !isAuthenticated) navigate({ to: '/login' });
@@ -76,8 +79,8 @@ function Sidebar({ email, role }: { email: string; role?: string }) {
     { to: '/atendimento/contatos', icon: Users, label: 'Contatos', ready: true },
     { to: '/atendimento/respostas', icon: MessageSquare, label: 'Respostas', ready: true },
     { to: '/atendimento/whatsapp', icon: Smartphone, label: 'WhatsApp', ready: true },
-    { to: '/atendimento/dashboard', icon: BarChart3, label: 'Dashboard' },
-    { to: '/atendimento/config', icon: Settings, label: 'Configurações' },
+    { to: '/atendimento/dashboard', icon: BarChart3, label: 'Dashboard', ready: true },
+    { to: '/atendimento/config', icon: Settings, label: 'Configurações', ready: true },
   ];
 
   return (
