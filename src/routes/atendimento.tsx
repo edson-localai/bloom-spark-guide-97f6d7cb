@@ -94,6 +94,7 @@ function Sidebar({ email, role }: { email: string; role?: string }) {
     { to: '/atendimento/respostas', icon: MessageSquare, label: 'Respostas', ready: true },
     { to: '/atendimento/whatsapp', icon: Smartphone, label: 'WhatsApp', ready: true },
     { to: '/atendimento/dashboard', icon: BarChart3, label: 'Dashboard', ready: true },
+    { to: '/atendimento/treinamento', icon: GraduationCap, label: 'Treinamento', ready: true },
     { to: '/atendimento/config', icon: Settings, label: 'Configurações', ready: true },
   ];
 
