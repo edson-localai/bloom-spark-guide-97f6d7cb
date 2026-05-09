@@ -1,5 +1,8 @@
-import { User, Car, Tag, MapPin, Calendar, FileText, ChevronRight } from 'lucide-react';
+import { User, Car, Tag, MapPin, Calendar, FileText, ChevronRight, Clock, History } from 'lucide-react';
 import { Contact } from '@/types/crm';
+import { useTimeline } from '@/hooks/useTimeline';
+import { formatDistanceToNow } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
 
 interface ContactSidebarProps {
   contact: Contact | null;
