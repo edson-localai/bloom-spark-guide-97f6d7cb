@@ -211,6 +211,7 @@ export type Database = {
           agent_id: string | null
           ai_intent: string | null
           ai_summary: string | null
+          auto_reply_enabled: boolean | null
           bot_active: boolean | null
           channel: string | null
           contact_id: string | null
@@ -234,6 +235,7 @@ export type Database = {
           agent_id?: string | null
           ai_intent?: string | null
           ai_summary?: string | null
+          auto_reply_enabled?: boolean | null
           bot_active?: boolean | null
           channel?: string | null
           contact_id?: string | null
@@ -257,6 +259,7 @@ export type Database = {
           agent_id?: string | null
           ai_intent?: string | null
           ai_summary?: string | null
+          auto_reply_enabled?: boolean | null
           bot_active?: boolean | null
           channel?: string | null
           contact_id?: string | null

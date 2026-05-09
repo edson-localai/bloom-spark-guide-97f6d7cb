@@ -18,14 +18,14 @@ export const handleAutoReply = createServerFn({ method: "POST" })
 
       if (settings?.value !== 'true') return { handled: false };
 
-      // 2. Verifica status da conversa
+      // 2. Verifica status da conversa e se auto-reply individual está ativo
       const { data: conv } = await supabaseAdmin
         .from('conversations')
-        .select('status, bot_active, contact_id')
+        .select('status, bot_active, auto_reply_enabled, contact_id')
         .eq('id', conversationId)
         .single();
 
-      if (!conv || conv.status !== 'bot' || !conv.bot_active) return { handled: false };
+      if (!conv || conv.status !== 'bot' || !conv.bot_active || !conv.auto_reply_enabled) return { handled: false };
 
       // 3. Busca histórico e prompt
       const { data: promptSetting } = await supabaseAdmin
