@@ -70,8 +70,8 @@ function AtendimentoLayout() {
 function Sidebar({ email, role }: { email: string; role?: string }) {
   const location = useLocation();
 
-  const items = [
-    { to: '/atendimento', icon: Inbox, label: 'Inbox', exact: true },
+  const items: { to: string; icon: typeof Inbox; label: string; exact?: boolean; ready?: boolean }[] = [
+    { to: '/atendimento', icon: Inbox, label: 'Inbox', exact: true, ready: true },
     { to: '/atendimento/kanban', icon: KanbanSquare, label: 'Kanban' },
     { to: '/atendimento/contatos', icon: Users, label: 'Contatos' },
     { to: '/atendimento/respostas', icon: MessageSquare, label: 'Respostas' },
