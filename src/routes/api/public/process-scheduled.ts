@@ -4,7 +4,7 @@ import { supabaseAdmin } from '@/integrations/supabase/client.server';
 export const Route = createFileRoute('/api/public/process-scheduled')({
   server: {
     handlers: {
-      POST: async ({ request }) => {
+      POST: async ({ request }: { request: Request }) => {
         try {
           console.log('Starting scheduled messages processing...');
           
