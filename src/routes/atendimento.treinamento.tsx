@@ -58,8 +58,28 @@ const COURSES: Record<UserType, Module[]> = {
       id: 'v-1',
       title: 'Trilha do Atendente HCB',
       lessons: [
-        { id: 'v-l1', title: '1. Domine o Inbox', description: 'Aprenda a organizar suas conversas e nunca deixar um cliente esperando.', duration: '5 min', type: 'video', icon: MessageSquare },
-        { id: 'v-l2', title: '2. WhatsApp Profissional', description: 'Como usar as ferramentas de automação e respostas rápidas.', duration: '8 min', type: 'video', icon: Smartphone },
+        { 
+          id: 'v-l1', 
+          title: '1. Domine o Inbox', 
+          description: 'Aprenda a organizar suas conversas e nunca deixar um cliente esperando.', 
+          duration: '5 min', 
+          type: 'video', 
+          icon: MessageSquare,
+          quiz: [
+            { id: 'q1', question: 'Qual a principal função do Inbox?', options: ['Organizar conversas', 'Gerar relatórios', 'Configurar o bot'], correctAnswer: 0 }
+          ]
+        },
+        { 
+          id: 'v-l2', 
+          title: '2. WhatsApp Profissional', 
+          description: 'Como usar as ferramentas de automação e respostas rápidas.', 
+          duration: '8 min', 
+          type: 'video', 
+          icon: Smartphone,
+          quiz: [
+            { id: 'q2', question: 'Para que servem as respostas rápidas?', options: ['Agilizar o atendimento', 'Bloquear clientes', 'Mudar o status da conversa'], correctAnswer: 0 }
+          ]
+        },
         { id: 'v-l3', title: '3. Gestão de Contatos', description: 'Cadastrando veículos e informações vitais do cliente.', duration: '7 min', type: 'video', icon: Users },
       ]
     },
