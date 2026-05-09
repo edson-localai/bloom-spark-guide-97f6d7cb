@@ -36,6 +36,19 @@ function PropostasPage() {
   const [debouncedSearch, setDebouncedSearch] = useState('');
   const [sortOrder, setSortOrder] = useState<'newest' | 'oldest'>('newest');
   const [statusFilter, setStatusFilter] = useState<'all' | 'draft' | 'sent' | 'accepted' | 'rejected'>('all');
+  const [clientFilter, setClientFilter] = useState<string>('all');
+
+  const uniqueClients = useMemo(() => {
+    const clientsMap = new Map();
+    proposals.forEach(p => {
+      if (p.contact?.id) {
+        clientsMap.set(p.contact.id, p.contact.name || p.contact.phone || 'Sem Nome');
+      }
+    });
+    return Array.from(clientsMap.entries())
+      .map(([id, name]) => ({ id, name }))
+      .sort((a, b) => a.name.localeCompare(b.name));
+  }, [proposals]);
 
   const subtotal = useMemo(() => items.reduce((acc, item) => acc + (item.quantity * item.price), 0), [items]);
 
@@ -51,6 +64,10 @@ function PropostasPage() {
     
     if (statusFilter !== 'all') {
       result = result.filter(p => p.status === statusFilter);
+    }
+
+    if (clientFilter !== 'all') {
+      result = result.filter(p => p.contact_id === clientFilter);
     }
 
     if (debouncedSearch) {
@@ -89,7 +106,7 @@ function PropostasPage() {
       const dateB = new Date(b.created_at).getTime();
       return sortOrder === 'newest' ? dateB - dateA : dateA - dateB;
     });
-  }, [proposals, debouncedSearch, sortOrder, statusFilter]);
+  }, [proposals, debouncedSearch, sortOrder, statusFilter, clientFilter]);
 
   useEffect(() => {
     fetchProposals();
@@ -299,6 +316,17 @@ function PropostasPage() {
               </div>
 
               <div className="flex items-center gap-2">
+                <select
+                  value={clientFilter}
+                  onChange={(e) => setClientFilter(e.target.value)}
+                  className="bg-[#151821] border border-[#1F232E] rounded-xl px-3 py-2 text-xs font-medium text-zinc-300 focus:outline-none focus:border-cyan-500/50 transition-colors max-w-[200px]"
+                >
+                  <option value="all">Todos os Clientes</option>
+                  {uniqueClients.map(client => (
+                    <option key={client.id} value={client.id}>{client.name}</option>
+                  ))}
+                </select>
+
                 <select
                   value={statusFilter}
                   onChange={(e) => setStatusFilter(e.target.value as any)}
