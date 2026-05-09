@@ -409,14 +409,14 @@ function PropostasPage() {
                 <div className="col-span-full flex justify-center py-20">
                   <Loader2 className="h-8 w-8 animate-spin text-cyan-500" />
                 </div>
-              ) : proposals.length === 0 ? (
+              ) : filteredProposals.length === 0 ? (
                 <div className="col-span-full text-center py-20 bg-[#151821]/30 rounded-3xl border-2 border-dashed border-[#1F232E]">
-                  <FileText className="h-12 w-12 text-zinc-700 mx-auto mb-4" />
-                  <h3 className="text-zinc-500 font-medium">Nenhuma proposta recente</h3>
-                  <p className="text-zinc-700 text-sm">Comece criando um novo orçamento profissional.</p>
+                  <SearchX className="h-12 w-12 text-zinc-700 mx-auto mb-4" />
+                  <h3 className="text-zinc-500 font-medium">Nenhum resultado encontrado</h3>
+                  <p className="text-zinc-700 text-sm">Tente buscar por outro termo ou limpe a busca.</p>
                 </div>
               ) : (
-                proposals.map((prop) => (
+                filteredProposals.map((prop) => (
                   <motion.div 
                     layout
                     key={prop.id}
