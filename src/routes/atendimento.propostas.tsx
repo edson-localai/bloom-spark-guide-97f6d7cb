@@ -66,6 +66,10 @@ function PropostasPage() {
       result = result.filter(p => p.status === statusFilter);
     }
 
+    if (clientFilter !== 'all') {
+      result = result.filter(p => p.contact_id === clientFilter);
+    }
+
     if (debouncedSearch) {
       const s = debouncedSearch.toLowerCase();
       const normalizedSearch = s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]/g, "");
