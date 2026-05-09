@@ -1,11 +1,13 @@
 import { createServerFn } from "@tanstack/react-start";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
+import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { z } from "zod";
 
 export const handleAutoReply = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
   .inputValidator((data) => z.object({ 
-    conversationId: z.string(),
-    content: z.string()
+    conversationId: z.string().uuid(),
+    content: z.string().min(1).max(10000)
   }).parse(data))
   .handler(async ({ data: { conversationId, content } }) => {
     try {
@@ -83,9 +85,10 @@ export const handleAutoReply = createServerFn({ method: "POST" })
   });
 
 export const extractContactData = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
   .inputValidator((data) => z.object({ 
-    conversationId: z.string(),
-    contactId: z.string()
+    conversationId: z.string().uuid(),
+    contactId: z.string().uuid()
   }).parse(data))
   .handler(async ({ data: { conversationId, contactId } }) => {
     try {

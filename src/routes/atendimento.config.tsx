@@ -11,7 +11,7 @@ export const Route = createFileRoute('/atendimento/config')({
 
 function ConfigPage() {
   const { roles, user, loading: authLoading } = useCrmAuth();
-  const isAdmin = roles.includes('admin') || user?.email === 'hcbautomotivo@gmail.com';
+  const isAdmin = roles.includes('admin');
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [settings, setSettings] = useState<any[]>([]);
