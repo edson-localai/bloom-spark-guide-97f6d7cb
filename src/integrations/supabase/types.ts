@@ -220,6 +220,8 @@ export type Database = {
           last_automated_msg_at: string | null
           last_message: string | null
           last_message_at: string | null
+          nps_comment: string | null
+          nps_score: number | null
           priority: string | null
           resolved_at: string | null
           status: string
@@ -241,6 +243,8 @@ export type Database = {
           last_automated_msg_at?: string | null
           last_message?: string | null
           last_message_at?: string | null
+          nps_comment?: string | null
+          nps_score?: number | null
           priority?: string | null
           resolved_at?: string | null
           status?: string
@@ -262,6 +266,8 @@ export type Database = {
           last_automated_msg_at?: string | null
           last_message?: string | null
           last_message_at?: string | null
+          nps_comment?: string | null
+          nps_score?: number | null
           priority?: string | null
           resolved_at?: string | null
           status?: string
