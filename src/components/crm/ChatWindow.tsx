@@ -11,6 +11,54 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
+function MediaPreview({ path, type, name }: { path: string, type: string, name: string }) {
+  const [signedUrl, setSignedUrl] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function getUrl() {
+      // Se for uma URL completa (dados legados), usa direto
+      if (path.startsWith('http')) {
+        setSignedUrl(path);
+        setLoading(false);
+        return;
+      }
+
+      try {
+        const { data, error } = await supabase.storage
+          .from('crm_media')
+          .createSignedUrl(path, 3600); // 1 hora de validade
+        
+        if (error) throw error;
+        setSignedUrl(data.signedUrl);
+      } catch (err) {
+        console.error('Error signing URL:', err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    getUrl();
+  }, [path]);
+
+  if (loading) return <div className="h-20 flex items-center justify-center bg-black/10 rounded-lg"><Loader2 className="h-4 w-4 animate-spin text-cyan-500" /></div>;
+  if (!signedUrl) return <div className="p-2 text-[10px] text-red-400 italic bg-red-500/5 rounded">Erro ao carregar mídia</div>;
+
+  if (type.startsWith('image')) {
+    return (
+      <div className="mb-2 rounded-lg overflow-hidden border border-white/10 cursor-pointer">
+        <img src={signedUrl} alt="Mídia" className="max-w-full h-auto hover:scale-[1.02] transition-transform" />
+      </div>
+    );
+  }
+
+  return (
+    <a href={signedUrl} target="_blank" rel="noreferrer" className="flex items-center gap-2 mb-2 p-2 rounded-lg bg-black/20 hover:bg-black/40 transition-colors">
+      <FileIcon className="h-4 w-4 text-cyan-400" />
+      <span className="text-xs truncate">{name}</span>
+    </a>
+  );
+}
+
 interface ChatWindowProps {
   conversation: (Conversation & { contact: Contact | null }) | null;
 }
