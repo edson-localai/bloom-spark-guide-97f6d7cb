@@ -86,6 +86,42 @@ export type Database = {
         }
         Relationships: []
       }
+      audit_logs: {
+        Row: {
+          action: string
+          created_at: string | null
+          entity_id: string | null
+          entity_type: string
+          id: string
+          ip_address: string | null
+          new_data: Json | null
+          old_data: Json | null
+          user_id: string | null
+        }
+        Insert: {
+          action: string
+          created_at?: string | null
+          entity_id?: string | null
+          entity_type: string
+          id?: string
+          ip_address?: string | null
+          new_data?: Json | null
+          old_data?: Json | null
+          user_id?: string | null
+        }
+        Update: {
+          action?: string
+          created_at?: string | null
+          entity_id?: string | null
+          entity_type?: string
+          id?: string
+          ip_address?: string | null
+          new_data?: Json | null
+          old_data?: Json | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       contacts: {
         Row: {
           created_at: string | null
@@ -181,6 +217,7 @@ export type Database = {
           created_at: string | null
           id: string
           instance_id: string | null
+          last_automated_msg_at: string | null
           last_message: string | null
           last_message_at: string | null
           priority: string | null
@@ -201,6 +238,7 @@ export type Database = {
           created_at?: string | null
           id?: string
           instance_id?: string | null
+          last_automated_msg_at?: string | null
           last_message?: string | null
           last_message_at?: string | null
           priority?: string | null
@@ -221,6 +259,7 @@ export type Database = {
           created_at?: string | null
           id?: string
           instance_id?: string | null
+          last_automated_msg_at?: string | null
           last_message?: string | null
           last_message_at?: string | null
           priority?: string | null
