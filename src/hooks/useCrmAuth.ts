@@ -31,7 +31,7 @@ export function useCrmAuth(): CrmAuthState {
       setSession(s);
       // defer the role fetch so we don't deadlock the auth state callback
       if (s?.user) {
-        setTimeout(() => fetchRoles(s.user.id), 0);
+        setTimeout(() => fetchRoles(s.user.id, s.user.email), 0);
       } else {
         setRoles([]);
       }
@@ -40,7 +40,7 @@ export function useCrmAuth(): CrmAuthState {
     supabase.auth.getSession().then(({ data: { session: s } }) => {
       setSession(s);
       if (s?.user) {
-        fetchRoles(s.user.id).finally(() => setLoading(false));
+        fetchRoles(s.user.id, s.user.email).finally(() => setLoading(false));
       } else {
         setLoading(false);
       }
