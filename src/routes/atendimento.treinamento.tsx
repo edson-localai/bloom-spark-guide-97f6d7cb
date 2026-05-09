@@ -16,7 +16,8 @@ import {
   Settings,
   GraduationCap
 } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useCrmAuth } from '@/hooks/useCrmAuth';
 
 export const Route = createFileRoute('/atendimento/treinamento')({
   component: TreinamentoPage,
