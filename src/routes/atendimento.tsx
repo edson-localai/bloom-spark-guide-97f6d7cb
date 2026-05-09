@@ -1,6 +1,7 @@
 import { createFileRoute, Outlet, useNavigate, Link, useLocation } from '@tanstack/react-router';
 import { useEffect } from 'react';
 import { useCrmAuth } from '@/hooks/useCrmAuth';
+import { useNotifications } from '@/hooks/useNotifications';
 import { supabase } from '@/integrations/supabase/client';
 import {
   Inbox,
