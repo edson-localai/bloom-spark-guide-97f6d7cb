@@ -52,14 +52,15 @@ export function useMessages(conversationId: string | null) {
     }
   }
 
-  async function sendMessage(content: string, type: any = 'text') {
+  async function sendMessage(content: string, type: any = 'text', isInternal: boolean = false) {
     if (!conversationId) return;
     try {
       const { error } = await supabase.from('messages').insert({
         conversation_id: conversationId,
         content,
         content_type: type,
-        sender_type: 'agent', // Temporário: ideal vir do auth
+        sender_type: 'agent',
+        is_internal: isInternal,
       });
       if (error) throw error;
     } catch (err) {
