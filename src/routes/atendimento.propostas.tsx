@@ -48,6 +48,11 @@ function PropostasPage() {
 
   const filteredProposals = useMemo(() => {
     let result = proposals;
+    
+    if (statusFilter !== 'all') {
+      result = result.filter(p => p.status === statusFilter);
+    }
+
     if (debouncedSearch) {
       const s = debouncedSearch.toLowerCase();
       const normalizedSearch = s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]/g, "");
