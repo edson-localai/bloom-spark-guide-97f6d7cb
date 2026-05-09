@@ -89,6 +89,7 @@ function Sidebar({ email, role }: { email: string; role?: string }) {
     { to: '/atendimento', icon: Inbox, label: 'Inbox', exact: true, ready: true },
     { to: '/atendimento/kanban', icon: KanbanSquare, label: 'Kanban', ready: true },
     { to: '/atendimento/contatos', icon: Users, label: 'Contatos', ready: true },
+    { to: '/atendimento/propostas', icon: FileText, label: 'Propostas', ready: true },
     { to: '/atendimento/respostas', icon: MessageSquare, label: 'Respostas', ready: true },
     { to: '/atendimento/whatsapp', icon: Smartphone, label: 'WhatsApp', ready: true },
     { to: '/atendimento/dashboard', icon: BarChart3, label: 'Dashboard', ready: true },
