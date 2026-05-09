@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { useState, useMemo, useEffect } from 'react';
-import { FileText, Plus, Trash2, Send, Download, Loader2, User, ChevronRight, Calculator, X, Edit2, CheckCircle2, SendHorizonal, Clock } from 'lucide-react';
+import { FileText, Plus, Trash2, Send, Download, Loader2, User, ChevronRight, Calculator, X, Edit2, CheckCircle2, SendHorizonal, Clock, Search, SearchX } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useContacts } from '@/hooks/useContacts';
 import { toast } from 'sonner';
@@ -32,8 +32,28 @@ function PropostasPage() {
   const [isSaving, setIsSaving] = useState(false);
   const [proposals, setProposals] = useState<any[]>([]);
   const [loadingProposals, setLoadingProposals] = useState(true);
+  const [search, setSearch] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
 
   const subtotal = useMemo(() => items.reduce((acc, item) => acc + (item.quantity * item.price), 0), [items]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(search);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [search]);
+
+  const filteredProposals = useMemo(() => {
+    if (!debouncedSearch) return proposals;
+    const s = debouncedSearch.toLowerCase();
+    return proposals.filter(p => 
+      p.proposal_number.toLowerCase().includes(s) ||
+      (p.contact?.name || '').toLowerCase().includes(s) ||
+      (p.contact?.vehicle_brand || '').toLowerCase().includes(s) ||
+      (p.contact?.vehicle_model || '').toLowerCase().includes(s)
+    );
+  }, [proposals, debouncedSearch]);
 
   useEffect(() => {
     fetchProposals();
@@ -222,6 +242,28 @@ function PropostasPage() {
         </button>
       </div>
 
+      <AnimatePresence>
+        {!isCreating && (
+          <motion.div 
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            className="px-8 py-4"
+          >
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
+              <input
+                type="text"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Buscar por cliente, veículo ou Nº da proposta..."
+                className="w-full max-w-md bg-[#151821] border border-[#1F232E] rounded-xl py-2.5 pl-10 pr-4 text-sm text-zinc-300 focus:outline-none focus:border-cyan-500/50 transition-colors"
+              />
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <div className="flex-1 overflow-auto p-8 custom-scrollbar">
         <AnimatePresence mode="wait">
           {isCreating ? (
@@ -367,14 +409,14 @@ function PropostasPage() {
                 <div className="col-span-full flex justify-center py-20">
                   <Loader2 className="h-8 w-8 animate-spin text-cyan-500" />
                 </div>
-              ) : proposals.length === 0 ? (
+              ) : filteredProposals.length === 0 ? (
                 <div className="col-span-full text-center py-20 bg-[#151821]/30 rounded-3xl border-2 border-dashed border-[#1F232E]">
-                  <FileText className="h-12 w-12 text-zinc-700 mx-auto mb-4" />
-                  <h3 className="text-zinc-500 font-medium">Nenhuma proposta recente</h3>
-                  <p className="text-zinc-700 text-sm">Comece criando um novo orçamento profissional.</p>
+                  <SearchX className="h-12 w-12 text-zinc-700 mx-auto mb-4" />
+                  <h3 className="text-zinc-500 font-medium">Nenhum resultado encontrado</h3>
+                  <p className="text-zinc-700 text-sm">Tente buscar por outro termo ou limpe a busca.</p>
                 </div>
               ) : (
-                proposals.map((prop) => (
+                filteredProposals.map((prop) => (
                   <motion.div 
                     layout
                     key={prop.id}
