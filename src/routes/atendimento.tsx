@@ -20,6 +20,30 @@ import {
 } from 'lucide-react';
 
 export const Route = createFileRoute('/atendimento')({
+  beforeLoad: async ({ location }) => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) throw redirect({ to: '/login' });
+
+    const { data: roles } = await supabase
+      .from('user_roles')
+      .select('role')
+      .eq('user_id', session.user.id);
+    
+    const userRoles = (roles ?? []).map(r => r.role as string);
+    const path = location.pathname;
+
+    if (path.includes('/dashboard') || path.includes('/whatsapp')) {
+      if (!userRoles.includes('admin') && !userRoles.includes('supervisor')) {
+        throw redirect({ to: '/atendimento' });
+      }
+    }
+
+    if (path.includes('/config') || path.includes('/usuarios')) {
+      if (!userRoles.includes('admin')) {
+        throw redirect({ to: '/atendimento' });
+      }
+    }
+  },
   component: AtendimentoLayout,
   head: () => ({ meta: [{ title: 'HCB CRM — Atendimento' }] }),
 });
