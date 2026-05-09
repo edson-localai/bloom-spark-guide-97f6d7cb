@@ -44,6 +44,20 @@ export function ChatWindow({ conversation }: ChatWindowProps) {
     const content = input;
     setInput('');
     await sendMessage(content);
+    
+    // Auto-extração a cada 3 mensagens (simples heuristic)
+    if (conversation && messages.length % 3 === 0) {
+      extractContactData({ 
+        conversationId: conversation.id, 
+        contactId: conversation.contact_id! 
+      }).then(res => {
+        if (res && 'updated' in res && res.updated) {
+          toast.info('Clara atualizou dados do veículo!', {
+            description: `Detectado: ${res.data.vehicle_brand || ''} ${res.data.vehicle_model || ''}`
+          });
+        }
+      });
+    }
   };
 
   if (!conversation) {
