@@ -1,27 +1,27 @@
-Fase 5: Automação de Fluxo e Notificações (Pós-Venda e Lembretes).
+Fase 6: Automação Avançada de Dados e Experiência do Usuário (UX).
 
 ## Mudanças Propostas
 
-### 1. Automações de Pós-Venda
-- **Trigger de Finalização:** Quando um card é movido para "Finalizado" no Kanban, a Clara agenda uma mensagem de agradecimento automática para 24h depois.
-- **NPS/Satisfação:** Envio automático de pesquisa de satisfação após 7 dias da conclusão do serviço.
+### 1. Extração Inteligente de Dados (IA)
+- Implementação de um observador que, ao detectar informações de veículo (marca, modelo, ano) nas mensagens do cliente, atualiza automaticamente o cadastro do contato.
+- A Clara passará a atuar como uma "Data Entry" silenciosa, mantendo a base de dados sempre limpa e atualizada.
 
-### 2. Sistema de Notificações
-- **Alertas de Ociosidade:** Notificar agentes se uma conversa na "Fila" estiver sem resposta por mais de 5 minutos.
-- **Notificações no Navegador:** Alertas visuais e sonoros para novas mensagens quando a aba não estiver em foco.
+### 2. Linha do Tempo de Interações (Timeline)
+- Substituição da visualização estática por uma **Timeline Interativa** no painel lateral do contato.
+- Exibição cronológica de: Entrada no funil, mudanças de status, atribuição de agente e notas de auditoria.
 
-### 3. Histórico de Auditoria
-- **Log de Eventos:** Registro de quem moveu cada card, quem alterou configurações e logs de acesso.
-- **Visualização de Timeline:** Exibir no painel lateral do contato uma linha do tempo de todas as interações e mudanças de status.
+### 3. Exportação de Inteligência (Dashboard)
+- Botão para **Exportar Relatórios** em CSV no Dashboard.
+- Filtros avançados por data e por agente para análise offline.
 
-### 4. Melhorias na Clara (IA)
-- **Extração Automática de Dados:** Se o cliente mencionar marca/modelo no chat, a Clara atualiza automaticamente o cadastro do contato sem intervenção humana.
-- **Tradutor Integrado:** Opção de tradução em tempo real para atendimentos internacionais (se necessário).
+### 4. Refinamento de UI/UX
+- Adição de animações de transição suave entre rotas.
+- Indicador de "Digitando..." real (simulado via Realtime).
+- Melhoria na responsividade dos painéis laterais.
 
 ### Detalhes Técnicos
-- Criação da tabela `audit_logs` para rastreabilidade.
-- Utilização de `window.Notification` API para alertas locais.
-- Implementação de um `useNotifications` hook.
-- Lógica de agendamento via Edge Functions (Cron jobs ou triggers retardados).
+- Utilização de `createServerFn` para processamento pesado de IA em background.
+- Implementação de um `AuditTimeline` componente.
+- Lógica de extração baseada no histórico recente da conversa.
 
-Esta fase finaliza a jornada de excelência, garantindo que nenhum cliente seja esquecido e que o processo seja 100% rastreável.
+Esta fase consolida o CRM como uma ferramenta de alta performance, focada em produtividade extrema e dados acionáveis.
