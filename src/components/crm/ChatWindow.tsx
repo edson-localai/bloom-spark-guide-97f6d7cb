@@ -229,6 +229,13 @@ export function ChatWindow({ conversation }: ChatWindowProps) {
               <div className={`h-3 w-3 rounded-full bg-white absolute top-1 transition-all ${conversation.auto_reply_enabled ? 'right-1' : 'left-1'}`} />
             </button>
           </div>
+          <button 
+            onClick={() => setShowTransfer(!showTransfer)}
+            className={`p-2 transition-colors ${showTransfer ? 'text-cyan-400' : 'text-zinc-400 hover:text-white'}`}
+            title="Transferir Atendimento"
+          >
+            <UserPlus className="h-5 w-5" />
+          </button>
           <button className="p-2 text-zinc-400 hover:text-white transition-colors">
             <ShieldCheck className="h-5 w-5" />
           </button>
@@ -237,6 +244,32 @@ export function ChatWindow({ conversation }: ChatWindowProps) {
           </button>
         </div>
       </div>
+
+      <AnimatePresence>
+        {showTransfer && (
+          <motion.div 
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            className="bg-[#151821] border-b border-[#1F232E] overflow-hidden"
+          >
+            <div className="p-4 flex gap-3 overflow-x-auto custom-scrollbar">
+              {agents.map(agent => (
+                <button
+                  key={agent.id}
+                  onClick={() => handleTransfer(agent.id)}
+                  className="flex flex-col items-center gap-2 p-3 rounded-xl bg-black/20 border border-[#1F232E] hover:border-cyan-500/30 transition-all min-w-[100px]"
+                >
+                  <div className="h-10 w-10 rounded-full bg-cyan-500/10 flex items-center justify-center text-cyan-500 font-bold">
+                    {agent.name.charAt(0)}
+                  </div>
+                  <span className="text-[10px] text-zinc-300 font-medium truncate w-full text-center">{agent.name}</span>
+                </button>
+              ))}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Messages Area */}
       <div className="flex-1 overflow-y-auto p-6 space-y-4 custom-scrollbar" ref={scrollRef}>
