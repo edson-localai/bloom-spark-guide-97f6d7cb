@@ -11,6 +11,54 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
+function MediaPreview({ path, type, name }: { path: string, type: string, name: string }) {
+  const [signedUrl, setSignedUrl] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function getUrl() {
+      // Se for uma URL completa (dados legados), usa direto
+      if (path.startsWith('http')) {
+        setSignedUrl(path);
+        setLoading(false);
+        return;
+      }
+
+      try {
+        const { data, error } = await supabase.storage
+          .from('crm_media')
+          .createSignedUrl(path, 3600); // 1 hora de validade
+        
+        if (error) throw error;
+        setSignedUrl(data.signedUrl);
+      } catch (err) {
+        console.error('Error signing URL:', err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    getUrl();
+  }, [path]);
+
+  if (loading) return <div className="h-20 flex items-center justify-center bg-black/10 rounded-lg"><Loader2 className="h-4 w-4 animate-spin text-cyan-500" /></div>;
+  if (!signedUrl) return <div className="p-2 text-[10px] text-red-400 italic bg-red-500/5 rounded">Erro ao carregar mídia</div>;
+
+  if (type.startsWith('image')) {
+    return (
+      <div className="mb-2 rounded-lg overflow-hidden border border-white/10 cursor-pointer">
+        <img src={signedUrl} alt="Mídia" className="max-w-full h-auto hover:scale-[1.02] transition-transform" />
+      </div>
+    );
+  }
+
+  return (
+    <a href={signedUrl} target="_blank" rel="noreferrer" className="flex items-center gap-2 mb-2 p-2 rounded-lg bg-black/20 hover:bg-black/40 transition-colors">
+      <FileIcon className="h-4 w-4 text-cyan-400" />
+      <span className="text-xs truncate">{name}</span>
+    </a>
+  );
+}
+
 interface ChatWindowProps {
   conversation: (Conversation & { contact: Contact | null }) | null;
 }
@@ -78,16 +126,12 @@ export function ChatWindow({ conversation }: ChatWindowProps) {
 
       if (uploadError) throw uploadError;
 
-      const { data: { publicUrl } } = supabase.storage
-        .from('crm_media')
-        .getPublicUrl(filePath);
-
       await sendMessage(file.name, file.type.startsWith('image/') ? 'image' : 'document', false);
       
-      // Update the last message to include media info (heurística simples para MVP)
+      // Armazena o PATH do arquivo em vez da URL pública (bucket privado)
       await supabase.from('messages')
         .update({
-          media_url: publicUrl,
+          media_url: filePath,
           media_mime: file.type
         } as any)
         .eq('content', file.name)
@@ -310,16 +354,12 @@ export function ChatWindow({ conversation }: ChatWindowProps) {
                           : 'bg-[#151821] text-zinc-200 border border-[#1F232E] rounded-tl-none'
                     }`}
                   >
-                    {msg.content_type === 'image' && msg.media_url && (
-                      <div className="mb-2 rounded-lg overflow-hidden border border-white/10 cursor-pointer">
-                        <img src={msg.media_url} alt="Mídia" className="max-w-full h-auto hover:scale-[1.02] transition-transform" />
-                      </div>
-                    )}
-                    {msg.content_type === 'document' && msg.media_url && (
-                      <a href={msg.media_url} target="_blank" rel="noreferrer" className="flex items-center gap-2 mb-2 p-2 rounded-lg bg-black/20 hover:bg-black/40 transition-colors">
-                        <FileIcon className="h-4 w-4 text-cyan-400" />
-                        <span className="text-xs truncate">{msg.content}</span>
-                      </a>
+                    {msg.media_url && (
+                      <MediaPreview 
+                        path={msg.media_url} 
+                        type={msg.content_type} 
+                        name={msg.content || 'Arquivo'} 
+                      />
                     )}
                     {msg.content}
                   </div>
