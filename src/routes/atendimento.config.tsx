@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { createFileRoute } from '@tanstack/react-router';
 import { supabase } from '@/integrations/supabase/client';
-import { Save, Bot, Shield, Clock, Bell, Loader2, Sparkles, ShieldAlert } from 'lucide-react';
+import { Save, Bot, Shield, Clock, Bell, Loader2, Sparkles, ShieldAlert, Users, ChevronRight } from 'lucide-react';
 import { toast } from 'sonner';
 import { useCrmAuth } from '@/hooks/useCrmAuth';
 
