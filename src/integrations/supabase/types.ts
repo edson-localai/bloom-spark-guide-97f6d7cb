@@ -14,16 +14,414 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      agents: {
+        Row: {
+          avatar_url: string | null
+          created_at: string | null
+          email: string
+          id: string
+          max_chats: number | null
+          name: string
+          role: string
+          status: string
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string | null
+          email: string
+          id?: string
+          max_chats?: number | null
+          name: string
+          role?: string
+          status?: string
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string | null
+          email?: string
+          id?: string
+          max_chats?: number | null
+          name?: string
+          role?: string
+          status?: string
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      app_settings: {
+        Row: {
+          description: string | null
+          id: string
+          is_secret: boolean | null
+          key: string
+          updated_at: string | null
+          updated_by: string | null
+          value: string | null
+          value_enc: string | null
+        }
+        Insert: {
+          description?: string | null
+          id?: string
+          is_secret?: boolean | null
+          key: string
+          updated_at?: string | null
+          updated_by?: string | null
+          value?: string | null
+          value_enc?: string | null
+        }
+        Update: {
+          description?: string | null
+          id?: string
+          is_secret?: boolean | null
+          key?: string
+          updated_at?: string | null
+          updated_by?: string | null
+          value?: string | null
+          value_enc?: string | null
+        }
+        Relationships: []
+      }
+      contacts: {
+        Row: {
+          created_at: string | null
+          id: string
+          name: string | null
+          notes: string | null
+          phone: string
+          tags: string[] | null
+          total_conversations: number | null
+          updated_at: string | null
+          vehicle_brand: string | null
+          vehicle_model: string | null
+          vehicle_year: number | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          name?: string | null
+          notes?: string | null
+          phone: string
+          tags?: string[] | null
+          total_conversations?: number | null
+          updated_at?: string | null
+          vehicle_brand?: string | null
+          vehicle_model?: string | null
+          vehicle_year?: number | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          name?: string | null
+          notes?: string | null
+          phone?: string
+          tags?: string[] | null
+          total_conversations?: number | null
+          updated_at?: string | null
+          vehicle_brand?: string | null
+          vehicle_model?: string | null
+          vehicle_year?: number | null
+        }
+        Relationships: []
+      }
+      conversation_events: {
+        Row: {
+          agent_id: string | null
+          conversation_id: string | null
+          created_at: string | null
+          event_type: string
+          id: string
+          meta: Json | null
+        }
+        Insert: {
+          agent_id?: string | null
+          conversation_id?: string | null
+          created_at?: string | null
+          event_type: string
+          id?: string
+          meta?: Json | null
+        }
+        Update: {
+          agent_id?: string | null
+          conversation_id?: string | null
+          created_at?: string | null
+          event_type?: string
+          id?: string
+          meta?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "conversation_events_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "agents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "conversation_events_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "conversations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      conversations: {
+        Row: {
+          agent_id: string | null
+          ai_intent: string | null
+          ai_summary: string | null
+          bot_active: boolean | null
+          channel: string | null
+          contact_id: string | null
+          created_at: string | null
+          id: string
+          instance_id: string | null
+          last_message: string | null
+          last_message_at: string | null
+          priority: string | null
+          resolved_at: string | null
+          status: string
+          subject: string | null
+          unread_count: number | null
+          updated_at: string | null
+          whatsapp_chat_id: string
+        }
+        Insert: {
+          agent_id?: string | null
+          ai_intent?: string | null
+          ai_summary?: string | null
+          bot_active?: boolean | null
+          channel?: string | null
+          contact_id?: string | null
+          created_at?: string | null
+          id?: string
+          instance_id?: string | null
+          last_message?: string | null
+          last_message_at?: string | null
+          priority?: string | null
+          resolved_at?: string | null
+          status?: string
+          subject?: string | null
+          unread_count?: number | null
+          updated_at?: string | null
+          whatsapp_chat_id: string
+        }
+        Update: {
+          agent_id?: string | null
+          ai_intent?: string | null
+          ai_summary?: string | null
+          bot_active?: boolean | null
+          channel?: string | null
+          contact_id?: string | null
+          created_at?: string | null
+          id?: string
+          instance_id?: string | null
+          last_message?: string | null
+          last_message_at?: string | null
+          priority?: string | null
+          resolved_at?: string | null
+          status?: string
+          subject?: string | null
+          unread_count?: number | null
+          updated_at?: string | null
+          whatsapp_chat_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "conversations_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "agents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "conversations_contact_id_fkey"
+            columns: ["contact_id"]
+            isOneToOne: false
+            referencedRelation: "contacts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "conversations_instance_id_fkey"
+            columns: ["instance_id"]
+            isOneToOne: false
+            referencedRelation: "whatsapp_instances"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      messages: {
+        Row: {
+          content: string | null
+          content_type: string | null
+          conversation_id: string
+          created_at: string | null
+          id: string
+          is_internal: boolean | null
+          media_mime: string | null
+          media_url: string | null
+          sender_id: string | null
+          sender_type: string
+          status: string | null
+          wa_message_id: string | null
+        }
+        Insert: {
+          content?: string | null
+          content_type?: string | null
+          conversation_id: string
+          created_at?: string | null
+          id?: string
+          is_internal?: boolean | null
+          media_mime?: string | null
+          media_url?: string | null
+          sender_id?: string | null
+          sender_type: string
+          status?: string | null
+          wa_message_id?: string | null
+        }
+        Update: {
+          content?: string | null
+          content_type?: string | null
+          conversation_id?: string
+          created_at?: string | null
+          id?: string
+          is_internal?: boolean | null
+          media_mime?: string | null
+          media_url?: string | null
+          sender_id?: string | null
+          sender_type?: string
+          status?: string | null
+          wa_message_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "messages_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "conversations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      quick_replies: {
+        Row: {
+          agent_id: string | null
+          content: string
+          created_at: string | null
+          id: string
+          shortcut: string | null
+          title: string
+          use_count: number | null
+        }
+        Insert: {
+          agent_id?: string | null
+          content: string
+          created_at?: string | null
+          id?: string
+          shortcut?: string | null
+          title: string
+          use_count?: number | null
+        }
+        Update: {
+          agent_id?: string | null
+          content?: string
+          created_at?: string | null
+          id?: string
+          shortcut?: string | null
+          title?: string
+          use_count?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quick_replies_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "agents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
+      whatsapp_instances: {
+        Row: {
+          created_at: string | null
+          display_name: string
+          id: string
+          last_seen: string | null
+          name: string
+          phone_number: string | null
+          qr_code: string | null
+          status: string | null
+          updated_at: string | null
+          webhook_url: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          display_name: string
+          id?: string
+          last_seen?: string | null
+          name: string
+          phone_number?: string | null
+          qr_code?: string | null
+          status?: string | null
+          updated_at?: string | null
+          webhook_url?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          display_name?: string
+          id?: string
+          last_seen?: string | null
+          name?: string
+          phone_number?: string | null
+          qr_code?: string | null
+          status?: string | null
+          updated_at?: string | null
+          webhook_url?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_any_role: { Args: { _user_id: string }; Returns: boolean }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "supervisor" | "agent"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +548,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "supervisor", "agent"],
+    },
   },
 } as const
