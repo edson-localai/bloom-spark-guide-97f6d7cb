@@ -44,7 +44,10 @@ function InboxPage() {
 
       {/* Details Column */}
       {selectedConversation && (
-        <ContactSidebar contact={(selectedConversation as any).contact} />
+        <ContactSidebar 
+          contact={(selectedConversation as any).contact} 
+          conversationId={selectedConversation.id}
+        />
       )}
     </div>
   );
