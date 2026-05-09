@@ -57,9 +57,15 @@ export function useScheduledMessages(conversationId: string | null) {
     try {
       const { error } = await supabase
         .from('scheduled_messages')
-        .update({ status: 'cancelled' })
+        .update({ status: 'cancelled' } as any)
         .eq('id', id);
+      
       if (error) throw error;
+      
+      // Atualização local otimista
+      setScheduledMessages(prev => 
+        prev.map(m => m.id === id ? { ...m, status: 'cancelled' } : m)
+      );
     } catch (err) {
       console.error('Error cancelling message:', err);
       throw err;
