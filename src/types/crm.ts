@@ -60,6 +60,7 @@ export interface Conversation {
   ai_summary: string | null;
   ai_intent: string | null;
   bot_active: boolean;
+  auto_reply_enabled: boolean;
   unread_count: number;
   last_message: string | null;
   last_message_at: string;

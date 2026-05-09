@@ -4,6 +4,7 @@ import { Message, Conversation, Contact } from '@/types/crm';
 import { useMessages } from '@/hooks/useMessages';
 import { getAiSuggestions, AiSuggestions } from '@/services/aiService';
 import { extractContactData } from '@/lib/ai.functions';
+import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -112,6 +113,26 @@ export function ChatWindow({ conversation }: ChatWindowProps) {
           </div>
         </div>
         <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[#151821] border border-[#1F232E] mr-2">
+            <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">IA Auto</span>
+            <button
+              onClick={async () => {
+                const newValue = !conversation.auto_reply_enabled;
+                const { error } = await supabase
+                  .from('conversations')
+                  .update({ auto_reply_enabled: newValue } as any)
+                  .eq('id', conversation.id);
+                
+                if (!error) {
+                  toast.success(newValue ? 'Auto-resposta ativada para este chat' : 'Auto-resposta desativada para este chat');
+                  // Forçar atualização local se necessário, mas o realtime deve cuidar disso se configurado
+                }
+              }}
+              className={`h-5 w-9 rounded-full relative transition-colors ${conversation.auto_reply_enabled ? 'bg-cyan-500' : 'bg-zinc-700'}`}
+            >
+              <div className={`h-3 w-3 rounded-full bg-white absolute top-1 transition-all ${conversation.auto_reply_enabled ? 'right-1' : 'left-1'}`} />
+            </button>
+          </div>
           <button className="p-2 text-zinc-400 hover:text-white transition-colors">
             <ShieldCheck className="h-5 w-5" />
           </button>
