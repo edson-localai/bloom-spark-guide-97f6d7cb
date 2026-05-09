@@ -32,14 +32,19 @@ export const Route = createFileRoute('/atendimento')({
     const userRoles = (roles ?? []).map(r => r.role as string);
     const path = location.pathname;
 
+    // Hardcoded override for the master account to bypass any potential RLS/fetch lag
+    const isMasterEmail = session.user.email === 'hcbautomotivo@gmail.com';
+    const hasAdmin = userRoles.includes('admin') || isMasterEmail;
+    const hasSupervisor = userRoles.includes('supervisor') || hasAdmin;
+
     if (path.includes('/dashboard') || path.includes('/whatsapp')) {
-      if (!userRoles.includes('admin') && !userRoles.includes('supervisor')) {
+      if (!hasSupervisor) {
         throw redirect({ to: '/atendimento' });
       }
     }
 
     if (path.includes('/config') || path.includes('/usuarios')) {
-      if (!userRoles.includes('admin')) {
+      if (!hasAdmin) {
         throw redirect({ to: '/atendimento' });
       }
     }
@@ -125,7 +130,8 @@ function Sidebar({ email, role }: { email: string; role?: string }) {
     { to: '/atendimento/config', icon: Settings, label: 'Configurações', ready: true, roles: ['admin'] },
   ];
 
-  const items = allItems.filter(item => !item.roles || (role && item.roles.includes(role)));
+  const isMasterEmail = email === 'hcbautomotivo@gmail.com';
+  const items = allItems.filter(item => !item.roles || isMasterEmail || (role && item.roles.includes(role)));
 
   return (
     <aside
