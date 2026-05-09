@@ -137,3 +137,58 @@ function Timeline({ contactId }: { contactId: string }) {
     </div>
   );
 }
+function ScheduledList({ conversationId }: { conversationId?: string | null }) {
+  const { scheduledMessages, loading, cancelMessage } = useScheduledMessages(conversationId || null);
+
+  if (loading && scheduledMessages.length === 0) return <div className="text-[10px] text-zinc-600 animate-pulse">Carregando agendamentos...</div>;
+
+  return (
+    <div className="space-y-3 overflow-y-auto pr-2 custom-scrollbar">
+      <AnimatePresence mode="popLayout">
+        {scheduledMessages.map((msg) => (
+          <motion.div 
+            layout
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            key={msg.id} 
+            className="p-2.5 rounded-xl bg-black/20 border border-[#1F232E] group relative"
+          >
+            <div className="flex justify-between items-start mb-1.5">
+              <div className="flex items-center gap-1.5">
+                {msg.status === 'pending' && <Clock className="h-2.5 w-2.5 text-amber-500" />}
+                {msg.status === 'sent' && <CheckCircle2 className="h-2.5 w-2.5 text-emerald-500" />}
+                {msg.status === 'cancelled' && <XCircle className="h-2.5 w-2.5 text-red-500" />}
+                <span className={`text-[8px] font-bold uppercase tracking-widest ${
+                  msg.status === 'pending' ? 'text-amber-500' : 
+                  msg.status === 'sent' ? 'text-emerald-500' : 'text-zinc-600'
+                }`}>
+                  {msg.status}
+                </span>
+              </div>
+              {msg.status === 'pending' && (
+                <button 
+                  onClick={() => cancelMessage(msg.id)}
+                  className="opacity-0 group-hover:opacity-100 transition-opacity text-red-500/50 hover:text-red-500 p-1"
+                  title="Cancelar Agendamento"
+                >
+                  <XCircle className="h-3 w-3" />
+                </button>
+              )}
+            </div>
+            <p className="text-[10px] text-zinc-400 line-clamp-2 italic mb-2">"{msg.content}"</p>
+            <div className="flex items-center gap-1 text-zinc-600">
+              <Calendar className="h-2.5 w-2.5" />
+              <span className="text-[9px]">
+                {format(new Date(msg.scheduled_for), "dd/MM 'às' HH:mm", { locale: ptBR })}
+              </span>
+            </div>
+          </motion.div>
+        ))}
+      </AnimatePresence>
+      {scheduledMessages.length === 0 && (
+        <p className="text-[10px] text-zinc-700 italic">Sem agendamentos para este chat.</p>
+      )}
+    </div>
+  );
+}
