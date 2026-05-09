@@ -112,6 +112,29 @@ export function ChatWindow({ conversation }: ChatWindowProps) {
     }
   };
 
+  const handleTransferToQueue = async () => {
+    if (!conversation) return;
+    
+    if (onlineAgents.length === 0) {
+      try {
+        await addToQueue(conversation.id, conversation.contact_id || undefined);
+        await supabase
+          .from('conversations')
+          .update({ status: 'queue' as any, agent_id: null })
+          .eq('id', conversation.id);
+        
+        toast.info('Sem agentes online. Chat colocado na fila de espera.', {
+          description: 'Será atribuído automaticamente assim que alguém ficar disponível.'
+        });
+        setShowTransfer(false);
+      } catch (err) {
+        toast.error('Erro ao adicionar à fila.');
+      }
+    } else {
+      toast.error('Há agentes online. Escolha um para transferir.');
+    }
+  };
+
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file || !conversation) return;
