@@ -147,6 +147,6 @@ function KanbanCard({ card }: any) {
           {card.contact?.name?.substring(0, 2) || 'WC'}
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }
