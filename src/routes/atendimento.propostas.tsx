@@ -36,6 +36,19 @@ function PropostasPage() {
   const [debouncedSearch, setDebouncedSearch] = useState('');
   const [sortOrder, setSortOrder] = useState<'newest' | 'oldest'>('newest');
   const [statusFilter, setStatusFilter] = useState<'all' | 'draft' | 'sent' | 'accepted' | 'rejected'>('all');
+  const [clientFilter, setClientFilter] = useState<string>('all');
+
+  const uniqueClients = useMemo(() => {
+    const clientsMap = new Map();
+    proposals.forEach(p => {
+      if (p.contact?.id) {
+        clientsMap.set(p.contact.id, p.contact.name || p.contact.phone || 'Sem Nome');
+      }
+    });
+    return Array.from(clientsMap.entries())
+      .map(([id, name]) => ({ id, name }))
+      .sort((a, b) => a.name.localeCompare(b.name));
+  }, [proposals]);
 
   const subtotal = useMemo(() => items.reduce((acc, item) => acc + (item.quantity * item.price), 0), [items]);
 
