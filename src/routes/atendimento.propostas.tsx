@@ -242,6 +242,28 @@ function PropostasPage() {
         </button>
       </div>
 
+      <AnimatePresence>
+        {!isCreating && (
+          <motion.div 
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            className="px-8 py-4"
+          >
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
+              <input
+                type="text"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Buscar por cliente, veículo ou Nº da proposta..."
+                className="w-full max-w-md bg-[#151821] border border-[#1F232E] rounded-xl py-2.5 pl-10 pr-4 text-sm text-zinc-300 focus:outline-none focus:border-cyan-500/50 transition-colors"
+              />
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <div className="flex-1 overflow-auto p-8 custom-scrollbar">
         <AnimatePresence mode="wait">
           {isCreating ? (
