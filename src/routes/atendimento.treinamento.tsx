@@ -184,34 +184,45 @@ function TreinamentoPage() {
                   {module.title}
                 </h2>
                 <div className="grid gap-3">
-                  {module.lessons.map((lesson) => (
-                    <button
-                      key={lesson.id}
-                      onClick={() => setSelectedLesson(lesson)}
-                      className={`flex items-center gap-4 p-4 rounded-2xl border transition-all text-left group ${
-                        selectedLesson?.id === lesson.id 
-                          ? 'bg-cyan-500/5 border-cyan-500/30' 
-                          : 'bg-[#0F1117] border-[#1F232E] hover:border-zinc-700'
-                      }`}
-                    >
-                      <div className={`h-12 w-12 rounded-xl flex items-center justify-center transition-colors ${
-                        selectedLesson?.id === lesson.id ? 'bg-cyan-500 text-black' : 'bg-zinc-800 text-zinc-400 group-hover:bg-zinc-700'
-                      }`}>
-                        <lesson.icon className="h-6 w-6" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <h3 className="font-semibold text-white mb-0.5">{lesson.title}</h3>
-                        <p className="text-xs text-zinc-500 truncate">{lesson.description}</p>
-                      </div>
-                      <div className="text-right shrink-0">
-                        <span className="text-[10px] font-bold text-zinc-600 block mb-1 uppercase tracking-wider">{lesson.duration}</span>
-                        <div className="flex items-center gap-1 text-cyan-500 text-xs font-semibold">
-                          <PlayCircle className="h-3 w-3" />
-                          Assistir
+                  {module.lessons.map((lesson) => {
+                    const isCompleted = completedLessons.includes(lesson.id);
+                    return (
+                      <button
+                        key={lesson.id}
+                        onClick={() => setSelectedLesson(lesson)}
+                        className={`flex items-center gap-4 p-4 rounded-2xl border transition-all text-left group ${
+                          selectedLesson?.id === lesson.id 
+                            ? 'bg-cyan-500/5 border-cyan-500/30' 
+                            : 'bg-[#0F1117] border-[#1F232E] hover:border-zinc-700'
+                        }`}
+                      >
+                        <div className={`h-12 w-12 rounded-xl flex items-center justify-center transition-colors relative ${
+                          selectedLesson?.id === lesson.id ? 'bg-cyan-500 text-black' : 'bg-zinc-800 text-zinc-400 group-hover:bg-zinc-700'
+                        }`}>
+                          <lesson.icon className="h-6 w-6" />
+                          {isCompleted && (
+                            <div className="absolute -top-1 -right-1 bg-emerald-500 text-white rounded-full p-0.5 border-2 border-[#0A0A0F]">
+                              <CheckCircle2 className="h-2.5 w-2.5" />
+                            </div>
+                          )}
                         </div>
-                      </div>
-                    </button>
-                  ))}
+                        <div className="flex-1 min-w-0">
+                          <h3 className={`font-semibold mb-0.5 ${isCompleted ? 'text-zinc-400' : 'text-white'}`}>
+                            {lesson.title}
+                            {isCompleted && <span className="ml-2 text-[9px] text-emerald-500 bg-emerald-500/10 px-1.5 py-0.5 rounded">Concluído</span>}
+                          </h3>
+                          <p className="text-xs text-zinc-500 truncate">{lesson.description}</p>
+                        </div>
+                        <div className="text-right shrink-0">
+                          <span className="text-[10px] font-bold text-zinc-600 block mb-1 uppercase tracking-wider">{lesson.duration}</span>
+                          <div className="flex items-center gap-1 text-cyan-500 text-xs font-semibold">
+                            <PlayCircle className="h-3 w-3" />
+                            {selectedLesson?.id === lesson.id ? 'Assistindo' : 'Assistir'}
+                          </div>
+                        </div>
+                      </button>
+                    );
+                  })}
                 </div>
               </section>
             ))}
