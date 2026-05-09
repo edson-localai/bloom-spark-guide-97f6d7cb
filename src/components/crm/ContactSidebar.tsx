@@ -1,14 +1,17 @@
-import { User, Car, Tag, MapPin, Calendar, FileText, ChevronRight, Clock, History } from 'lucide-react';
+import { User, Car, Tag, MapPin, Calendar, FileText, ChevronRight, Clock, History, CalendarClock, XCircle, CheckCircle2 } from 'lucide-react';
 import { Contact } from '@/types/crm';
 import { useTimeline } from '@/hooks/useTimeline';
-import { formatDistanceToNow } from 'date-fns';
+import { useScheduledMessages } from '@/hooks/useScheduledMessages';
+import { formatDistanceToNow, format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface ContactSidebarProps {
   contact: Contact | null;
+  conversationId?: string | null;
 }
 
-export function ContactSidebar({ contact }: ContactSidebarProps) {
+export function ContactSidebar({ contact, conversationId }: ContactSidebarProps) {
   if (!contact) return null;
 
   return (
@@ -70,6 +73,15 @@ export function ContactSidebar({ contact }: ContactSidebarProps) {
         </div>
       </div>
 
+      {/* Scheduled Messages Section */}
+      <div className="px-6 py-4 border-t border-[#1F232E] space-y-4 max-h-60 flex flex-col">
+        <div className="flex items-center justify-between">
+          <h4 className="text-[10px] uppercase font-bold tracking-widest text-zinc-500">Agendamentos</h4>
+          <CalendarClock className="h-3 w-3 text-zinc-500" />
+        </div>
+        <ScheduledList conversationId={conversationId} />
+      </div>
+
       {/* Timeline Section */}
       <div className="px-6 py-4 border-t border-[#1F232E] space-y-4 flex-1 overflow-hidden flex flex-col">
         <div className="flex items-center justify-between">
@@ -121,6 +133,61 @@ function Timeline({ contactId }: { contactId: string }) {
       ))}
       {events.length === 0 && (
         <p className="text-[10px] text-zinc-600 italic">Nenhuma atividade recente.</p>
+      )}
+    </div>
+  );
+}
+function ScheduledList({ conversationId }: { conversationId?: string | null }) {
+  const { scheduledMessages, loading, cancelMessage } = useScheduledMessages(conversationId || null);
+
+  if (loading && scheduledMessages.length === 0) return <div className="text-[10px] text-zinc-600 animate-pulse">Carregando agendamentos...</div>;
+
+  return (
+    <div className="space-y-3 overflow-y-auto pr-2 custom-scrollbar">
+      <AnimatePresence mode="popLayout">
+        {scheduledMessages.map((msg) => (
+          <motion.div 
+            layout
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            key={msg.id} 
+            className="p-2.5 rounded-xl bg-black/20 border border-[#1F232E] group relative"
+          >
+            <div className="flex justify-between items-start mb-1.5">
+              <div className="flex items-center gap-1.5">
+                {msg.status === 'pending' && <Clock className="h-2.5 w-2.5 text-amber-500" />}
+                {msg.status === 'sent' && <CheckCircle2 className="h-2.5 w-2.5 text-emerald-500" />}
+                {msg.status === 'cancelled' && <XCircle className="h-2.5 w-2.5 text-red-500" />}
+                <span className={`text-[8px] font-bold uppercase tracking-widest ${
+                  msg.status === 'pending' ? 'text-amber-500' : 
+                  msg.status === 'sent' ? 'text-emerald-500' : 'text-zinc-600'
+                }`}>
+                  {msg.status}
+                </span>
+              </div>
+              {msg.status === 'pending' && (
+                <button 
+                  onClick={() => cancelMessage(msg.id)}
+                  className="opacity-0 group-hover:opacity-100 transition-opacity text-red-500/50 hover:text-red-500 p-1"
+                  title="Cancelar Agendamento"
+                >
+                  <XCircle className="h-3 w-3" />
+                </button>
+              )}
+            </div>
+            <p className="text-[10px] text-zinc-400 line-clamp-2 italic mb-2">"{msg.content}"</p>
+            <div className="flex items-center gap-1 text-zinc-600">
+              <Calendar className="h-2.5 w-2.5" />
+              <span className="text-[9px]">
+                {format(new Date(msg.scheduled_for), "dd/MM 'às' HH:mm", { locale: ptBR })}
+              </span>
+            </div>
+          </motion.div>
+        ))}
+      </AnimatePresence>
+      {scheduledMessages.length === 0 && (
+        <p className="text-[10px] text-zinc-700 italic">Sem agendamentos para este chat.</p>
       )}
     </div>
   );
