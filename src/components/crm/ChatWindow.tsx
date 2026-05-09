@@ -14,6 +14,7 @@ interface ChatWindowProps {
 export function ChatWindow({ conversation }: ChatWindowProps) {
   const [input, setInput] = useState('');
   const [isAiLoading, setIsAiLoading] = useState(false);
+  const [suggestions, setSuggestions] = useState<AiSuggestions | null>(null);
   const { messages, loading, sendMessage } = useMessages(conversation?.id ?? null);
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -21,16 +22,19 @@ export function ChatWindow({ conversation }: ChatWindowProps) {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
-  }, [messages]);
+    // Limpa sugestões ao mudar de conversa
+    setSuggestions(null);
+  }, [messages, conversation?.id]);
 
   const handleAiSuggest = async () => {
     if (!conversation || messages.length === 0) return;
     setIsAiLoading(true);
+    setSuggestions(null);
     try {
-      const suggestion = await getAiSuggestion(conversation.id, messages);
-      if (suggestion) {
-        setInput(suggestion);
-        toast.success('Clara sugeriu uma resposta!');
+      const data = await getAiSuggestions(conversation.id, messages);
+      if (data) {
+        setSuggestions(data);
+        toast.success('Clara gerou três opções de resposta!');
       }
     } catch (error) {
       toast.error('Erro ao buscar sugestão da Clara.');
