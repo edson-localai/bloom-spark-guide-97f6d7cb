@@ -75,7 +75,7 @@ export function ChatWindow({ conversation }: ChatWindowProps) {
   const [scheduledTime, setScheduledTime] = useState('');
   
   const { messages, loading, sendMessage } = useMessages(conversation?.id ?? null);
-  const { agents } = useAgents();
+  const { agents, onlineAgents } = useAgents();
   const scrollRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -298,18 +298,29 @@ export function ChatWindow({ conversation }: ChatWindowProps) {
             className="bg-[#151821] border-b border-[#1F232E] overflow-hidden"
           >
             <div className="p-4 flex gap-3 overflow-x-auto custom-scrollbar">
-              {agents.map(agent => (
-                <button
-                  key={agent.id}
-                  onClick={() => handleTransfer(agent.id)}
-                  className="flex flex-col items-center gap-2 p-3 rounded-xl bg-black/20 border border-[#1F232E] hover:border-cyan-500/30 transition-all min-w-[100px]"
-                >
-                  <div className="h-10 w-10 rounded-full bg-cyan-500/10 flex items-center justify-center text-cyan-500 font-bold">
-                    {agent.name.charAt(0)}
-                  </div>
-                  <span className="text-[10px] text-zinc-300 font-medium truncate w-full text-center">{agent.name}</span>
-                </button>
-              ))}
+              {agents.map(agent => {
+                const isOnline = onlineAgents.includes(agent.user_id!);
+                return (
+                  <button
+                    key={agent.id}
+                    onClick={() => isOnline ? handleTransfer(agent.id) : toast.error(`${agent.name} está offline no momento.`)}
+                    className={`flex flex-col items-center gap-2 p-3 rounded-xl bg-black/20 border transition-all min-w-[100px] ${
+                      isOnline ? 'border-[#1F232E] hover:border-cyan-500/30' : 'border-red-500/10 opacity-50 cursor-not-allowed'
+                    }`}
+                  >
+                    <div className={`h-10 w-10 rounded-full flex items-center justify-center font-bold relative ${
+                      isOnline ? 'bg-cyan-500/10 text-cyan-500' : 'bg-zinc-800 text-zinc-600'
+                    }`}>
+                      {agent.name.charAt(0)}
+                      {isOnline && <span className="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full bg-emerald-500 border-2 border-[#151821]" />}
+                    </div>
+                    <span className="text-[10px] text-zinc-300 font-medium truncate w-full text-center">{agent.name}</span>
+                    <span className={`text-[8px] uppercase font-bold tracking-tighter ${isOnline ? 'text-emerald-500' : 'text-zinc-600'}`}>
+                      {isOnline ? 'Online' : 'Offline'}
+                    </span>
+                  </button>
+                );
+              })}
             </div>
           </motion.div>
         )}
