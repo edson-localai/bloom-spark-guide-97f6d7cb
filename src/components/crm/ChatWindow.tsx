@@ -11,6 +11,7 @@ interface ChatWindowProps {
 
 export function ChatWindow({ conversation }: ChatWindowProps) {
   const [input, setInput] = useState('');
+  const [isAiLoading, setIsAiLoading] = useState(false);
   const { messages, loading, sendMessage } = useMessages(conversation?.id ?? null);
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -19,6 +20,22 @@ export function ChatWindow({ conversation }: ChatWindowProps) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
   }, [messages]);
+
+  const handleAiSuggest = async () => {
+    if (!conversation || messages.length === 0) return;
+    setIsAiLoading(true);
+    try {
+      const suggestion = await getAiSuggestion(conversation.id, messages);
+      if (suggestion) {
+        setInput(suggestion);
+        toast.success('Clara sugeriu uma resposta!');
+      }
+    } catch (error) {
+      toast.error('Erro ao buscar sugestão da Clara.');
+    } finally {
+      setIsAiLoading(false);
+    }
+  };
 
   const handleSend = async (e: React.FormEvent) => {
     e.preventDefault();
