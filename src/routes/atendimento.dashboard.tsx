@@ -1,5 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router';
-import { BarChart3, Users, MessageSquare, Clock, TrendingUp, ArrowUpRight, ArrowDownRight, Download } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { BarChart3, Users, MessageSquare, Clock, TrendingUp, ArrowUpRight, ArrowDownRight, Download, Hourglass } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
@@ -8,6 +9,46 @@ export const Route = createFileRoute('/atendimento/dashboard')({
 });
 
 function DashboardPage() {
+  const [avgWaitTime, setAvgWaitTime] = useState<string>('--');
+  const [waitingNow, setWaitingNow] = useState<number>(0);
+
+  useEffect(() => {
+    fetchWaitMetrics();
+    const interval = setInterval(fetchWaitMetrics, 30000);
+    return () => clearInterval(interval);
+  }, []);
+
+  async function fetchWaitMetrics() {
+    try {
+      const { count } = await supabase
+        .from('waiting_queue')
+        .select('*', { count: 'exact', head: true });
+      setWaitingNow(count || 0);
+
+      const { data } = await supabase
+        .from('conversations')
+        .select('created_at, updated_at, agent_id')
+        .not('agent_id', 'is', null)
+        .gte('created_at', new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString())
+        .limit(100);
+
+      if (data && data.length > 0) {
+        const totalMs = data.reduce((acc, c) => {
+          const created = new Date(c.created_at!).getTime();
+          const assigned = new Date(c.updated_at!).getTime();
+          return acc + Math.max(0, assigned - created);
+        }, 0);
+        
+        const avgSec = Math.floor((totalMs / data.length) / 1000);
+        const min = Math.floor(avgSec / 60);
+        const sec = avgSec % 60;
+        setAvgWaitTime(`${min}m ${sec}s`);
+      }
+    } catch (err) {
+      console.error('Failed to fetch wait metrics:', err);
+    }
+  }
+
   const exportContacts = async () => {
     try {
       const { data } = await supabase.from('contacts').select('*');
@@ -70,11 +111,11 @@ function DashboardPage() {
           color="#8B5CF6" 
         />
         <StatCard 
-          title="Tempo Médio" 
-          value="4m 12s" 
-          change="-18%" 
-          trend="down" 
-          icon={Clock} 
+          title="Tempo Médio de Espera" 
+          value={avgWaitTime} 
+          change={waitingNow > 0 ? `${waitingNow} na fila` : 'Fila vazia'} 
+          trend={waitingNow > 0 ? 'up' : 'down'} 
+          icon={Hourglass} 
           color="#F59E0B" 
         />
         <StatCard 
