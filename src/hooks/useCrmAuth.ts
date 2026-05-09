@@ -14,6 +14,13 @@ export interface CrmAuthState {
   isSupervisor: boolean;
 }
 
+const CRM_MASTER_EMAIL = 'hcbautomotivo@gmail.com';
+
+function normalizeRoles(userEmail: string | undefined, fetchedRoles: AppRole[]): AppRole[] {
+  if (userEmail?.toLowerCase() !== CRM_MASTER_EMAIL) return fetchedRoles;
+  return fetchedRoles.includes('admin') ? fetchedRoles : ['admin', ...fetchedRoles];
+}
+
 export function useCrmAuth(): CrmAuthState {
   const [session, setSession] = useState<Session | null>(null);
   const [roles, setRoles] = useState<AppRole[]>([]);
@@ -39,14 +46,15 @@ export function useCrmAuth(): CrmAuthState {
       }
     });
 
-    async function fetchRoles(userId: string) {
+    async function fetchRoles(userId: string, userEmail?: string) {
       // Prefer RPC (security definer) — bypasses any RLS oddities and is the
       // canonical way to fetch the current user's roles.
       const rpc = await supabase.rpc('get_my_roles');
       if (!rpc.error && rpc.data) {
-        setRoles((rpc.data as { role?: AppRole }[] | AppRole[]).map((r: any) =>
+        const fetchedRoles = (rpc.data as { role?: AppRole }[] | AppRole[]).map((r: any) =>
           (typeof r === 'string' ? r : r.role) as AppRole,
-        ));
+        );
+        setRoles(normalizeRoles(userEmail, fetchedRoles));
         return;
       }
       if (rpc.error) {
@@ -57,7 +65,7 @@ export function useCrmAuth(): CrmAuthState {
         .select('role')
         .eq('user_id', userId);
       if (error) console.error('[useCrmAuth] user_roles select failed', error);
-      setRoles((data ?? []).map((r) => r.role as AppRole));
+      setRoles(normalizeRoles(userEmail, (data ?? []).map((r) => r.role as AppRole)));
     }
 
     return () => sub.subscription.unsubscribe();
