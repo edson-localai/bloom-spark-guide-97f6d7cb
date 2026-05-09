@@ -48,8 +48,10 @@ export function ChatWindow({ conversation }: ChatWindowProps) {
     e.preventDefault();
     if (!input.trim()) return;
     const content = input;
+    const internal = isInternal;
     setInput('');
-    await sendMessage(content);
+    if (internal) setIsInternal(false);
+    await sendMessage(content, 'text', internal);
     
     // Auto-extração a cada 3 mensagens (simples heuristic)
     if (conversation && messages.length % 3 === 0) {
