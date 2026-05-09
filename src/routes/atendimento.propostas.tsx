@@ -298,27 +298,41 @@ function PropostasPage() {
                 />
               </div>
 
-              <div className="flex items-center gap-2 bg-[#151821] border border-[#1F232E] rounded-xl p-1">
-                <button
-                  onClick={() => setSortOrder('newest')}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
-                    sortOrder === 'newest' 
-                      ? 'bg-cyan-500/10 text-cyan-500 border border-cyan-500/20' 
-                      : 'text-zinc-500 hover:text-zinc-300'
-                  }`}
+              <div className="flex items-center gap-2">
+                <select
+                  value={statusFilter}
+                  onChange={(e) => setStatusFilter(e.target.value as any)}
+                  className="bg-[#151821] border border-[#1F232E] rounded-xl px-3 py-2 text-xs font-medium text-zinc-300 focus:outline-none focus:border-cyan-500/50 transition-colors"
                 >
-                  Mais Recentes
-                </button>
-                <button
-                  onClick={() => setSortOrder('oldest')}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
-                    sortOrder === 'oldest' 
-                      ? 'bg-cyan-500/10 text-cyan-500 border border-cyan-500/20' 
-                      : 'text-zinc-500 hover:text-zinc-300'
-                  }`}
-                >
-                  Mais Antigas
-                </button>
+                  <option value="all">Todos os Status</option>
+                  <option value="draft">Rascunho</option>
+                  <option value="sent">Enviada</option>
+                  <option value="accepted">Aprovada</option>
+                  <option value="rejected">Rejeitada</option>
+                </select>
+
+                <div className="flex items-center gap-2 bg-[#151821] border border-[#1F232E] rounded-xl p-1">
+                  <button
+                    onClick={() => setSortOrder('newest')}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                      sortOrder === 'newest' 
+                        ? 'bg-cyan-500/10 text-cyan-500 border border-cyan-500/20' 
+                        : 'text-zinc-500 hover:text-zinc-300'
+                    }`}
+                  >
+                    Mais Recentes
+                  </button>
+                  <button
+                    onClick={() => setSortOrder('oldest')}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                      sortOrder === 'oldest' 
+                        ? 'bg-cyan-500/10 text-cyan-500 border border-cyan-500/20' 
+                        : 'text-zinc-500 hover:text-zinc-300'
+                    }`}
+                  >
+                    Mais Antigas
+                  </button>
+                </div>
               </div>
             </div>
           </motion.div>
