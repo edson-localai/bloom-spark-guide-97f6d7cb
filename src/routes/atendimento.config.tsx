@@ -1,14 +1,17 @@
 import { useEffect, useState } from 'react';
 import { createFileRoute } from '@tanstack/react-router';
 import { supabase } from '@/integrations/supabase/client';
-import { Save, Bot, Shield, Clock, Bell, Loader2, Sparkles } from 'lucide-react';
+import { Save, Bot, Shield, Clock, Bell, Loader2, Sparkles, ShieldAlert } from 'lucide-react';
 import { toast } from 'sonner';
+import { useCrmAuth } from '@/hooks/useCrmAuth';
 
 export const Route = createFileRoute('/atendimento/config')({
   component: ConfigPage,
 });
 
 function ConfigPage() {
+  const { roles, loading: authLoading } = useCrmAuth();
+  const isAdmin = roles.includes('admin');
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [settings, setSettings] = useState<any[]>([]);
