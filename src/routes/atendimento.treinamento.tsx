@@ -98,10 +98,32 @@ function TreinamentoPage() {
 
   const [activeUserType, setActiveUserType] = useState<UserType>(getDefaultUserType(userRole));
   const [selectedLesson, setSelectedLesson] = useState<Lesson | null>(null);
+  const [completedLessons, setCompletedLessons] = useState<string[]>([]);
+
+  const currentCourse = COURSES[activeUserType];
+  const allLessons = currentCourse.flatMap(m => m.lessons);
+  const progressPercent = allLessons.length > 0 
+    ? Math.round((completedLessons.filter(id => allLessons.some(l => l.id === id)).length / allLessons.length) * 100)
+    : 0;
 
   useEffect(() => {
     setActiveUserType(getDefaultUserType(userRole));
+    // Reset selected lesson when role changes unless it's an admin browsing
   }, [userRole]);
+
+  const toggleComplete = (lessonId: string) => {
+    setCompletedLessons(prev => 
+      prev.includes(lessonId) ? prev.filter(id => id !== lessonId) : [...prev, lessonId]
+    );
+  };
+
+  const nextLesson = () => {
+    if (!selectedLesson) return;
+    const currentIndex = allLessons.findIndex(l => l.id === selectedLesson.id);
+    if (currentIndex < allLessons.length - 1) {
+      setSelectedLesson(allLessons[currentIndex + 1]);
+    }
+  };
 
   return (
     <div className="h-full flex flex-col bg-[#0A0A0F]">
