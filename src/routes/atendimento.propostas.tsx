@@ -37,6 +37,8 @@ function PropostasPage() {
   const [sortOrder, setSortOrder] = useState<'newest' | 'oldest'>('newest');
   const [statusFilter, setStatusFilter] = useState<'all' | 'draft' | 'sent' | 'accepted' | 'rejected'>('all');
   const [clientFilter, setClientFilter] = useState<string>('all');
+  const [agentFilter, setAgentFilter] = useState<string>('all');
+  const [agents, setAgents] = useState<any[]>([]);
 
   const uniqueClients = useMemo(() => {
     const clientsMap = new Map();
