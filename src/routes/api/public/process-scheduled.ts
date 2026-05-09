@@ -8,7 +8,6 @@ export const Route = createFileRoute('/api/public/process-scheduled')({
         try {
           console.log('Starting scheduled messages processing...');
           
-          // 1. Busca mensagens pendentes que já deveriam ter sido enviadas
           const { data: pending, error: fetchError } = await supabaseAdmin
             .from('scheduled_messages')
             .select('*')
@@ -22,24 +21,20 @@ export const Route = createFileRoute('/api/public/process-scheduled')({
             });
           }
 
-          console.log(`Found ${pending.length} messages to send.`);
-
           const results = [];
 
           for (const msg of pending) {
             try {
-              // 2. Insere na tabela de mensagens real do chat
               const { error: msgError } = await supabaseAdmin.from('messages').insert({
                 conversation_id: msg.conversation_id,
                 content: msg.content,
-                sender_type: 'agent', // Ou 'system'/'bot' dependendo do contexto
+                sender_type: 'agent',
                 sender_id: msg.agent_id,
-                created_at: msg.scheduled_for, // Mantém a data original do agendamento
+                created_at: msg.scheduled_for,
               });
 
               if (msgError) throw msgError;
 
-              // 3. Atualiza status do agendamento
               const { error: updateError } = await supabaseAdmin
                 .from('scheduled_messages')
                 .update({ 
@@ -52,7 +47,6 @@ export const Route = createFileRoute('/api/public/process-scheduled')({
               
               results.push({ id: msg.id, status: 'sent' });
             } catch (err) {
-              console.error(`Failed to process message ${msg.id}:`, err);
               results.push({ id: msg.id, status: 'failed', error: err });
             }
           }
@@ -61,7 +55,6 @@ export const Route = createFileRoute('/api/public/process-scheduled')({
             headers: { 'Content-Type': 'application/json' },
           });
         } catch (error: any) {
-          console.error('Scheduled processing error:', error);
           return new Response(JSON.stringify({ success: false, error: error.message }), {
             status: 500,
             headers: { 'Content-Type': 'application/json' },
@@ -70,4 +63,4 @@ export const Route = createFileRoute('/api/public/process-scheduled')({
       },
     },
   },
-});
+} as any);
