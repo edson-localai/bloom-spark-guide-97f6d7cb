@@ -1,14 +1,17 @@
 import { useEffect, useState } from 'react';
 import { createFileRoute } from '@tanstack/react-router';
 import { supabase } from '@/integrations/supabase/client';
-import { Save, Bot, Shield, Clock, Bell, Loader2, Sparkles } from 'lucide-react';
+import { Save, Bot, Shield, Clock, Bell, Loader2, Sparkles, ShieldAlert } from 'lucide-react';
 import { toast } from 'sonner';
+import { useCrmAuth } from '@/hooks/useCrmAuth';
 
 export const Route = createFileRoute('/atendimento/config')({
   component: ConfigPage,
 });
 
 function ConfigPage() {
+  const { roles, loading: authLoading } = useCrmAuth();
+  const isAdmin = roles.includes('admin');
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [settings, setSettings] = useState<any[]>([]);
@@ -47,10 +50,26 @@ function ConfigPage() {
 
   const getSetting = (key: string) => settings.find(s => s.key === key)?.value || '';
 
-  if (loading) {
+  if (authLoading || loading) {
     return (
-      <div className="h-full flex items-center justify-center">
+      <div className="h-full flex items-center justify-center bg-[#0A0A0F]">
         <Loader2 className="h-8 w-8 animate-spin text-cyan-400" />
+      </div>
+    );
+  }
+
+  if (!isAdmin) {
+    return (
+      <div className="h-full flex items-center justify-center p-8 bg-[#0A0A0F]">
+        <div className="max-w-md text-center bg-[#0F1117] border border-[#1F232E] rounded-3xl p-12">
+          <div className="h-16 w-16 bg-red-500/10 rounded-2xl flex items-center justify-center text-red-500 mx-auto mb-6">
+            <ShieldAlert className="h-8 w-8" />
+          </div>
+          <h2 className="text-xl font-bold text-white mb-2">Acesso Negado</h2>
+          <p className="text-zinc-500 text-sm leading-relaxed">
+            Você não tem permissão para acessar as Configurações. Este módulo é restrito apenas a administradores.
+          </p>
+        </div>
       </div>
     );
   }

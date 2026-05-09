@@ -1,14 +1,17 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { useEffect, useState } from 'react';
-import { BarChart3, Users, MessageSquare, Clock, TrendingUp, ArrowUpRight, ArrowDownRight, Download, Hourglass } from 'lucide-react';
+import { BarChart3, Users, MessageSquare, Clock, TrendingUp, ArrowUpRight, ArrowDownRight, Download, Hourglass, ShieldAlert } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { useCrmAuth } from '@/hooks/useCrmAuth';
 
 export const Route = createFileRoute('/atendimento/dashboard')({
   component: DashboardPage,
 });
 
 function DashboardPage() {
+  const { roles, loading: authLoading } = useCrmAuth();
+  const isSupervisor = roles.includes('admin') || roles.includes('supervisor');
   const [avgWaitTime, setAvgWaitTime] = useState<string>('--');
   const [waitingNow, setWaitingNow] = useState<number>(0);
 
@@ -77,6 +80,24 @@ function DashboardPage() {
       toast.error('Erro ao exportar relatório.');
     }
   };
+  if (authLoading) return null;
+
+  if (!isSupervisor) {
+    return (
+      <div className="h-full flex items-center justify-center p-8 bg-[#0A0A0F]">
+        <div className="max-w-md text-center bg-[#0F1117] border border-[#1F232E] rounded-3xl p-12">
+          <div className="h-16 w-16 bg-red-500/10 rounded-2xl flex items-center justify-center text-red-500 mx-auto mb-6">
+            <ShieldAlert className="h-8 w-8" />
+          </div>
+          <h2 className="text-xl font-bold text-white mb-2">Acesso Negado</h2>
+          <p className="text-zinc-500 text-sm leading-relaxed">
+            Você não tem permissão para acessar o Dashboard. Este módulo é restrito a supervisores e administradores.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="h-full flex flex-col overflow-auto custom-scrollbar" style={{ background: '#0A0A0F' }}>
       <div className="p-8 pb-4 flex justify-between items-center">
