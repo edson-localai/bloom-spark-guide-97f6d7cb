@@ -3,6 +3,7 @@ import { Send, User, Bot, Paperclip, MoreVertical, ShieldCheck, Clock, Sparkles,
 import { Message, Conversation, Contact } from '@/types/crm';
 import { useMessages } from '@/hooks/useMessages';
 import { getAiSuggestion } from '@/services/aiService';
+import { extractContactData } from '@/lib/ai.functions';
 import { toast } from 'sonner';
 
 interface ChatWindowProps {
