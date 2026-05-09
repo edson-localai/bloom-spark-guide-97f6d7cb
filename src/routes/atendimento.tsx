@@ -104,20 +104,29 @@ function Sidebar({ email, role }: { email: string; role?: string }) {
           const active = item.exact
             ? location.pathname === item.to
             : location.pathname.startsWith(item.to);
-          return (
-            <Link
-              key={item.to}
-              to={item.to}
-              className="flex items-center gap-3 px-3 py-2 rounded-md text-sm transition-colors"
-              style={{
-                background: active ? 'rgba(0,204,238,0.1)' : 'transparent',
-                color: active ? '#00CCEE' : '#A1A1AA',
-                fontWeight: active ? 600 : 500,
-              }}
-            >
+          const style = {
+            background: active ? 'rgba(0,204,238,0.1)' : 'transparent',
+            color: active ? '#00CCEE' : item.ready ? '#A1A1AA' : '#52525B',
+            fontWeight: active ? 600 : 500,
+          } as const;
+          const className = 'flex items-center gap-3 px-3 py-2 rounded-md text-sm transition-colors';
+          const inner = (
+            <>
               <Icon className="h-4 w-4" />
-              {item.label}
+              <span className="flex-1">{item.label}</span>
+              {!item.ready && (
+                <span className="text-[9px] uppercase tracking-wider opacity-60">em breve</span>
+              )}
+            </>
+          );
+          return item.ready ? (
+            <Link key={item.to} to={item.to} className={className} style={style}>
+              {inner}
             </Link>
+          ) : (
+            <span key={item.to} className={className + ' cursor-not-allowed'} style={style}>
+              {inner}
+            </span>
           );
         })}
       </nav>
