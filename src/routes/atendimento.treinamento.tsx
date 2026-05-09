@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { 
   PlayCircle, 
   BookOpen, 
@@ -14,16 +14,27 @@ import {
   BarChart3,
   Smartphone,
   Settings,
-  GraduationCap
+  GraduationCap,
+  Trophy,
+  AlertCircle
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useCrmAuth } from '@/hooks/useCrmAuth';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
 export const Route = createFileRoute('/atendimento/treinamento')({
   component: TreinamentoPage,
 });
 
 type UserType = 'vendedor' | 'gerente' | 'admin';
+
+interface Question {
+  id: string;
+  question: string;
+  options: string[];
+  correctAnswer: number;
+}
 
 interface Lesson {
   id: string;
@@ -32,6 +43,7 @@ interface Lesson {
   duration: string;
   type: 'video' | 'text' | 'practical';
   icon: any;
+  quiz?: Question[];
 }
 
 interface Module {
@@ -46,8 +58,28 @@ const COURSES: Record<UserType, Module[]> = {
       id: 'v-1',
       title: 'Trilha do Atendente HCB',
       lessons: [
-        { id: 'v-l1', title: '1. Domine o Inbox', description: 'Aprenda a organizar suas conversas e nunca deixar um cliente esperando.', duration: '5 min', type: 'video', icon: MessageSquare },
-        { id: 'v-l2', title: '2. WhatsApp Profissional', description: 'Como usar as ferramentas de automação e respostas rápidas.', duration: '8 min', type: 'video', icon: Smartphone },
+        { 
+          id: 'v-l1', 
+          title: '1. Domine o Inbox', 
+          description: 'Aprenda a organizar suas conversas e nunca deixar um cliente esperando.', 
+          duration: '5 min', 
+          type: 'video', 
+          icon: MessageSquare,
+          quiz: [
+            { id: 'q1', question: 'Qual a principal função do Inbox?', options: ['Organizar conversas', 'Gerar relatórios', 'Configurar o bot'], correctAnswer: 0 }
+          ]
+        },
+        { 
+          id: 'v-l2', 
+          title: '2. WhatsApp Profissional', 
+          description: 'Como usar as ferramentas de automação e respostas rápidas.', 
+          duration: '8 min', 
+          type: 'video', 
+          icon: Smartphone,
+          quiz: [
+            { id: 'q2', question: 'Para que servem as respostas rápidas?', options: ['Agilizar o atendimento', 'Bloquear clientes', 'Mudar o status da conversa'], correctAnswer: 0 }
+          ]
+        },
         { id: 'v-l3', title: '3. Gestão de Contatos', description: 'Cadastrando veículos e informações vitais do cliente.', duration: '7 min', type: 'video', icon: Users },
       ]
     },
@@ -99,6 +131,11 @@ function TreinamentoPage() {
   const [activeUserType, setActiveUserType] = useState<UserType>(getDefaultUserType(userRole));
   const [selectedLesson, setSelectedLesson] = useState<Lesson | null>(null);
   const [completedLessons, setCompletedLessons] = useState<string[]>([]);
+  const [quizResults, setQuizResults] = useState<Record<string, { score: number, total: number }>>({});
+  const [activeQuiz, setActiveQuiz] = useState<Question[] | null>(null);
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [quizScore, setQuizScore] = useState(0);
+  const [showQuizResult, setShowQuizResult] = useState(false);
 
   const currentCourse = COURSES[activeUserType];
   const allLessons = currentCourse.flatMap(m => m.lessons);
@@ -107,14 +144,87 @@ function TreinamentoPage() {
     : 0;
 
   useEffect(() => {
+    fetchUserData();
+  }, []);
+
+  async function fetchUserData() {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    const { data } = await supabase
+      .from('quiz_results')
+      .select('lesson_id, score, total_questions')
+      .eq('user_id', user.id);
+    
+    if (data) {
+      const results: Record<string, { score: number, total: number }> = {};
+      const completed: string[] = [];
+      data.forEach(r => {
+        results[r.lesson_id] = { score: r.score, total: r.total_questions };
+        completed.push(r.lesson_id);
+      });
+      setQuizResults(results);
+      setCompletedLessons(completed);
+    }
+  }
+
+  useEffect(() => {
     setActiveUserType(getDefaultUserType(userRole));
-    // Reset selected lesson when role changes unless it's an admin browsing
   }, [userRole]);
 
+  const saveQuizResult = async (lessonId: string, score: number, total: number) => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    const { error } = await supabase
+      .from('quiz_results')
+      .upsert({
+        user_id: user.id,
+        lesson_id: lessonId,
+        score,
+        total_questions: total
+      }, { onConflict: 'user_id,lesson_id' });
+
+    if (error) {
+      toast.error('Erro ao salvar resultado do quiz');
+    } else {
+      setQuizResults(prev => ({ ...prev, [lessonId]: { score, total } }));
+      if (!completedLessons.includes(lessonId)) {
+        setCompletedLessons(prev => [...prev, lessonId]);
+      }
+    }
+  };
+
+  const handleQuizAnswer = (optionIndex: number) => {
+    if (!activeQuiz) return;
+    
+    if (optionIndex === activeQuiz[currentQuestionIndex].correctAnswer) {
+      setQuizScore(prev => prev + 1);
+    }
+
+    if (currentQuestionIndex < activeQuiz.length - 1) {
+      setCurrentQuestionIndex(prev => prev + 1);
+    } else {
+      setShowQuizResult(true);
+      if (selectedLesson) {
+        saveQuizResult(selectedLesson.id, quizScore + (optionIndex === activeQuiz[currentQuestionIndex].correctAnswer ? 1 : 0), activeQuiz.length);
+      }
+    }
+  };
+
+  const startQuiz = () => {
+    if (selectedLesson?.quiz) {
+      setActiveQuiz(selectedLesson.quiz);
+      setCurrentQuestionIndex(0);
+      setQuizScore(0);
+      setShowQuizResult(false);
+    }
+  };
+
   const toggleComplete = (lessonId: string) => {
-    setCompletedLessons(prev => 
-      prev.includes(lessonId) ? prev.filter(id => id !== lessonId) : [...prev, lessonId]
-    );
+    if (completedLessons.includes(lessonId)) return;
+    setCompletedLessons(prev => [...prev, lessonId]);
+    saveQuizResult(lessonId, 1, 1); // For practical/video without quiz
   };
 
   const nextLesson = () => {
@@ -250,25 +360,83 @@ function TreinamentoPage() {
                     <p className="text-sm text-zinc-400 leading-relaxed mb-6">
                       {selectedLesson.description}
                     </p>
-                    <div className="space-y-3">
-                      <div className="flex items-center gap-3 p-3 rounded-xl bg-emerald-500/5 border border-emerald-500/10 text-emerald-400 text-xs">
-                        <CheckCircle2 className="h-4 w-4 shrink-0" />
-                        Aprenda na prática como otimizar seu tempo.
-                      </div>
-                      <button 
-                        onClick={() => toggleComplete(selectedLesson.id)}
-                        className={`w-full font-bold py-3 rounded-xl transition-all border ${
-                          completedLessons.includes(selectedLesson.id)
-                            ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20'
-                            : 'bg-cyan-500 hover:bg-cyan-400 text-black border-transparent'
-                        }`}
-                      >
-                        {completedLessons.includes(selectedLesson.id) ? 'Aula Concluída' : 'Marcar como Concluído'}
-                      </button>
+                    
+                    <div className="space-y-4">
+                      {selectedLesson.quiz && !activeQuiz && (
+                        <div className="p-4 rounded-2xl bg-cyan-500/5 border border-cyan-500/10">
+                          <div className="flex items-center gap-2 text-cyan-400 font-bold text-xs uppercase tracking-widest mb-2">
+                            <Trophy className="h-4 w-4" /> Desafio Final
+                          </div>
+                          <p className="text-xs text-zinc-500 mb-4">Complete o quiz para confirmar seu aprendizado nesta aula.</p>
+                          <button 
+                            onClick={startQuiz}
+                            className="w-full bg-cyan-500 hover:bg-cyan-400 text-black font-bold py-2.5 rounded-xl transition-all"
+                          >
+                            Iniciar Quiz
+                          </button>
+                        </div>
+                      )}
+
+                      {activeQuiz && !showQuizResult && (
+                        <div className="p-5 rounded-2xl bg-[#151821] border border-[#1F232E]">
+                          <div className="flex justify-between items-center mb-4">
+                            <span className="text-[10px] font-bold text-zinc-500 uppercase">Questão {currentQuestionIndex + 1}/{activeQuiz.length}</span>
+                            <div className="h-1.5 w-24 bg-zinc-800 rounded-full overflow-hidden">
+                              <div 
+                                className="h-full bg-cyan-500 transition-all" 
+                                style={{ width: `${((currentQuestionIndex + 1) / activeQuiz.length) * 100}%` }}
+                              />
+                            </div>
+                          </div>
+                          <h4 className="text-white font-bold mb-4">{activeQuiz[currentQuestionIndex].question}</h4>
+                          <div className="space-y-2">
+                            {activeQuiz[currentQuestionIndex].options.map((option, idx) => (
+                              <button
+                                key={idx}
+                                onClick={() => handleQuizAnswer(idx)}
+                                className="w-full p-3 rounded-xl border border-[#1F232E] bg-black/20 text-left text-sm text-zinc-400 hover:border-cyan-500/50 hover:text-white transition-all"
+                              >
+                                {option}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {showQuizResult && (
+                        <motion.div 
+                          initial={{ opacity: 0, scale: 0.9 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          className="p-6 rounded-2xl bg-[#151821] border border-cyan-500/20 text-center"
+                        >
+                          <Trophy className="h-12 w-12 text-cyan-500 mx-auto mb-4" />
+                          <h4 className="text-white font-bold text-lg mb-1">Quiz Concluído!</h4>
+                          <p className="text-sm text-zinc-400 mb-4">Você acertou {quizScore} de {activeQuiz?.length} questões.</p>
+                          <button 
+                            onClick={() => setActiveQuiz(null)}
+                            className="w-full bg-white/5 hover:bg-white/10 text-white font-bold py-2.5 rounded-xl transition-all"
+                          >
+                            Fechar
+                          </button>
+                        </motion.div>
+                      )}
+
+                      {!selectedLesson.quiz && (
+                        <button 
+                          onClick={() => toggleComplete(selectedLesson.id)}
+                          className={`w-full font-bold py-3 rounded-xl transition-all border ${
+                            completedLessons.includes(selectedLesson.id)
+                              ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20'
+                              : 'bg-cyan-500 hover:bg-cyan-400 text-black border-transparent'
+                          }`}
+                        >
+                          {completedLessons.includes(selectedLesson.id) ? 'Aula Concluída' : 'Marcar como Concluído'}
+                        </button>
+                      )}
                       
                       {completedLessons.includes(selectedLesson.id) && allLessons.findIndex(l => l.id === selectedLesson.id) < allLessons.length - 1 && (
                         <button 
-                          onClick={nextLesson}
+                          onClick={() => { setSelectedLesson(allLessons[allLessons.findIndex(l => l.id === selectedLesson.id) + 1]); setActiveQuiz(null); }}
                           className="w-full bg-white/5 hover:bg-white/10 text-white font-semibold py-3 rounded-xl transition-all flex items-center justify-center gap-2"
                         >
                           Próxima Aula
@@ -293,18 +461,50 @@ function TreinamentoPage() {
               {/* Progress Summary */}
               <div className="bg-[#0F1117] border border-[#1F232E] rounded-3xl p-6">
                 <h4 className="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-4">Seu Progresso na Trilha</h4>
-                <div className="space-y-4">
-                  <div className="flex justify-between text-xs mb-1">
-                    <span className="text-zinc-400">Total Concluído</span>
-                    <span className="text-cyan-500 font-bold">{progressPercent}%</span>
+                <div className="space-y-6">
+                  <div>
+                    <div className="flex justify-between text-xs mb-1">
+                      <span className="text-zinc-400">Total Concluído</span>
+                      <span className="text-cyan-500 font-bold">{progressPercent}%</span>
+                    </div>
+                    <div className="h-2 w-full bg-zinc-800 rounded-full overflow-hidden">
+                      <motion.div 
+                        initial={{ width: 0 }}
+                        animate={{ width: `${progressPercent}%` }}
+                        className="h-full bg-cyan-500 transition-all duration-500" 
+                      />
+                    </div>
                   </div>
-                  <div className="h-2 w-full bg-zinc-800 rounded-full overflow-hidden">
-                    <motion.div 
-                      initial={{ width: 0 }}
-                      animate={{ width: `${progressPercent}%` }}
-                      className="h-full bg-cyan-500 transition-all duration-500" 
-                    />
-                  </div>
+
+                  {Object.keys(quizResults).length > 0 && (
+                    <div className="space-y-3 pt-4 border-t border-[#1F232E]">
+                      <h5 className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider">Últimos Resultados</h5>
+                      {Object.entries(quizResults).slice(-3).map(([id, result]) => {
+                        const lesson = allLessons.find(l => l.id === id);
+                        if (!lesson) return null;
+                        const scorePercent = Math.round((result.score / result.total) * 100);
+                        return (
+                          <div key={id} className="flex items-center justify-between gap-3">
+                            <div className="flex-1 min-w-0">
+                              <p className="text-[10px] text-zinc-300 truncate font-semibold">{lesson.title}</p>
+                              <div className="flex items-center gap-1 mt-0.5">
+                                <div className="h-1 flex-1 bg-zinc-800 rounded-full overflow-hidden">
+                                  <div 
+                                    className={`h-full ${scorePercent >= 70 ? 'bg-emerald-500' : 'bg-amber-500'}`}
+                                    style={{ width: `${scorePercent}%` }}
+                                  />
+                                </div>
+                              </div>
+                            </div>
+                            <span className={`text-[10px] font-black ${scorePercent >= 70 ? 'text-emerald-500' : 'text-amber-500'}`}>
+                              {result.score}/{result.total}
+                            </span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+
                   <div className="flex items-center gap-2 text-[10px] text-zinc-600 font-bold uppercase tracking-wider">
                     <ChevronRight className="h-3 w-3" />
                     {progressPercent === 100 ? 'Parabéns! Você é um HCB Expert!' : 'Continue para ganhar seu selo'}
