@@ -15,6 +15,7 @@ import { Route as AtendimentoRouteImport } from './routes/atendimento'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AtendimentoIndexRouteImport } from './routes/atendimento.index'
 import { Route as AtendimentoWhatsappRouteImport } from './routes/atendimento.whatsapp'
+import { Route as AtendimentoTreinamentoRouteImport } from './routes/atendimento.treinamento'
 import { Route as AtendimentoRespostasRouteImport } from './routes/atendimento.respostas'
 import { Route as AtendimentoPropostasRouteImport } from './routes/atendimento.propostas'
 import { Route as AtendimentoKanbanRouteImport } from './routes/atendimento.kanban'
@@ -51,6 +52,11 @@ const AtendimentoIndexRoute = AtendimentoIndexRouteImport.update({
 const AtendimentoWhatsappRoute = AtendimentoWhatsappRouteImport.update({
   id: '/whatsapp',
   path: '/whatsapp',
+  getParentRoute: () => AtendimentoRoute,
+} as any)
+const AtendimentoTreinamentoRoute = AtendimentoTreinamentoRouteImport.update({
+  id: '/treinamento',
+  path: '/treinamento',
   getParentRoute: () => AtendimentoRoute,
 } as any)
 const AtendimentoRespostasRoute = AtendimentoRespostasRouteImport.update({
@@ -101,6 +107,7 @@ export interface FileRoutesByFullPath {
   '/atendimento/kanban': typeof AtendimentoKanbanRoute
   '/atendimento/propostas': typeof AtendimentoPropostasRoute
   '/atendimento/respostas': typeof AtendimentoRespostasRoute
+  '/atendimento/treinamento': typeof AtendimentoTreinamentoRoute
   '/atendimento/whatsapp': typeof AtendimentoWhatsappRoute
   '/atendimento/': typeof AtendimentoIndexRoute
   '/api/public/process-scheduled': typeof ApiPublicProcessScheduledRoute
@@ -115,6 +122,7 @@ export interface FileRoutesByTo {
   '/atendimento/kanban': typeof AtendimentoKanbanRoute
   '/atendimento/propostas': typeof AtendimentoPropostasRoute
   '/atendimento/respostas': typeof AtendimentoRespostasRoute
+  '/atendimento/treinamento': typeof AtendimentoTreinamentoRoute
   '/atendimento/whatsapp': typeof AtendimentoWhatsappRoute
   '/atendimento': typeof AtendimentoIndexRoute
   '/api/public/process-scheduled': typeof ApiPublicProcessScheduledRoute
@@ -131,6 +139,7 @@ export interface FileRoutesById {
   '/atendimento/kanban': typeof AtendimentoKanbanRoute
   '/atendimento/propostas': typeof AtendimentoPropostasRoute
   '/atendimento/respostas': typeof AtendimentoRespostasRoute
+  '/atendimento/treinamento': typeof AtendimentoTreinamentoRoute
   '/atendimento/whatsapp': typeof AtendimentoWhatsappRoute
   '/atendimento/': typeof AtendimentoIndexRoute
   '/api/public/process-scheduled': typeof ApiPublicProcessScheduledRoute
@@ -148,6 +157,7 @@ export interface FileRouteTypes {
     | '/atendimento/kanban'
     | '/atendimento/propostas'
     | '/atendimento/respostas'
+    | '/atendimento/treinamento'
     | '/atendimento/whatsapp'
     | '/atendimento/'
     | '/api/public/process-scheduled'
@@ -162,6 +172,7 @@ export interface FileRouteTypes {
     | '/atendimento/kanban'
     | '/atendimento/propostas'
     | '/atendimento/respostas'
+    | '/atendimento/treinamento'
     | '/atendimento/whatsapp'
     | '/atendimento'
     | '/api/public/process-scheduled'
@@ -177,6 +188,7 @@ export interface FileRouteTypes {
     | '/atendimento/kanban'
     | '/atendimento/propostas'
     | '/atendimento/respostas'
+    | '/atendimento/treinamento'
     | '/atendimento/whatsapp'
     | '/atendimento/'
     | '/api/public/process-scheduled'
@@ -232,6 +244,13 @@ declare module '@tanstack/react-router' {
       path: '/whatsapp'
       fullPath: '/atendimento/whatsapp'
       preLoaderRoute: typeof AtendimentoWhatsappRouteImport
+      parentRoute: typeof AtendimentoRoute
+    }
+    '/atendimento/treinamento': {
+      id: '/atendimento/treinamento'
+      path: '/treinamento'
+      fullPath: '/atendimento/treinamento'
+      preLoaderRoute: typeof AtendimentoTreinamentoRouteImport
       parentRoute: typeof AtendimentoRoute
     }
     '/atendimento/respostas': {
@@ -293,6 +312,7 @@ interface AtendimentoRouteChildren {
   AtendimentoKanbanRoute: typeof AtendimentoKanbanRoute
   AtendimentoPropostasRoute: typeof AtendimentoPropostasRoute
   AtendimentoRespostasRoute: typeof AtendimentoRespostasRoute
+  AtendimentoTreinamentoRoute: typeof AtendimentoTreinamentoRoute
   AtendimentoWhatsappRoute: typeof AtendimentoWhatsappRoute
   AtendimentoIndexRoute: typeof AtendimentoIndexRoute
 }
@@ -304,6 +324,7 @@ const AtendimentoRouteChildren: AtendimentoRouteChildren = {
   AtendimentoKanbanRoute: AtendimentoKanbanRoute,
   AtendimentoPropostasRoute: AtendimentoPropostasRoute,
   AtendimentoRespostasRoute: AtendimentoRespostasRoute,
+  AtendimentoTreinamentoRoute: AtendimentoTreinamentoRoute,
   AtendimentoWhatsappRoute: AtendimentoWhatsappRoute,
   AtendimentoIndexRoute: AtendimentoIndexRoute,
 }
@@ -322,3 +343,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
