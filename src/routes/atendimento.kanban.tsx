@@ -98,7 +98,7 @@ function KanbanColumn({ column, cards }: any) {
   );
 }
 
-import { useDraggable } from '@dnd-kit/core';
+// useDraggable import moved to top
 
 function KanbanCard({ card }: any) {
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
