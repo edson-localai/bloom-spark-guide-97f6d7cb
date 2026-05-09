@@ -227,6 +227,8 @@ export type Database = {
           resolved_at: string | null
           status: string
           subject: string | null
+          transferred_at: string | null
+          transferred_from: string | null
           unread_count: number | null
           updated_at: string | null
           whatsapp_chat_id: string
@@ -251,6 +253,8 @@ export type Database = {
           resolved_at?: string | null
           status?: string
           subject?: string | null
+          transferred_at?: string | null
+          transferred_from?: string | null
           unread_count?: number | null
           updated_at?: string | null
           whatsapp_chat_id: string
@@ -275,6 +279,8 @@ export type Database = {
           resolved_at?: string | null
           status?: string
           subject?: string | null
+          transferred_at?: string | null
+          transferred_from?: string | null
           unread_count?: number | null
           updated_at?: string | null
           whatsapp_chat_id?: string
@@ -299,6 +305,13 @@ export type Database = {
             columns: ["instance_id"]
             isOneToOne: false
             referencedRelation: "whatsapp_instances"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "conversations_transferred_from_fkey"
+            columns: ["transferred_from"]
+            isOneToOne: false
+            referencedRelation: "agents"
             referencedColumns: ["id"]
           },
         ]
@@ -356,6 +369,72 @@ export type Database = {
           },
         ]
       }
+      proposals: {
+        Row: {
+          agent_id: string | null
+          contact_id: string | null
+          conversation_id: string | null
+          created_at: string | null
+          discount: number | null
+          id: string
+          items: Json
+          notes: string | null
+          proposal_number: string
+          status: string | null
+          subtotal: number | null
+          total: number | null
+          updated_at: string | null
+          valid_until: string | null
+        }
+        Insert: {
+          agent_id?: string | null
+          contact_id?: string | null
+          conversation_id?: string | null
+          created_at?: string | null
+          discount?: number | null
+          id?: string
+          items?: Json
+          notes?: string | null
+          proposal_number?: string
+          status?: string | null
+          subtotal?: number | null
+          total?: number | null
+          updated_at?: string | null
+          valid_until?: string | null
+        }
+        Update: {
+          agent_id?: string | null
+          contact_id?: string | null
+          conversation_id?: string | null
+          created_at?: string | null
+          discount?: number | null
+          id?: string
+          items?: Json
+          notes?: string | null
+          proposal_number?: string
+          status?: string | null
+          subtotal?: number | null
+          total?: number | null
+          updated_at?: string | null
+          valid_until?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "proposals_contact_id_fkey"
+            columns: ["contact_id"]
+            isOneToOne: false
+            referencedRelation: "contacts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "proposals_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "conversations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       quick_replies: {
         Row: {
           agent_id: string | null
@@ -390,6 +469,47 @@ export type Database = {
             columns: ["agent_id"]
             isOneToOne: false
             referencedRelation: "agents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      scheduled_messages: {
+        Row: {
+          agent_id: string | null
+          content: string
+          conversation_id: string
+          created_at: string | null
+          id: string
+          scheduled_for: string
+          sent_at: string | null
+          status: string
+        }
+        Insert: {
+          agent_id?: string | null
+          content: string
+          conversation_id: string
+          created_at?: string | null
+          id?: string
+          scheduled_for: string
+          sent_at?: string | null
+          status?: string
+        }
+        Update: {
+          agent_id?: string | null
+          content?: string
+          conversation_id?: string
+          created_at?: string | null
+          id?: string
+          scheduled_for?: string
+          sent_at?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "scheduled_messages_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "conversations"
             referencedColumns: ["id"]
           },
         ]
