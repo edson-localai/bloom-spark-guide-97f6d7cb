@@ -648,6 +648,27 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_agents_with_email: {
+        Args: never
+        Returns: {
+          avatar_url: string | null
+          created_at: string | null
+          email: string
+          id: string
+          max_chats: number | null
+          name: string
+          role: string
+          status: string
+          updated_at: string | null
+          user_id: string | null
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "agents"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
       get_my_roles: {
         Args: never
         Returns: Database["public"]["Enums"]["app_role"][]

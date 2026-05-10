@@ -49,13 +49,11 @@ function UsuariosPage() {
   async function fetchUsers() {
     setLoading(true);
     try {
-      const { data, error } = await supabase
-        .from('agents')
-        .select('*')
-        .order('name');
+      const { data, error } = await supabase.rpc('get_agents_with_email');
       
       if (error) throw error;
-      setUsers(data as UserProfile[]);
+      const sorted = ((data as UserProfile[]) ?? []).slice().sort((a, b) => a.name.localeCompare(b.name));
+      setUsers(sorted);
     } catch (err) {
       console.error('Erro ao buscar usuários:', err);
       toast.error('Não foi possível carregar a lista de usuários.');
