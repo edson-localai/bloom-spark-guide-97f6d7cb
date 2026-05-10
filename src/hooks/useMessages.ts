@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Message } from '@/types/crm';
 import { handleAutoReply } from '@/lib/ai.functions';
+import { sendWhatsAppMessage } from '@/lib/whatsapp.functions';
 
 export function useMessages(conversationId: string | null) {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -75,6 +76,15 @@ export function useMessages(conversationId: string | null) {
         is_internal: isInternal,
       });
       if (error) throw error;
+
+      // Forward to WhatsApp (skip internal notes)
+      if (!isInternal && type === 'text') {
+        try {
+          await sendWhatsAppMessage({ data: { conversationId, content } });
+        } catch (waErr) {
+          console.warn('WhatsApp delivery failed:', waErr);
+        }
+      }
     } catch (err) {
       console.error('Error sending message:', err);
     }
