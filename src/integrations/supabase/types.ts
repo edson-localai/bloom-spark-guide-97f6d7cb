@@ -609,6 +609,8 @@ export type Database = {
           created_at: string | null
           display_name: string
           id: string
+          instance_data: Json | null
+          instance_key: string | null
           last_seen: string | null
           name: string
           phone_number: string | null
@@ -621,6 +623,8 @@ export type Database = {
           created_at?: string | null
           display_name: string
           id?: string
+          instance_data?: Json | null
+          instance_key?: string | null
           last_seen?: string | null
           name: string
           phone_number?: string | null
@@ -633,6 +637,8 @@ export type Database = {
           created_at?: string | null
           display_name?: string
           id?: string
+          instance_data?: Json | null
+          instance_key?: string | null
           last_seen?: string | null
           name?: string
           phone_number?: string | null
