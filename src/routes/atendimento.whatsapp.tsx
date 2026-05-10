@@ -233,16 +233,7 @@ function WhatsAppPage() {
             </button>
           </div>
         )}
-        </div>
-        <div>
-          <label className="text-xs uppercase font-bold text-zinc-500 mb-1 block">API Key (opcional)</label>
-          <input
-            value={apiKey}
-            onChange={(e) => setApiKey(e.target.value)}
-            placeholder="Chave da instância (se já existir)"
-            className="w-full bg-[#151821] border border-[#1F232E] rounded-lg px-3 py-2 text-white text-sm focus:border-cyan-500 outline-none"
-          />
-          <p className="text-[10px] text-zinc-600 mt-1">Deixe em branco para gerar uma nova chave automaticamente.</p>
+      </div>
 
       {showCreate && (
         <CreateInstanceModal
@@ -311,6 +302,16 @@ function CreateInstanceModal({ onClose, onCreated }: { onClose: () => void; onCr
             required
             className="w-full bg-[#151821] border border-[#1F232E] rounded-lg px-3 py-2 text-white text-sm focus:border-cyan-500 outline-none"
           />
+        </div>
+        <div>
+          <label className="text-xs uppercase font-bold text-zinc-500 mb-1 block">API Key (opcional)</label>
+          <input
+            value={apiKey}
+            onChange={(e) => setApiKey(e.target.value)}
+            placeholder="Chave da instância (se já existir)"
+            className="w-full bg-[#151821] border border-[#1F232E] rounded-lg px-3 py-2 text-white text-sm focus:border-cyan-500 outline-none"
+          />
+          <p className="text-[10px] text-zinc-600 mt-1">Deixe em branco para gerar uma nova chave automaticamente.</p>
         </div>
         <button
           disabled={submitting}
@@ -454,4 +455,3 @@ function ConfigApiModal({ onClose }: { onClose: () => void }) {
     </div>
   );
 }
-
