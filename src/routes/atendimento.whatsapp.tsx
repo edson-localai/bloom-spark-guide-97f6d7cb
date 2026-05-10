@@ -55,7 +55,7 @@ function WhatsAppPage() {
     try {
       await fn();
       toast.success(success);
-      fetchInstances();
+      await fetchInstances();
     } catch (err: any) {
       toast.error(err?.message || 'Erro');
     } finally {
