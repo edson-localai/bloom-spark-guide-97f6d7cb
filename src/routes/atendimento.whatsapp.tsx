@@ -178,7 +178,7 @@ function WhatsAppPage() {
                       disabled={!!busy}
                       onClick={() => {
                         if (!confirm(`Excluir definitivamente a instância "${inst.name}"?`)) return;
-                        runAction(`del-${inst.name}`, () => deleteWhatsAppInstance({ data: { name: inst.name } }), 'Instância excluída');
+                        runAction(`del-${inst.name}`, () => deleteWhatsAppInstance({ data: { id: inst.id, name: inst.name } }), 'Instância excluída');
                       }}
                       className="p-2.5 bg-red-500/5 hover:bg-red-500/15 text-red-500 border border-red-500/10 rounded-xl transition-all"
                       title="Excluir instância"
