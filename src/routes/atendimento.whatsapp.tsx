@@ -8,8 +8,8 @@ export const Route = createFileRoute('/atendimento/whatsapp')({
 });
 
 function WhatsAppPage() {
-  const { roles, user, loading: authLoading } = useCrmAuth();
-  const isSupervisor = roles.includes('admin') || roles.includes('supervisor') || user?.email === 'hcbautomotivo@gmail.com';
+  const { roles, loading: authLoading } = useCrmAuth();
+  const isSupervisor = roles.includes('admin') || roles.includes('supervisor');
   const { instances, loading, fetchInstances } = useWhatsApp();
 
   if (authLoading) return null;
