@@ -367,8 +367,8 @@ function ConfigApiModal({ onClose }: { onClose: () => void }) {
     e.preventDefault();
     setSaving(true);
     try {
-      await supabase.from('app_settings').update({ value: url.trim() }).eq('key', 'whatsapp_api_url');
-      await supabase.from('app_settings').update({ value: apiKey.trim() }).eq('key', 'whatsapp_api_key');
+      await supabase.from('app_settings').upsert({ key: 'whatsapp_api_url', value: url.trim() }, { onConflict: 'key' });
+      await supabase.from('app_settings').upsert({ key: 'whatsapp_api_key', value: apiKey.trim() }, { onConflict: 'key' });
       toast.success('Configuração salva!');
       onClose();
     } catch (err: any) {
@@ -382,53 +382,66 @@ function ConfigApiModal({ onClose }: { onClose: () => void }) {
     <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
       <form onSubmit={handleSave} className="bg-[#0F1117] border border-[#1F232E] rounded-2xl p-6 w-full max-w-lg space-y-4">
         <div className="flex justify-between items-center">
-          <h3 className="text-lg font-bold text-white">Configuração da Evolution API</h3>
+          <div className="flex items-center gap-2">
+            <SettingsIcon className="h-5 w-5 text-cyan-500" />
+            <h3 className="text-lg font-bold text-white">Configuração da Evolution API</h3>
+          </div>
           <button type="button" onClick={onClose} className="text-zinc-500 hover:text-white"><X className="h-5 w-5" /></button>
         </div>
 
-        <div className="bg-cyan-500/5 border border-cyan-500/20 rounded-lg p-3 text-xs text-cyan-200/80 leading-relaxed">
-          Informe o endpoint da sua instalação da <b>Evolution API</b> (compatível com Baileys).
-          Após salvar, configure o webhook desta URL no painel da Evolution:
-          <br />
-          <code className="text-cyan-300 break-all">https://project--{`<seu-project-id>`}.lovable.app/api/public/whatsapp/webhook</code>
-        </div>
-
         {loading ? (
-          <div className="flex justify-center py-6"><Loader2 className="h-6 w-6 animate-spin text-cyan-400" /></div>
+          <div className="py-12 flex justify-center"><Loader2 className="h-6 w-6 animate-spin text-cyan-400" /></div>
         ) : (
           <>
-            <div>
-              <label className="text-xs uppercase font-bold text-zinc-500 mb-1 block">URL da API</label>
-              <input
-                value={url}
-                onChange={(e) => setUrl(e.target.value)}
-                placeholder="https://evolution.seu-dominio.com"
-                required
-                className="w-full bg-[#151821] border border-[#1F232E] rounded-lg px-3 py-2 text-white text-sm focus:border-cyan-500 outline-none font-mono"
-              />
+            <div className="space-y-4">
+              <div>
+                <label className="text-xs uppercase font-bold text-zinc-500 mb-1 block">API URL</label>
+                <input
+                  value={url}
+                  onChange={(e) => setUrl(e.target.value)}
+                  placeholder="https://api.seudominio.com"
+                  required
+                  className="w-full bg-[#151821] border border-[#1F232E] rounded-lg px-3 py-2 text-white text-sm focus:border-cyan-500 outline-none"
+                />
+                <p className="text-[10px] text-zinc-600 mt-1">URL base da sua Evolution API (sem / no final).</p>
+              </div>
+              <div>
+                <label className="text-xs uppercase font-bold text-zinc-500 mb-1 block">Global API Key</label>
+                <div className="relative">
+                  <input
+                    type="password"
+                    value={apiKey}
+                    onChange={(e) => setApiKey(e.target.value)}
+                    placeholder="Sua chave global da API"
+                    required
+                    className="w-full bg-[#151821] border border-[#1F232E] rounded-lg px-3 py-2 text-white text-sm focus:border-cyan-500 outline-none"
+                  />
+                </div>
+                <p className="text-[10px] text-zinc-600 mt-1">Chave de autenticação global configurada na Evolution API.</p>
+              </div>
             </div>
-            <div>
-              <label className="text-xs uppercase font-bold text-zinc-500 mb-1 block">Global API Key</label>
-              <input
-                type="password"
-                value={apiKey}
-                onChange={(e) => setApiKey(e.target.value)}
-                placeholder="••••••••••••"
-                required
-                className="w-full bg-[#151821] border border-[#1F232E] rounded-lg px-3 py-2 text-white text-sm focus:border-cyan-500 outline-none font-mono"
-              />
+
+            <div className="pt-4 flex gap-3">
+              <button
+                type="button"
+                onClick={onClose}
+                className="flex-1 bg-transparent hover:bg-white/5 text-zinc-400 py-2.5 rounded-lg font-semibold text-sm border border-[#1F232E]"
+              >
+                Cancelar
+              </button>
+              <button
+                disabled={saving}
+                type="submit"
+                className="flex-1 bg-cyan-500 hover:bg-cyan-400 text-black py-2.5 rounded-lg font-semibold text-sm flex items-center justify-center gap-2"
+              >
+                {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+                Salvar Alterações
+              </button>
             </div>
-            <button
-              disabled={saving}
-              type="submit"
-              className="w-full bg-cyan-500 hover:bg-cyan-400 text-black py-2.5 rounded-lg font-semibold text-sm disabled:opacity-50 flex items-center justify-center gap-2"
-            >
-              <Save className="h-4 w-4" />
-              {saving ? 'Salvando...' : 'Salvar configuração'}
-            </button>
           </>
         )}
       </form>
     </div>
   );
 }
+
