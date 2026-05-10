@@ -150,13 +150,13 @@ export const disconnectWhatsAppInstance = createServerFn({ method: 'POST' })
 export const deleteWhatsAppInstance = createServerFn({ method: 'POST' })
   .middleware([requireSupabaseAuth])
   .inputValidator((data) => z.object({ 
-    id: z.string().uuid(),
+    id: z.string().uuid().optional(),
     name: z.string().min(1) 
   }).parse(data))
   .handler(async ({ data, context }) => {
     await requireAdminOrSupervisor(context.supabase, context.userId);
     
-    console.log(`Deleting WhatsApp instance ID: ${data.id}, Name: ${data.name}`);
+    console.log(`Deleting WhatsApp instance ID: ${data.id || 'by-name'}, Name: ${data.name}`);
     
     // 1. Try to logout and delete from Evolution API (optional, don't block if fails)
     try { 
@@ -171,23 +171,44 @@ export const deleteWhatsAppInstance = createServerFn({ method: 'POST' })
       console.warn(`Evolution delete failed for ${data.name}:`, e);
     }
 
+    const { data: target, error: findError } = await supabaseAdmin
+      .from('whatsapp_instances')
+      .select('id, name')
+      .eq(data.id ? 'id' : 'name', data.id || data.name)
+      .maybeSingle();
+
+    if (findError) {
+      console.error(`Database lookup failed for ${data.name}:`, findError);
+      throw new Error(`Erro ao localizar instância no banco: ${findError.message}`);
+    }
+
+    if (!target) {
+      console.warn(`No local WhatsApp instance found for ${data.id || data.name}`);
+      return { ok: true, count: 0, alreadyDeleted: true };
+    }
+
+    await supabaseAdmin
+      .from('conversations')
+      .update({ instance_id: null, updated_at: new Date().toISOString() })
+      .eq('instance_id', target.id);
+
     // 2. Delete from local database
     const { error, count } = await supabaseAdmin
       .from('whatsapp_instances')
-      .delete()
-      .eq('id', data.id);
+      .delete({ count: 'exact' })
+      .eq('id', target.id);
 
     if (error) {
       console.error(`Database delete failed for ${data.id}:`, error);
       throw new Error(`Erro ao excluir no banco: ${error.message}`);
     }
 
-    if (!count) {
-      console.warn(`No row deleted for ID ${data.id}`);
-      // Don't throw if already gone, but log it
+    if (count !== 1) {
+      console.warn(`Unexpected delete count for ID ${target.id}: ${count}`);
+      throw new Error('A instância não foi removida do banco. Atualize a página e tente novamente.');
     }
 
-    console.log(`Deleted ${count} rows from whatsapp_instances for ID ${data.id}`);
+    console.log(`Deleted ${count} rows from whatsapp_instances for ID ${target.id}`);
 
     return { ok: true, count };
   });
