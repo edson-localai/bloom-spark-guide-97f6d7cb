@@ -149,13 +149,47 @@ export const disconnectWhatsAppInstance = createServerFn({ method: 'POST' })
 // --- Delete instance entirely ---
 export const deleteWhatsAppInstance = createServerFn({ method: 'POST' })
   .middleware([requireSupabaseAuth])
-  .inputValidator((data) => z.object({ name: z.string().min(1) }).parse(data))
+  .inputValidator((data) => z.object({ 
+    id: z.string().uuid(),
+    name: z.string().min(1) 
+  }).parse(data))
   .handler(async ({ data, context }) => {
     await requireAdminOrSupervisor(context.supabase, context.userId);
-    try { await evoFetch(`/instance/logout/${encodeURIComponent(data.name)}`, { method: 'DELETE' }); } catch {}
-    try { await evoFetch(`/instance/delete/${encodeURIComponent(data.name)}`, { method: 'DELETE' }); } catch {}
-    await supabaseAdmin.from('whatsapp_instances').delete().eq('name', data.name);
-    return { ok: true };
+    
+    console.log(`Deleting WhatsApp instance ID: ${data.id}, Name: ${data.name}`);
+    
+    // 1. Try to logout and delete from Evolution API (optional, don't block if fails)
+    try { 
+      await evoFetch(`/instance/logout/${encodeURIComponent(data.name)}`, { method: 'DELETE' }); 
+    } catch (e) {
+      console.warn(`Evolution logout failed for ${data.name}:`, e);
+    }
+    
+    try { 
+      await evoFetch(`/instance/delete/${encodeURIComponent(data.name)}`, { method: 'DELETE' }); 
+    } catch (e) {
+      console.warn(`Evolution delete failed for ${data.name}:`, e);
+    }
+
+    // 2. Delete from local database
+    const { error, count } = await supabaseAdmin
+      .from('whatsapp_instances')
+      .delete()
+      .eq('id', data.id);
+
+    if (error) {
+      console.error(`Database delete failed for ${data.id}:`, error);
+      throw new Error(`Erro ao excluir no banco: ${error.message}`);
+    }
+
+    if (!count) {
+      console.warn(`No row deleted for ID ${data.id}`);
+      // Don't throw if already gone, but log it
+    }
+
+    console.log(`Deleted ${count} rows from whatsapp_instances for ID ${data.id}`);
+
+    return { ok: true, count };
   });
 
 // --- Send a text message via WhatsApp (called from the chat) ---
