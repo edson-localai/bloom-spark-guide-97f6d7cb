@@ -29,6 +29,7 @@ export const createWhatsAppInstance = createServerFn({ method: 'POST' })
     z.object({
       name: z.string().min(2).max(60).regex(/^[a-zA-Z0-9_-]+$/, 'Use letras, números, _ ou -'),
       displayName: z.string().min(1).max(100),
+      apiKey: z.string().optional(),
     }).parse(data),
   )
   .handler(async ({ data, context }) => {
@@ -42,6 +43,7 @@ export const createWhatsAppInstance = createServerFn({ method: 'POST' })
       body: JSON.stringify({
         instanceName: data.name,
         qrcode: true,
+        token: data.apiKey,
         integration: 'WHATSAPP-BAILEYS',
         webhookUrl,
         webhookByEvents: false,
@@ -65,8 +67,9 @@ export const createWhatsAppInstance = createServerFn({ method: 'POST' })
         display_name: data.displayName,
         status,
         qr_code: qr,
+        instance_key: data.apiKey || created?.instance?.token || created?.hash || null,
         webhook_url: webhookUrl,
-        instance_data: created || {},
+        instance_data: created as any,
       })
       .select()
       .single();
