@@ -1,8 +1,6 @@
 import { createServerFn } from '@tanstack/react-start';
 import { z } from 'zod';
 import { requireSupabaseAuth } from '@/integrations/supabase/auth-middleware';
-import { supabaseAdmin } from '@/integrations/supabase/client.server';
-import { evoFetch, normalizeStatus, jidToPhone } from './whatsapp.server';
 
 async function requireAdminOrSupervisor(supabase: any, userId: string) {
   const { data: roles } = await supabase
@@ -34,6 +32,8 @@ export const createWhatsAppInstance = createServerFn({ method: 'POST' })
   )
   .handler(async ({ data, context }) => {
     await requireAdminOrSupervisor(context.supabase, context.userId);
+    const { supabaseAdmin } = await import('@/integrations/supabase/client.server');
+    const { evoFetch, normalizeStatus } = await import('./whatsapp.server');
 
     const webhookUrl = publicWebhookUrl();
 
@@ -84,6 +84,8 @@ export const getWhatsAppQrCode = createServerFn({ method: 'POST' })
   .inputValidator((data) => z.object({ name: z.string().min(1) }).parse(data))
   .handler(async ({ data, context }) => {
     await requireAdminOrSupervisor(context.supabase, context.userId);
+    const { supabaseAdmin } = await import('@/integrations/supabase/client.server');
+    const { evoFetch } = await import('./whatsapp.server');
     const res = await evoFetch(`/instance/connect/${encodeURIComponent(data.name)}`);
     const qr = res?.base64 || res?.qrcode?.base64 || res?.code || null;
     await supabaseAdmin
@@ -99,6 +101,8 @@ export const syncWhatsAppInstance = createServerFn({ method: 'POST' })
   .inputValidator((data) => z.object({ name: z.string().min(1) }).parse(data))
   .handler(async ({ data, context }) => {
     await requireAdminOrSupervisor(context.supabase, context.userId);
+    const { supabaseAdmin } = await import('@/integrations/supabase/client.server');
+    const { evoFetch, normalizeStatus, jidToPhone } = await import('./whatsapp.server');
 
     const state = await evoFetch(`/instance/connectionState/${encodeURIComponent(data.name)}`);
     const status = normalizeStatus(state?.instance?.state || state?.state);
@@ -124,6 +128,8 @@ export const restartWhatsAppInstance = createServerFn({ method: 'POST' })
   .inputValidator((data) => z.object({ name: z.string().min(1) }).parse(data))
   .handler(async ({ data, context }) => {
     await requireAdminOrSupervisor(context.supabase, context.userId);
+    const { supabaseAdmin } = await import('@/integrations/supabase/client.server');
+    const { evoFetch } = await import('./whatsapp.server');
     await evoFetch(`/instance/restart/${encodeURIComponent(data.name)}`, { method: 'POST' });
     await supabaseAdmin
       .from('whatsapp_instances')
@@ -138,6 +144,8 @@ export const disconnectWhatsAppInstance = createServerFn({ method: 'POST' })
   .inputValidator((data) => z.object({ name: z.string().min(1) }).parse(data))
   .handler(async ({ data, context }) => {
     await requireAdminOrSupervisor(context.supabase, context.userId);
+    const { supabaseAdmin } = await import('@/integrations/supabase/client.server');
+    const { evoFetch } = await import('./whatsapp.server');
     await evoFetch(`/instance/logout/${encodeURIComponent(data.name)}`, { method: 'DELETE' });
     await supabaseAdmin
       .from('whatsapp_instances')
@@ -150,13 +158,15 @@ export const disconnectWhatsAppInstance = createServerFn({ method: 'POST' })
 export const deleteWhatsAppInstance = createServerFn({ method: 'POST' })
   .middleware([requireSupabaseAuth])
   .inputValidator((data) => z.object({ 
-    id: z.string().uuid(),
+    id: z.string().uuid().optional(),
     name: z.string().min(1) 
   }).parse(data))
   .handler(async ({ data, context }) => {
     await requireAdminOrSupervisor(context.supabase, context.userId);
+    const { supabaseAdmin } = await import('@/integrations/supabase/client.server');
+    const { evoFetch } = await import('./whatsapp.server');
     
-    console.log(`Deleting WhatsApp instance ID: ${data.id}, Name: ${data.name}`);
+    console.log(`Deleting WhatsApp instance ID: ${data.id || 'by-name'}, Name: ${data.name}`);
     
     // 1. Try to logout and delete from Evolution API (optional, don't block if fails)
     try { 
@@ -171,23 +181,44 @@ export const deleteWhatsAppInstance = createServerFn({ method: 'POST' })
       console.warn(`Evolution delete failed for ${data.name}:`, e);
     }
 
+    const { data: target, error: findError } = await supabaseAdmin
+      .from('whatsapp_instances')
+      .select('id, name')
+      .eq(data.id ? 'id' : 'name', data.id || data.name)
+      .maybeSingle();
+
+    if (findError) {
+      console.error(`Database lookup failed for ${data.name}:`, findError);
+      throw new Error(`Erro ao localizar instância no banco: ${findError.message}`);
+    }
+
+    if (!target) {
+      console.warn(`No local WhatsApp instance found for ${data.id || data.name}`);
+      return { ok: true, count: 0, alreadyDeleted: true };
+    }
+
+    await supabaseAdmin
+      .from('conversations')
+      .update({ instance_id: null, updated_at: new Date().toISOString() })
+      .eq('instance_id', target.id);
+
     // 2. Delete from local database
     const { error, count } = await supabaseAdmin
       .from('whatsapp_instances')
-      .delete()
-      .eq('id', data.id);
+      .delete({ count: 'exact' })
+      .eq('id', target.id);
 
     if (error) {
       console.error(`Database delete failed for ${data.id}:`, error);
       throw new Error(`Erro ao excluir no banco: ${error.message}`);
     }
 
-    if (!count) {
-      console.warn(`No row deleted for ID ${data.id}`);
-      // Don't throw if already gone, but log it
+    if (count !== 1) {
+      console.warn(`Unexpected delete count for ID ${target.id}: ${count}`);
+      throw new Error('A instância não foi removida do banco. Atualize a página e tente novamente.');
     }
 
-    console.log(`Deleted ${count} rows from whatsapp_instances for ID ${data.id}`);
+    console.log(`Deleted ${count} rows from whatsapp_instances for ID ${target.id}`);
 
     return { ok: true, count };
   });
@@ -205,6 +236,8 @@ export const sendWhatsAppMessage = createServerFn({ method: 'POST' })
     // Caller must at least have a CRM role (any agent can reply).
     const { data: roles } = await context.supabase.from('user_roles').select('role').eq('user_id', context.userId);
     if (!roles || roles.length === 0) throw new Error('Forbidden');
+    const { supabaseAdmin } = await import('@/integrations/supabase/client.server');
+    const { evoFetch, jidToPhone } = await import('./whatsapp.server');
 
     const { data: conv, error: convErr } = await supabaseAdmin
       .from('conversations')

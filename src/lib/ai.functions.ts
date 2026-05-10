@@ -1,5 +1,4 @@
 import { createServerFn } from "@tanstack/react-start";
-import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { z } from "zod";
 
@@ -11,6 +10,8 @@ export const handleAutoReply = createServerFn({ method: "POST" })
   }).parse(data))
   .handler(async ({ data: { conversationId, content } }) => {
     try {
+      const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
       // 1. Verifica se auto-reply está ativo
       const { data: settings } = await supabaseAdmin
         .from('app_settings')
@@ -92,6 +93,8 @@ export const extractContactData = createServerFn({ method: "POST" })
   }).parse(data))
   .handler(async ({ data: { conversationId, contactId } }) => {
     try {
+      const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
       // 1. Busca as últimas 10 mensagens
       const { data: messages } = await supabaseAdmin
         .from('messages')

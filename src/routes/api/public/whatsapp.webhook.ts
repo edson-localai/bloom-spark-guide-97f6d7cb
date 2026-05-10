@@ -1,6 +1,4 @@
 import { createFileRoute } from '@tanstack/react-router';
-import { supabaseAdmin } from '@/integrations/supabase/client.server';
-import { jidToPhone, normalizeStatus } from '@/lib/whatsapp.server';
 
 // Evolution API → Lovable webhook receiver.
 // Configure this URL in your Evolution API panel:
@@ -22,6 +20,9 @@ export const Route = createFileRoute('/api/public/whatsapp/webhook')({
         const instanceName = payload?.instance || payload?.instanceName;
 
         try {
+          const { supabaseAdmin } = await import('@/integrations/supabase/client.server');
+          const { jidToPhone, normalizeStatus } = await import('@/lib/whatsapp.server');
+
           if (event === 'CONNECTION_UPDATE') {
             const status = normalizeStatus(payload?.data?.state);
             const update: any = {
