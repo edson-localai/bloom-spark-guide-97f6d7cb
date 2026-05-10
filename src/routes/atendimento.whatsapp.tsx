@@ -233,7 +233,16 @@ function WhatsAppPage() {
             </button>
           </div>
         )}
-      </div>
+        </div>
+        <div>
+          <label className="text-xs uppercase font-bold text-zinc-500 mb-1 block">API Key (opcional)</label>
+          <input
+            value={apiKey}
+            onChange={(e) => setApiKey(e.target.value)}
+            placeholder="Chave da instância (se já existir)"
+            className="w-full bg-[#151821] border border-[#1F232E] rounded-lg px-3 py-2 text-white text-sm focus:border-cyan-500 outline-none"
+          />
+          <p className="text-[10px] text-zinc-600 mt-1">Deixe em branco para gerar uma nova chave automaticamente.</p>
 
       {showCreate && (
         <CreateInstanceModal
@@ -258,13 +267,14 @@ function WhatsAppPage() {
 function CreateInstanceModal({ onClose, onCreated }: { onClose: () => void; onCreated: (qr: string | null, name: string) => void }) {
   const [name, setName] = useState('');
   const [displayName, setDisplayName] = useState('');
+  const [apiKey, setApiKey] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setSubmitting(true);
     try {
-      const res: any = await createWhatsAppInstance({ data: { name: name.trim(), displayName: displayName.trim() } });
+      const res: any = await createWhatsAppInstance({ data: { name: name.trim(), displayName: displayName.trim(), apiKey: apiKey.trim() || undefined } });
       toast.success('Instância criada! Escaneie o QR Code para conectar.');
       onCreated(res?.qr || null, name.trim());
     } catch (err: any) {
