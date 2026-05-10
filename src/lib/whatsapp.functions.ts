@@ -182,6 +182,11 @@ export const deleteWhatsAppInstance = createServerFn({ method: 'POST' })
       throw new Error(`Erro ao excluir no banco: ${error.message}`);
     }
 
+    if (!count) {
+      console.warn(`No row deleted for ID ${data.id}`);
+      // Don't throw if already gone, but log it
+    }
+
     console.log(`Deleted ${count} rows from whatsapp_instances for ID ${data.id}`);
 
     return { ok: true, count };
