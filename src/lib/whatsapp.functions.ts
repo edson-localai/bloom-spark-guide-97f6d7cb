@@ -149,11 +149,14 @@ export const disconnectWhatsAppInstance = createServerFn({ method: 'POST' })
 // --- Delete instance entirely ---
 export const deleteWhatsAppInstance = createServerFn({ method: 'POST' })
   .middleware([requireSupabaseAuth])
-  .inputValidator((data) => z.object({ name: z.string().min(1) }).parse(data))
+  .inputValidator((data) => z.object({ 
+    id: z.string().uuid(),
+    name: z.string().min(1) 
+  }).parse(data))
   .handler(async ({ data, context }) => {
     await requireAdminOrSupervisor(context.supabase, context.userId);
     
-    console.log(`Deleting WhatsApp instance: ${data.name}`);
+    console.log(`Deleting WhatsApp instance ID: ${data.id}, Name: ${data.name}`);
     
     // 1. Try to logout and delete from Evolution API (optional, don't block if fails)
     try { 
@@ -172,14 +175,14 @@ export const deleteWhatsAppInstance = createServerFn({ method: 'POST' })
     const { error, count } = await supabaseAdmin
       .from('whatsapp_instances')
       .delete()
-      .eq('name', data.name);
+      .eq('id', data.id);
 
     if (error) {
-      console.error(`Database delete failed for ${data.name}:`, error);
+      console.error(`Database delete failed for ${data.id}:`, error);
       throw new Error(`Erro ao excluir no banco: ${error.message}`);
     }
 
-    console.log(`Deleted ${count} rows from whatsapp_instances for name ${data.name}`);
+    console.log(`Deleted ${count} rows from whatsapp_instances for ID ${data.id}`);
 
     return { ok: true, count };
   });
