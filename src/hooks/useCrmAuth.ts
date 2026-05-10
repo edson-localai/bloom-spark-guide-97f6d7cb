@@ -14,11 +14,8 @@ export interface CrmAuthState {
   isSupervisor: boolean;
 }
 
-const CRM_MASTER_EMAIL = 'hcbautomotivo@gmail.com';
-
-function normalizeRoles(userEmail: string | undefined, fetchedRoles: AppRole[]): AppRole[] {
-  if (userEmail?.toLowerCase() !== CRM_MASTER_EMAIL) return fetchedRoles;
-  return fetchedRoles.includes('admin') ? fetchedRoles : ['admin', ...fetchedRoles];
+function normalizeRoles(_userEmail: string | undefined, fetchedRoles: AppRole[]): AppRole[] {
+  return fetchedRoles;
 }
 
 export function useCrmAuth(): CrmAuthState {
