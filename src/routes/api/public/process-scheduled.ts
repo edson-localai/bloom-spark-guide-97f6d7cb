@@ -1,5 +1,4 @@
 import { createFileRoute } from '@tanstack/react-router';
-import { supabaseAdmin } from '@/integrations/supabase/client.server';
 
 export const Route = createFileRoute('/api/public/process-scheduled')({
   server: {
@@ -16,6 +15,8 @@ export const Route = createFileRoute('/api/public/process-scheduled')({
         }
 
         try {
+          const { supabaseAdmin } = await import('@/integrations/supabase/client.server');
+
           const { data: pending, error: fetchError } = await supabaseAdmin
             .from('scheduled_messages')
             .select('*')
