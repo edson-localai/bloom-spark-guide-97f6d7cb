@@ -128,6 +128,8 @@ export const restartWhatsAppInstance = createServerFn({ method: 'POST' })
   .inputValidator((data) => z.object({ name: z.string().min(1) }).parse(data))
   .handler(async ({ data, context }) => {
     await requireAdminOrSupervisor(context.supabase, context.userId);
+    const { supabaseAdmin } = await import('@/integrations/supabase/client.server');
+    const { evoFetch } = await import('./whatsapp.server');
     await evoFetch(`/instance/restart/${encodeURIComponent(data.name)}`, { method: 'POST' });
     await supabaseAdmin
       .from('whatsapp_instances')
@@ -142,6 +144,8 @@ export const disconnectWhatsAppInstance = createServerFn({ method: 'POST' })
   .inputValidator((data) => z.object({ name: z.string().min(1) }).parse(data))
   .handler(async ({ data, context }) => {
     await requireAdminOrSupervisor(context.supabase, context.userId);
+    const { supabaseAdmin } = await import('@/integrations/supabase/client.server');
+    const { evoFetch } = await import('./whatsapp.server');
     await evoFetch(`/instance/logout/${encodeURIComponent(data.name)}`, { method: 'DELETE' });
     await supabaseAdmin
       .from('whatsapp_instances')
@@ -159,6 +163,8 @@ export const deleteWhatsAppInstance = createServerFn({ method: 'POST' })
   }).parse(data))
   .handler(async ({ data, context }) => {
     await requireAdminOrSupervisor(context.supabase, context.userId);
+    const { supabaseAdmin } = await import('@/integrations/supabase/client.server');
+    const { evoFetch } = await import('./whatsapp.server');
     
     console.log(`Deleting WhatsApp instance ID: ${data.id || 'by-name'}, Name: ${data.name}`);
     
@@ -230,6 +236,8 @@ export const sendWhatsAppMessage = createServerFn({ method: 'POST' })
     // Caller must at least have a CRM role (any agent can reply).
     const { data: roles } = await context.supabase.from('user_roles').select('role').eq('user_id', context.userId);
     if (!roles || roles.length === 0) throw new Error('Forbidden');
+    const { supabaseAdmin } = await import('@/integrations/supabase/client.server');
+    const { evoFetch, jidToPhone } = await import('./whatsapp.server');
 
     const { data: conv, error: convErr } = await supabaseAdmin
       .from('conversations')
