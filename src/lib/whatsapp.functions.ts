@@ -67,9 +67,9 @@ export const createWhatsAppInstance = createServerFn({ method: 'POST' })
         display_name: data.displayName,
         status,
         qr_code: qr,
-        evolution_apikey: data.apiKey || created?.instance?.token || created?.hash || null,
+        instance_key: data.apiKey || created?.instance?.token || created?.hash || null,
         webhook_url: webhookUrl,
-        instance_data: created || {},
+        instance_data: created as any,
       })
       .select()
       .single();
