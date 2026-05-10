@@ -1,8 +1,6 @@
 import { createServerFn } from '@tanstack/react-start';
 import { z } from 'zod';
 import { requireSupabaseAuth } from '@/integrations/supabase/auth-middleware';
-import { supabaseAdmin } from '@/integrations/supabase/client.server';
-import { evoFetch, normalizeStatus, jidToPhone } from './whatsapp.server';
 
 async function requireAdminOrSupervisor(supabase: any, userId: string) {
   const { data: roles } = await supabase
@@ -34,6 +32,8 @@ export const createWhatsAppInstance = createServerFn({ method: 'POST' })
   )
   .handler(async ({ data, context }) => {
     await requireAdminOrSupervisor(context.supabase, context.userId);
+    const { supabaseAdmin } = await import('@/integrations/supabase/client.server');
+    const { evoFetch, normalizeStatus } = await import('./whatsapp.server');
 
     const webhookUrl = publicWebhookUrl();
 
@@ -84,6 +84,8 @@ export const getWhatsAppQrCode = createServerFn({ method: 'POST' })
   .inputValidator((data) => z.object({ name: z.string().min(1) }).parse(data))
   .handler(async ({ data, context }) => {
     await requireAdminOrSupervisor(context.supabase, context.userId);
+    const { supabaseAdmin } = await import('@/integrations/supabase/client.server');
+    const { evoFetch } = await import('./whatsapp.server');
     const res = await evoFetch(`/instance/connect/${encodeURIComponent(data.name)}`);
     const qr = res?.base64 || res?.qrcode?.base64 || res?.code || null;
     await supabaseAdmin
@@ -99,6 +101,8 @@ export const syncWhatsAppInstance = createServerFn({ method: 'POST' })
   .inputValidator((data) => z.object({ name: z.string().min(1) }).parse(data))
   .handler(async ({ data, context }) => {
     await requireAdminOrSupervisor(context.supabase, context.userId);
+    const { supabaseAdmin } = await import('@/integrations/supabase/client.server');
+    const { evoFetch, normalizeStatus, jidToPhone } = await import('./whatsapp.server');
 
     const state = await evoFetch(`/instance/connectionState/${encodeURIComponent(data.name)}`);
     const status = normalizeStatus(state?.instance?.state || state?.state);
