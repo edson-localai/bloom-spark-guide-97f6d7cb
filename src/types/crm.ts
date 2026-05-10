@@ -28,6 +28,7 @@ export interface WhatsAppInstance {
   last_seen: string | null;
   created_at: string;
   updated_at: string;
+  instance_key?: string | null;
 }
 
 export interface Contact {
