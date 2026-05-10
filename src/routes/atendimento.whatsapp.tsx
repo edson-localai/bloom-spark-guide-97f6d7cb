@@ -122,9 +122,30 @@ function WhatsAppPage() {
                   </div>
                   <div>
                     <h3 className="text-lg font-bold text-white">{inst.display_name}</h3>
-                    <p className="text-sm text-zinc-500 font-mono">{inst.phone_number || inst.name}</p>
+                    <div className="flex flex-col">
+                      <p className="text-xs text-zinc-500 font-mono">ID: {inst.name}</p>
+                      {inst.phone_number && <p className="text-xs text-zinc-500 font-mono">Fone: {inst.phone_number}</p>}
+                    </div>
                   </div>
                 </div>
+
+                {isAdmin && (
+                  <div className="bg-amber-500/5 border border-amber-500/10 rounded-2xl p-4 space-y-2">
+                    <p className="text-[10px] uppercase font-bold tracking-widest text-amber-500/60">Credenciais da Instância</p>
+                    <div className="flex flex-col gap-1">
+                      <div className="flex justify-between items-center">
+                        <span className="text-[10px] text-zinc-600 font-mono">Instance Name:</span>
+                        <span className="text-[10px] text-zinc-400 font-mono">{inst.name}</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-[10px] text-zinc-600 font-mono">API Key:</span>
+                        <span className="text-[10px] text-zinc-400 font-mono truncate max-w-[150px]" title={inst.instance_key || ''}>
+                          {inst.instance_key || 'N/A'}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                )}
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="bg-[#151821] rounded-2xl p-4 border border-[#1F232E]">
