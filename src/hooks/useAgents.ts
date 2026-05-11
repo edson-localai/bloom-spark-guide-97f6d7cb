@@ -37,11 +37,21 @@ export function useAgents() {
               user_id: user.id,
               online_at: new Date().toISOString(),
             });
+            // Marca o próprio agente como online no banco (lido pelo webhook para auto-atribuição)
+            await supabase.from('agents').update({ status: 'online' }).eq('user_id', user.id);
           }
         }
       });
 
+    const setOffline = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) await supabase.from('agents').update({ status: 'offline' }).eq('user_id', user.id);
+    };
+    window.addEventListener('beforeunload', setOffline);
+
     return () => {
+      window.removeEventListener('beforeunload', setOffline);
+      setOffline();
       supabase.removeChannel(channel);
     };
   }, []);
