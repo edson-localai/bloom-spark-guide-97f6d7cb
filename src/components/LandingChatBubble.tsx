@@ -265,6 +265,36 @@ export default function LandingChatBubble() {
                     </div>
                     
                     <div className="space-y-2 max-h-[180px] overflow-y-auto pr-1 custom-scrollbar">
+                      <div className="flex items-center gap-3 py-2 border-b border-white/5">
+                        <div className="relative group">
+                          {lead.avatar_url ? (
+                            <img src={lead.avatar_url} alt="Sua foto" className="w-10 h-10 rounded-full object-cover border border-white/20" />
+                          ) : (
+                            <div className="w-10 h-10 rounded-full bg-white/10 border border-white/20 flex items-center justify-center">
+                              <User className="w-5 h-5 text-white/30" />
+                            </div>
+                          )}
+                          <button 
+                            onClick={() => fileInputRef.current?.click()}
+                            disabled={uploading}
+                            className="absolute -bottom-1 -right-1 p-1 rounded-full bg-[#0066CC] text-white shadow-lg hover:bg-[#3385ff] transition-colors disabled:opacity-50"
+                          >
+                            {uploading ? <Loader2 className="w-3 h-3 animate-spin" /> : <Camera className="w-3 h-3" />}
+                          </button>
+                          <input 
+                            type="file" 
+                            ref={fileInputRef} 
+                            onChange={handleFileChange} 
+                            accept="image/*" 
+                            className="hidden" 
+                          />
+                        </div>
+                        <div className="flex-1">
+                          <p className="text-[10px] text-white font-medium">Sua foto de perfil</p>
+                          <p className="text-[9px] text-white/40 leading-tight">Será usada no chat se a do WhatsApp não carregar.</p>
+                        </div>
+                      </div>
+
                       <div className="flex flex-col gap-0.5">
                         <label className="text-[9px] text-white/40 uppercase font-semibold">Nome</label>
                         {isEditing ? (
