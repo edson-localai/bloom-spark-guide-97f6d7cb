@@ -205,33 +205,41 @@ export const Route = createFileRoute('/api/public/wapi/webhook')({
 
           const instanceRowId = inst?.id || null;
 
-          // 2) conversa
+          // 2) conversa (Chatwoot-style: nova conversa entra na fila e tenta atribuição automática)
           let conversationId: string | null = null;
+          let isNewConversation = false;
+          let needsAssignment = false;
           {
             const { data: existing } = await supabaseAdmin
               .from('conversations')
-              .select('id')
+              .select('id, agent_id, status')
               .eq('whatsapp_chat_id', remoteJid)
               .maybeSingle();
             if (existing?.id) {
               conversationId = existing.id;
+              // Se a conversa foi reaberta (resolvida/arquivada) ou continua sem agente, reentrar na fila
+              const reopened = existing.status === 'resolved' || existing.status === 'archived';
+              needsAssignment = !existing.agent_id || reopened;
               await supabaseAdmin
                 .from('conversations')
                 .update({
                   last_message: content,
                   last_message_at: new Date().toISOString(),
-                  unread_count: 1,
+                  unread_count: (existing as any).unread_count != null ? undefined : 1,
+                  status: reopened ? 'queue' : existing.status,
                   updated_at: new Date().toISOString(),
                 })
                 .eq('id', existing.id);
             } else {
+              isNewConversation = true;
+              needsAssignment = true;
               const { data: created } = await supabaseAdmin
                 .from('conversations')
                 .insert({
                   contact_id: contactId,
                   instance_id: instanceRowId,
                   whatsapp_chat_id: remoteJid,
-                  status: 'bot',
+                  status: 'queue',
                   channel: 'whatsapp',
                   last_message: content,
                   last_message_at: new Date().toISOString(),
