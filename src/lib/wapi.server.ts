@@ -14,14 +14,26 @@ export async function wapiFetch(
   if (!url.searchParams.get('instanceId')) {
     url.searchParams.set('instanceId', creds.instanceId);
   }
-  const res = await fetch(url.toString(), {
-    ...init,
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${creds.token}`,
-      ...(init.headers || {}),
-    },
-  });
+  const ctrl = new AbortController();
+  const timeoutMs = (init as any)?.timeoutMs ?? 12000;
+  const t = setTimeout(() => ctrl.abort(), timeoutMs);
+  let res: Response;
+  try {
+    res = await fetch(url.toString(), {
+      ...init,
+      signal: ctrl.signal,
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${creds.token}`,
+        ...(init.headers || {}),
+      },
+    });
+  } catch (e: any) {
+    clearTimeout(t);
+    if (e?.name === 'AbortError') throw new Error(`W-API timeout após ${timeoutMs}ms`);
+    throw e;
+  }
+  clearTimeout(t);
   const text = await res.text();
   let body: any = null;
   try { body = text ? JSON.parse(text) : null; } catch { body = text; }
