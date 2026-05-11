@@ -117,10 +117,10 @@ export default function LandingChatBubble() {
 
     setUploading(true);
     try {
-      const blob = await compressImage(file);
-      setCompressedBlob(blob);
+      const result = await compressImage(file);
+      setOptimizedImage(result);
       if (previewUrl) URL.revokeObjectURL(previewUrl);
-      setPreviewUrl(URL.createObjectURL(blob));
+      setPreviewUrl(URL.createObjectURL(result.blob));
     } catch (err) {
       console.error('Error compressing image:', err);
       setValidationError("Erro ao processar a imagem. Tente novamente.");
@@ -130,18 +130,17 @@ export default function LandingChatBubble() {
   };
 
   const handleConfirmUpload = async () => {
-    if (!compressedBlob || !lead) return;
+    if (!optimizedImage || !lead) return;
     
     setUploading(true);
     try {
-      const fileExt = "jpg";
-      const fileName = `${Math.random().toString(36).slice(2, 10)}.${fileExt}`;
+      const fileName = `${Math.random().toString(36).slice(2, 10)}.${optimizedImage.extension}`;
       const filePath = `leads/${fileName}`;
 
       const { error: uploadError } = await supabase.storage
         .from('avatars')
-        .upload(filePath, compressedBlob, {
-          contentType: 'image/jpeg',
+        .upload(filePath, optimizedImage.blob, {
+          contentType: optimizedImage.contentType,
           upsert: true
         });
 
@@ -154,7 +153,7 @@ export default function LandingChatBubble() {
       if (previewUrl) URL.revokeObjectURL(previewUrl);
       setLead({ ...lead, avatar_url: publicUrl });
       setPreviewUrl(null);
-      setCompressedBlob(null);
+      setOptimizedImage(null);
     } catch (err) {
       console.error('Error uploading avatar:', err);
       setValidationError("Erro ao salvar a foto. Tente novamente.");
@@ -166,7 +165,7 @@ export default function LandingChatBubble() {
   const handleCancelPreview = () => {
     if (previewUrl) URL.revokeObjectURL(previewUrl);
     setPreviewUrl(null);
-    setCompressedBlob(null);
+    setOptimizedImage(null);
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
   
