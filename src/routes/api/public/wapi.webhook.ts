@@ -219,29 +219,37 @@ export const Route = createFileRoute('/api/public/wapi/webhook')({
             content = '[Mensagem não suportada]';
           }
 
-          // 1) contato — chave por phone (real quando possível). Atualiza nome se vier melhor pelo WhatsApp.
+          // 1) contato — chave por phone (real quando possível). 
+          // Tenta vincular lead se houver referência [Ref: web-...]
           let contactId: string | null = null;
           {
-            const { data: existing } = await supabaseAdmin
-              .from('contacts')
-              .select('id, name, phone')
-              .eq('phone', phone)
-              .maybeSingle();
-            const looksLikeJustDigits = (n: string | null | undefined) =>
-              !n || /^[0-9]+$/.test(String(n).trim());
-            if (existing?.id) {
-              contactId = existing.id;
-              // Atualiza o nome quando o atual está vazio ou é só dígitos (LID), e temos pushName real
-              if (pushName && looksLikeJustDigits(existing.name)) {
-                await supabaseAdmin.from('contacts').update({ name: pushName }).eq('id', existing.id);
-              }
+            const { linkLeadToContact } = await import('@/lib/whatsapp.server');
+            const linkedId = await linkLeadToContact(content, phone);
+            
+            if (linkedId) {
+              contactId = linkedId;
             } else {
-              const { data: created } = await supabaseAdmin
+              const { data: existing } = await supabaseAdmin
                 .from('contacts')
-                .insert({ phone, name: pushName || null })
-                .select('id')
-                .single();
-              contactId = created?.id || null;
+                .select('id, name, phone')
+                .eq('phone', phone)
+                .maybeSingle();
+              const looksLikeJustDigits = (n: string | null | undefined) =>
+                !n || /^[0-9]+$/.test(String(n).trim());
+              if (existing?.id) {
+                contactId = existing.id;
+                // Atualiza o nome quando o atual está vazio ou é só dígitos (LID), e temos pushName real
+                if (pushName && looksLikeJustDigits(existing.name)) {
+                  await supabaseAdmin.from('contacts').update({ name: pushName }).eq('id', existing.id);
+                }
+              } else {
+                const { data: created } = await supabaseAdmin
+                  .from('contacts')
+                  .insert({ phone, name: pushName || null })
+                  .select('id')
+                  .single();
+                contactId = created?.id || null;
+              }
             }
           }
 

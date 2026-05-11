@@ -121,13 +121,13 @@ export const saveLandingLead = createServerFn({ method: "POST" })
     // Phone é NOT NULL na tabela; usamos um placeholder único até o cliente
     // mandar a primeira mensagem real pelo WhatsApp (que cria outro contato
     // com o telefone verdadeiro via webhook).
-    const placeholderPhone = `web-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+    const leadId = `web-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
 
     const { data: row, error } = await supabaseAdmin
       .from('contacts')
       .insert({
         name: data.name || 'Lead do site',
-        phone: placeholderPhone,
+        phone: leadId,
         vehicle_brand: data.vehicle_brand,
         vehicle_model: data.vehicle_model,
         vehicle_year: data.vehicle_year,
@@ -141,8 +141,8 @@ export const saveLandingLead = createServerFn({ method: "POST" })
 
     if (error) {
       console.error('[saveLandingLead] insert error', error);
-      return { ok: false, id: null as string | null };
+      return { ok: false, id: null as string | null, leadId: null as string | null };
     }
 
-    return { ok: true, id: row.id };
+    return { ok: true, id: row.id, leadId };
   });

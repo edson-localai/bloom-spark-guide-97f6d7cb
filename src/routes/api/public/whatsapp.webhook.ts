@@ -102,25 +102,33 @@ export const Route = createFileRoute('/api/public/whatsapp/webhook')({
               }
 
               // 1) Find / create the contact by phone
+              // Try to link lead if there is a reference [Ref: web-...]
               let contactId: string | null = null;
               {
-                const { data: existing } = await supabaseAdmin
-                  .from('contacts')
-                  .select('id, name')
-                  .eq('phone', phone)
-                  .maybeSingle();
-                if (existing?.id) {
-                  contactId = existing.id;
-                  if (!existing.name && pushName) {
-                    await supabaseAdmin.from('contacts').update({ name: pushName }).eq('id', existing.id);
-                  }
+                const { linkLeadToContact } = await import('@/lib/whatsapp.server');
+                const linkedId = await linkLeadToContact(content, phone);
+
+                if (linkedId) {
+                  contactId = linkedId;
                 } else {
-                  const { data: created } = await supabaseAdmin
+                  const { data: existing } = await supabaseAdmin
                     .from('contacts')
-                    .insert({ phone, name: pushName || null })
-                    .select('id')
-                    .single();
-                  contactId = created?.id || null;
+                    .select('id, name')
+                    .eq('phone', phone)
+                    .maybeSingle();
+                  if (existing?.id) {
+                    contactId = existing.id;
+                    if (!existing.name && pushName) {
+                      await supabaseAdmin.from('contacts').update({ name: pushName }).eq('id', existing.id);
+                    }
+                  } else {
+                    const { data: created } = await supabaseAdmin
+                      .from('contacts')
+                      .insert({ phone, name: pushName || null })
+                      .select('id')
+                      .single();
+                    contactId = created?.id || null;
+                  }
                 }
               }
 
