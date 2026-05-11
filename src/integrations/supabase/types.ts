@@ -154,6 +154,7 @@ export type Database = {
       }
       contacts: {
         Row: {
+          avatar_url: string | null
           birthdate: string | null
           cep: string | null
           city: string | null
@@ -179,6 +180,7 @@ export type Database = {
           vehicle_year: number | null
         }
         Insert: {
+          avatar_url?: string | null
           birthdate?: string | null
           cep?: string | null
           city?: string | null
@@ -204,6 +206,7 @@ export type Database = {
           vehicle_year?: number | null
         }
         Update: {
+          avatar_url?: string | null
           birthdate?: string | null
           cep?: string | null
           city?: string | null
