@@ -145,7 +145,7 @@ export const saveLandingLead = createServerFn({ method: "POST" })
 
     if (existing) {
       console.log('[saveLandingLead] lead repetido encontrado:', existing.id);
-      return { ok: true, id: existing.id, leadId: existing.phone };
+      return { ok: true, id: existing.id, leadId: existing.phone, reused: true };
     }
 
     // Phone é NOT NULL na tabela; usamos um placeholder único até o cliente

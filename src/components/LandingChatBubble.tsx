@@ -23,6 +23,7 @@ export default function LandingChatBubble() {
   const [savingLead, setSavingLead] = useState(false);
   const [saveError, setSaveError] = useState(false);
   const [leadSaved, setLeadSaved] = useState<string | null>(null);
+  const [isReused, setIsReused] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const chat = useServerFn(landingChat);
@@ -85,6 +86,7 @@ export default function LandingChatBubble() {
       });
       if (res.ok && res.leadId) {
         setLeadSaved(res.leadId as any);
+        if (res.reused) setIsReused(true);
       } else {
         setSaveError(true);
       }
@@ -304,10 +306,14 @@ export default function LandingChatBubble() {
                   <div className="bg-green-500/10 border border-green-500/20 rounded-xl p-4 text-center space-y-3">
                     <div className="flex flex-col items-center gap-2 text-green-400">
                       <CheckCircle2 className="w-8 h-8" />
-                      <p className="font-semibold text-sm">Dados salvos com sucesso!</p>
+                      <p className="font-semibold text-sm">
+                        {isReused ? "Dados identificados!" : "Dados salvos com sucesso!"}
+                      </p>
                     </div>
                     <p className="text-white/60 text-xs px-2">
-                      Sua solicitação foi registrada. Clique abaixo para iniciar a conversa no WhatsApp.
+                      {isReused 
+                        ? "Já encontramos seu cadastro com esses dados. Vamos continuar o atendimento?" 
+                        : "Sua solicitação foi registrada. Clique abaixo para iniciar a conversa no WhatsApp."}
                     </p>
                     <button
                       onClick={openWhatsApp}
