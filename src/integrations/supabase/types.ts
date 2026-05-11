@@ -621,6 +621,7 @@ export type Database = {
           last_seen: string | null
           name: string
           phone_number: string | null
+          provider: string
           qr_code: string | null
           status: string | null
           updated_at: string | null
@@ -635,6 +636,7 @@ export type Database = {
           last_seen?: string | null
           name: string
           phone_number?: string | null
+          provider?: string
           qr_code?: string | null
           status?: string | null
           updated_at?: string | null
@@ -649,6 +651,7 @@ export type Database = {
           last_seen?: string | null
           name?: string
           phone_number?: string | null
+          provider?: string
           qr_code?: string | null
           status?: string | null
           updated_at?: string | null
