@@ -290,6 +290,24 @@ export default function LandingChatBubble() {
                   </div>
                 )}
 
+                {validationError && (
+                  <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-3 flex items-start gap-2 animate-in fade-in slide-in-from-top-1">
+                    <AlertCircle className="w-4 h-4 text-red-400 mt-0.5 shrink-0" />
+                    <div className="flex-1">
+                      <p className="text-xs text-red-400 font-medium">{validationError}</p>
+                      <button 
+                        onClick={() => {
+                          setIsEditing(true);
+                          setValidationError(null);
+                        }} 
+                        className="text-[10px] text-white/60 hover:text-white underline mt-1"
+                      >
+                        Corrigir agora
+                      </button>
+                    </div>
+                  </div>
+                )}
+
                 {!leadSaved && !saveError && (
                   <button
                     onClick={() => handleWhatsAppClick()}
