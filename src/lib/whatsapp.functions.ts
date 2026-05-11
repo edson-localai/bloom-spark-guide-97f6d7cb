@@ -118,20 +118,73 @@ export const disconnectWhatsAppInstance = createServerFn({ method: 'POST' })
   });
 
 // --- Delete instance entirely ---
+// Uses the caller's authenticated Supabase client (admin via RLS) to avoid
+// requiring SUPABASE_SERVICE_ROLE_KEY in the Worker runtime.
 export const deleteWhatsAppInstance = createServerFn({ method: 'POST' })
   .middleware([requireSupabaseAuth])
-  .inputValidator((data) => z.object({ 
+  .inputValidator((data) => z.object({
     id: z.string().uuid().optional(),
-    name: z.string().min(1) 
+    name: z.string().min(1),
   }).parse(data))
   .handler(async ({ data, context }) => {
     await requireAdminOrSupervisor(context.supabase, context.userId);
-    try {
-      const { WhatsAppService } = await import('@/services/WhatsAppService');
-      return await WhatsAppService.getInstance().deleteInstance(data.id || data.name);
-    } catch (err) {
-      handleServerError(err);
+    const sb = context.supabase;
+
+    // Locate the instance row (by id when provided, else by name).
+    let target: { id: string; name: string } | null = null;
+    if (data.id) {
+      const { data: row } = await sb
+        .from('whatsapp_instances')
+        .select('id, name')
+        .eq('id', data.id)
+        .maybeSingle();
+      target = row as any;
     }
+    if (!target) {
+      const { data: row } = await sb
+        .from('whatsapp_instances')
+        .select('id, name')
+        .eq('name', data.name)
+        .maybeSingle();
+      target = row as any;
+    }
+    if (!target) return { ok: true, alreadyDeleted: true };
+
+    // Best-effort: drop the instance from the Evolution API. Never block delete on this.
+    try {
+      const { data: settings } = await sb
+        .from('app_settings')
+        .select('key, value')
+        .in('key', ['whatsapp_api_url', 'whatsapp_api_key']);
+      const map = Object.fromEntries((settings || []).map((r: any) => [r.key, r.value]));
+      const url = (map.whatsapp_api_url || '').replace(/\/+$/, '');
+      const apiKey = map.whatsapp_api_key || '';
+      if (url && apiKey) {
+        await fetch(`${url}/instance/delete/${encodeURIComponent(target.name)}`, {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json', apikey: apiKey },
+        }).catch(() => {});
+      }
+    } catch (e) {
+      console.warn('[deleteWhatsAppInstance] Evolution cleanup skipped:', (e as any)?.message);
+    }
+
+    // Detach references in conversations so FK doesn't block deletion.
+    await sb
+      .from('conversations')
+      .update({ instance_id: null, updated_at: new Date().toISOString() })
+      .eq('instance_id', target.id);
+
+    const { error: delErr } = await sb
+      .from('whatsapp_instances')
+      .delete()
+      .eq('id', target.id);
+
+    if (delErr) {
+      console.error('[deleteWhatsAppInstance] DB delete failed:', delErr);
+      throw AppError.internal(`Falha ao excluir instância: ${delErr.message}`);
+    }
+    return { ok: true };
   });
 
 // --- Send a text message via WhatsApp (called from the chat) ---
