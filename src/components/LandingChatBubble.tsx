@@ -1,5 +1,5 @@
-import { useState, useRef, useEffect } from "react";
-import { MessageCircle, X, Send, Loader2, CheckCircle2, AlertCircle, ArrowRight, Pencil, Save } from "lucide-react";
+import { useState, useRef, useEffect, useMemo } from "react";
+import { MessageCircle, X, Send, Loader2, CheckCircle2, AlertCircle, ArrowRight, Pencil, Save, User } from "lucide-react";
 import { useServerFn } from "@tanstack/react-start";
 import { landingChat, saveLandingLead, type LeadData } from "@/lib/landing-chat.functions";
 import attendantImg from "@/assets/attendant.jpg";
@@ -177,13 +177,24 @@ export default function LandingChatBubble() {
             {messages.map((m, i) => (
               <div
                 key={i}
-                className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}
+                className={`flex items-end gap-2 ${m.role === "user" ? "flex-row-reverse" : "flex-row"}`}
               >
+                {m.role === "user" ? (
+                  <div className="w-6 h-6 rounded-full bg-white/10 border border-white/20 flex items-center justify-center shrink-0 mb-1">
+                    <User className="w-3.5 h-3.5 text-white/50" />
+                  </div>
+                ) : (
+                  <img
+                    src={attendantImg}
+                    alt="Clara"
+                    className="w-6 h-6 rounded-full object-cover border border-white/20 shrink-0 mb-1"
+                  />
+                )}
                 <div
                   className={`max-w-[80%] px-3.5 py-2.5 rounded-2xl text-sm leading-relaxed ${
                     m.role === "user"
-                      ? "bg-[#0066CC] text-white rounded-br-sm"
-                      : "bg-white/5 border border-white/10 text-white/90 rounded-bl-sm"
+                      ? "bg-[#0066CC] text-white rounded-br-none"
+                      : "bg-white/5 border border-white/10 text-white/90 rounded-bl-none"
                   }`}
                 >
                   {m.content}
