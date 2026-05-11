@@ -661,6 +661,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      delete_whatsapp_instance: {
+        Args: { _instance_id?: string; _instance_name?: string }
+        Returns: Json
+      }
       get_agents_with_email: {
         Args: never
         Returns: {
