@@ -108,6 +108,34 @@ export default function LandingChatBubble() {
       setSavingLead(false);
     }
   };
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !lead) return;
+
+    setUploading(true);
+    try {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${Math.random().toString(36).slice(2, 10)}.${fileExt}`;
+      const filePath = `leads/${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('avatars')
+        .upload(filePath, file);
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('avatars')
+        .getPublicUrl(filePath);
+
+      setLead({ ...lead, avatar_url: publicUrl });
+    } catch (err) {
+      console.error('Error uploading avatar:', err);
+      setValidationError("Erro ao carregar a foto. Tente novamente.");
+    } finally {
+      setUploading(false);
+    }
+  };
 
   const openWhatsApp = () => {
     window.open(whatsappLink, "_blank", "noopener,noreferrer");
