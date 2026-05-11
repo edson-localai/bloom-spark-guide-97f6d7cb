@@ -1,5 +1,16 @@
 import { createFileRoute } from '@tanstack/react-router';
 
+function readTextMessage(message: any): string | null {
+  return (
+    message?.conversation ||
+    message?.extendedTextMessage?.text ||
+    message?.text ||
+    message?.message ||
+    message?.body ||
+    null
+  );
+}
+
 // W-API → Lovable webhook receiver.
 // Configure no painel da W-API esta URL para os 3 eventos:
 //   - Recebimento de mensagem
@@ -86,12 +97,16 @@ export const Route = createFileRoute('/api/public/wapi/webhook')({
           if (isOutbound) return Response.json({ ok: true, skipped: 'fromMe' });
 
           // Extrai dados da mensagem
-          const msgRoot = payload?.message || payload?.data?.message || payload?.data || payload;
+          const msgRoot = payload?.msgContent || payload?.message || payload?.data?.msgContent || payload?.data?.message || payload?.data || payload;
           const fromRaw =
             payload?.phone ||
             payload?.from ||
+            payload?.chat?.id ||
+            payload?.sender?.id ||
             payload?.data?.phone ||
             payload?.data?.from ||
+            payload?.data?.chat?.id ||
+            payload?.data?.sender?.id ||
             msgRoot?.phone ||
             msgRoot?.from ||
             null;
@@ -99,9 +114,16 @@ export const Route = createFileRoute('/api/public/wapi/webhook')({
             payload?.messageId || payload?.id || msgRoot?.messageId || msgRoot?.id || null;
           const pushName =
             payload?.senderName || payload?.pushName || payload?.notifyName ||
-            payload?.data?.senderName || msgRoot?.senderName || '';
+            payload?.sender?.pushName || payload?.data?.senderName ||
+            payload?.data?.sender?.pushName || msgRoot?.senderName || '';
 
           if (!fromRaw || !waMsgId) {
+            console.warn('W-API webhook ignored: no_message_payload', {
+              event: eventRaw,
+              hasChat: !!payload?.chat,
+              hasSender: !!payload?.sender,
+              hasMsgContent: !!payload?.msgContent,
+            });
             return Response.json({ ok: true, ignored: 'no_message_payload', event: eventRaw });
           }
 
@@ -118,7 +140,7 @@ export const Route = createFileRoute('/api/public/wapi/webhook')({
           let mediaUrl: string | null = null;
           let mediaMime: string | null = null;
 
-          const text = msgRoot?.text || msgRoot?.message || msgRoot?.body || msgRoot?.conversation || payload?.text || payload?.body;
+          const text = readTextMessage(msgRoot) || payload?.text || payload?.body;
           const image = msgRoot?.image || msgRoot?.imageMessage || payload?.image;
           const audio = msgRoot?.audio || msgRoot?.audioMessage || payload?.audio;
           const video = msgRoot?.video || msgRoot?.videoMessage || payload?.video;
