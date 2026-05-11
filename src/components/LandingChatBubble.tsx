@@ -3,6 +3,7 @@ import { MessageCircle, X, Send, Loader2, CheckCircle2, AlertCircle, ArrowRight,
 import { useServerFn } from "@tanstack/react-start";
 import { landingChat, saveLandingLead, type LeadData } from "@/lib/landing-chat.functions";
 import { supabase } from "@/integrations/supabase/client";
+import { compressImage } from "@/lib/image-utils";
 import attendantImg from "@/assets/attendant.jpg";
 
 const WHATSAPP_NUMBER = "5591985161991";
@@ -114,13 +115,17 @@ export default function LandingChatBubble() {
 
     setUploading(true);
     try {
-      const fileExt = file.name.split('.').pop();
+      const compressedBlob = await compressImage(file);
+      const fileExt = "jpg"; // We compress to jpeg in the utility
       const fileName = `${Math.random().toString(36).slice(2, 10)}.${fileExt}`;
       const filePath = `leads/${fileName}`;
 
       const { error: uploadError } = await supabase.storage
         .from('avatars')
-        .upload(filePath, file);
+        .upload(filePath, compressedBlob, {
+          contentType: 'image/jpeg',
+          upsert: true
+        });
 
       if (uploadError) throw uploadError;
 
