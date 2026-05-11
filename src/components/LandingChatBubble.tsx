@@ -53,21 +53,33 @@ export default function LandingChatBubble() {
   };
 
   const whatsappLink = handoff
-    ? `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(handoff)}`
+    ? `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(handoff + (leadSaved ? `\n\n[Ref: ${leadSaved}]` : ""))}`
     : `https://wa.me/${WHATSAPP_NUMBER}`;
 
   const handleWhatsAppClick = async (e: React.MouseEvent<HTMLAnchorElement>) => {
-    if (!lead || leadSaved || savingLead) return;
+    if (!lead || savingLead) return;
+    if (leadSaved) {
+      window.open(whatsappLink, "_blank", "noopener,noreferrer");
+      return;
+    }
+    
     e.preventDefault();
     setSavingLead(true);
     try {
-      await saveLead({ data: lead });
-      setLeadSaved(true);
+      const res = await saveLead({ data: lead });
+      if (res.ok && res.leadId) {
+        setLeadSaved(res.leadId as any);
+        // After setting leadSaved, the link needs to be recalculated or we just use the new one here
+        const finalLink = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(handoff + `\n\n[Ref: ${res.leadId}]`)}`;
+        window.open(finalLink, "_blank", "noopener,noreferrer");
+      } else {
+        window.open(whatsappLink, "_blank", "noopener,noreferrer");
+      }
     } catch (err) {
       console.warn('[landing-chat] save lead failed', err);
+      window.open(whatsappLink, "_blank", "noopener,noreferrer");
     } finally {
       setSavingLead(false);
-      window.open(whatsappLink, "_blank", "noopener,noreferrer");
     }
   };
 
