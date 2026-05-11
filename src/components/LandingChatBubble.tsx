@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { MessageCircle, X, Send, Loader2, CheckCircle2, AlertCircle, ArrowRight } from "lucide-react";
+import { MessageCircle, X, Send, Loader2, CheckCircle2, AlertCircle, ArrowRight, Pencil, Save } from "lucide-react";
 import { useServerFn } from "@tanstack/react-start";
 import { landingChat, saveLandingLead, type LeadData } from "@/lib/landing-chat.functions";
 import attendantImg from "@/assets/attendant.jpg";
@@ -23,6 +23,7 @@ export default function LandingChatBubble() {
   const [savingLead, setSavingLead] = useState(false);
   const [saveError, setSaveError] = useState(false);
   const [leadSaved, setLeadSaved] = useState<string | null>(null);
+  const [isEditing, setIsEditing] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const chat = useServerFn(landingChat);
   const saveLead = useServerFn(saveLandingLead);
@@ -53,8 +54,12 @@ export default function LandingChatBubble() {
     }
   };
 
-  const whatsappLink = handoff
-    ? `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(handoff + (leadSaved ? `\n\n[Ref: ${leadSaved}]` : ""))}`
+  const currentSummary = lead 
+    ? `Olá! Sou ${lead.name || 'cliente'}, tenho um ${lead.vehicle_brand || ''} ${lead.vehicle_model || ''} ${lead.vehicle_year || ''}. Preciso de: ${lead.need || 'suporte'}. Estou em ${lead.city || 'região'}.`
+    : handoff;
+
+  const whatsappLink = currentSummary
+    ? `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(currentSummary + (leadSaved ? `\n\n[Ref: ${leadSaved}]` : ""))}`
     : `https://wa.me/${WHATSAPP_NUMBER}`;
 
   const handleWhatsAppClick = async (e?: React.MouseEvent) => {
@@ -84,6 +89,12 @@ export default function LandingChatBubble() {
 
   return (
     <>
+      <style>{`
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.2); }
+      `}</style>
       {/* Floating bubble */}
       {!open && (
         <button
@@ -165,10 +176,101 @@ export default function LandingChatBubble() {
             )}
             {handoff && (
               <div className="space-y-3 animate-in fade-in slide-in-from-bottom-2 duration-300">
+                {lead && !leadSaved && !saveError && (
+                  <div className="bg-white/5 border border-white/10 rounded-xl p-3 space-y-2 mb-1">
+                    <div className="flex items-center justify-between mb-1">
+                      <h4 className="text-white/70 text-[10px] font-bold uppercase tracking-wider">Confirme seus dados</h4>
+                      {!isEditing ? (
+                        <button onClick={() => setIsEditing(true)} className="text-[#0066CC] hover:text-[#3385ff] text-xs flex items-center gap-1 font-medium">
+                          <Pencil className="w-3 h-3" /> Editar
+                        </button>
+                      ) : (
+                        <button onClick={() => setIsEditing(false)} className="text-green-500 hover:text-green-400 text-xs flex items-center gap-1 font-medium">
+                          <Save className="w-3 h-3" /> Concluir
+                        </button>
+                      )}
+                    </div>
+                    
+                    <div className="space-y-2 max-h-[180px] overflow-y-auto pr-1 custom-scrollbar">
+                      <div className="flex flex-col gap-0.5">
+                        <label className="text-[9px] text-white/40 uppercase font-semibold">Nome</label>
+                        {isEditing ? (
+                          <input 
+                            className="w-full bg-white/5 border border-white/10 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-[#0066CC]"
+                            value={lead.name || ''} 
+                            onChange={e => setLead({...lead, name: e.target.value})} 
+                          />
+                        ) : (
+                          <p className="text-xs text-white px-0.5">{lead.name || 'Não informado'}</p>
+                        )}
+                      </div>
+
+                      <div className="flex flex-col gap-0.5">
+                        <label className="text-[9px] text-white/40 uppercase font-semibold">Veículo</label>
+                        {isEditing ? (
+                          <div className="grid grid-cols-3 gap-2">
+                            <input 
+                              placeholder="Marca"
+                              className="w-full bg-white/5 border border-white/10 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-[#0066CC]"
+                              value={lead.vehicle_brand || ''} 
+                              onChange={e => setLead({...lead, vehicle_brand: e.target.value})} 
+                            />
+                            <input 
+                              placeholder="Modelo"
+                              className="w-full bg-white/5 border border-white/10 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-[#0066CC]"
+                              value={lead.vehicle_model || ''} 
+                              onChange={e => setLead({...lead, vehicle_model: e.target.value})} 
+                            />
+                            <input 
+                              placeholder="Ano"
+                              type="number"
+                              className="w-full bg-white/5 border border-white/10 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-[#0066CC]"
+                              value={lead.vehicle_year || ''} 
+                              onChange={e => setLead({...lead, vehicle_year: parseInt(e.target.value) || null})} 
+                            />
+                          </div>
+                        ) : (
+                          <p className="text-xs text-white px-0.5">
+                            {lead.vehicle_brand} {lead.vehicle_model} {lead.vehicle_year && `(${lead.vehicle_year})`}
+                            {(!lead.vehicle_brand && !lead.vehicle_model) && 'Não informado'}
+                          </p>
+                        )}
+                      </div>
+
+                      <div className="flex flex-col gap-0.5">
+                        <label className="text-[9px] text-white/40 uppercase font-semibold">Necessidade</label>
+                        {isEditing ? (
+                          <textarea 
+                            rows={2}
+                            className="w-full bg-white/5 border border-white/10 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-[#0066CC] resize-none"
+                            value={lead.need || ''} 
+                            onChange={e => setLead({...lead, need: e.target.value})} 
+                          />
+                        ) : (
+                          <p className="text-xs text-white px-0.5 leading-relaxed">{lead.need || 'Não informado'}</p>
+                        )}
+                      </div>
+
+                      <div className="flex flex-col gap-0.5">
+                        <label className="text-[9px] text-white/40 uppercase font-semibold">Cidade/Bairro</label>
+                        {isEditing ? (
+                          <input 
+                            className="w-full bg-white/5 border border-white/10 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-[#0066CC]"
+                            value={lead.city || ''} 
+                            onChange={e => setLead({...lead, city: e.target.value})} 
+                          />
+                        ) : (
+                          <p className="text-xs text-white px-0.5">{lead.city || 'Não informado'}</p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                )}
+
                 {!leadSaved && !saveError && (
                   <button
                     onClick={() => handleWhatsAppClick()}
-                    disabled={savingLead}
+                    disabled={savingLead || isEditing}
                     className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-[#25D366] hover:bg-[#1ebe57] text-white font-semibold text-sm transition-all shadow-lg active:scale-95 disabled:opacity-70"
                   >
                     {savingLead ? (
@@ -178,8 +280,8 @@ export default function LandingChatBubble() {
                       </>
                     ) : (
                       <>
-                        Continuar pelo WhatsApp
-                        <ArrowRight className="w-4 h-4" />
+                        {isEditing ? 'Conclua a edição para continuar' : 'Continuar pelo WhatsApp'}
+                        {!isEditing && <ArrowRight className="w-4 h-4" />}
                       </>
                     )}
                   </button>
