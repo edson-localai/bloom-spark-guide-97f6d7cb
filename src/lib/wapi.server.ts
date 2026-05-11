@@ -48,8 +48,8 @@ export async function wapiFetch(
 export async function wapiGetQr(creds: WapiCreds): Promise<{ qr: string | null; connected: boolean }> {
   try {
     const r = await wapiFetch(`/v1/instance/qr-code?image=enable`, { method: 'GET' }, creds);
-    // Common shapes: { qrCode: 'data:image/png;base64,...' } or { base64: '...' } or { connected: true }
-    const qr = r?.qrCode || r?.qr || r?.base64 || r?.image || null;
+    // Common shapes: { qrcode: 'data:image/png;base64,...' }, { qrCode: '...' }, { base64: '...' } or { connected: true }
+    const qr = r?.qrcode || r?.qrCode || r?.qr || r?.base64 || r?.image || r?.value || null;
     const connected = !!(r?.connected || r?.status === 'connected');
     return { qr, connected };
   } catch (e: any) {
