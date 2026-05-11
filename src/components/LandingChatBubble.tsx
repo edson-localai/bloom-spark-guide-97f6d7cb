@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { MessageCircle, X, Send, Loader2 } from "lucide-react";
+import { MessageCircle, X, Send, Loader2, CheckCircle2, AlertCircle, ArrowRight } from "lucide-react";
 import { useServerFn } from "@tanstack/react-start";
 import { landingChat, saveLandingLead, type LeadData } from "@/lib/landing-chat.functions";
 import attendantImg from "@/assets/attendant.jpg";
@@ -21,6 +21,7 @@ export default function LandingChatBubble() {
   const [handoff, setHandoff] = useState<string | null>(null);
   const [lead, setLead] = useState<LeadData | null>(null);
   const [savingLead, setSavingLead] = useState(false);
+  const [saveError, setSaveError] = useState(false);
   const [leadSaved, setLeadSaved] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const chat = useServerFn(landingChat);
@@ -56,31 +57,29 @@ export default function LandingChatBubble() {
     ? `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(handoff + (leadSaved ? `\n\n[Ref: ${leadSaved}]` : ""))}`
     : `https://wa.me/${WHATSAPP_NUMBER}`;
 
-  const handleWhatsAppClick = async (e: React.MouseEvent<HTMLAnchorElement>) => {
+  const handleWhatsAppClick = async (e?: React.MouseEvent) => {
+    if (e) e.preventDefault();
     if (!lead || savingLead) return;
-    if (leadSaved) {
-      window.open(whatsappLink, "_blank", "noopener,noreferrer");
-      return;
-    }
     
-    e.preventDefault();
     setSavingLead(true);
+    setSaveError(false);
     try {
       const res = await saveLead({ data: lead });
       if (res.ok && res.leadId) {
         setLeadSaved(res.leadId as any);
-        // After setting leadSaved, the link needs to be recalculated or we just use the new one here
-        const finalLink = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(handoff + `\n\n[Ref: ${res.leadId}]`)}`;
-        window.open(finalLink, "_blank", "noopener,noreferrer");
       } else {
-        window.open(whatsappLink, "_blank", "noopener,noreferrer");
+        setSaveError(true);
       }
     } catch (err) {
       console.warn('[landing-chat] save lead failed', err);
-      window.open(whatsappLink, "_blank", "noopener,noreferrer");
+      setSaveError(true);
     } finally {
       setSavingLead(false);
     }
+  };
+
+  const openWhatsApp = () => {
+    window.open(whatsappLink, "_blank", "noopener,noreferrer");
   };
 
   return (
@@ -165,15 +164,71 @@ export default function LandingChatBubble() {
               </div>
             )}
             {handoff && (
-              <a
-                href={whatsappLink}
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={handleWhatsAppClick}
-                className="block w-full text-center mt-2 px-4 py-3 rounded-xl bg-[#25D366] hover:bg-[#1ebe57] text-white font-semibold text-sm transition-colors shadow-lg"
-              >
-                {savingLead ? "Salvando seus dados..." : "Continuar pelo WhatsApp →"}
-              </a>
+              <div className="space-y-3 animate-in fade-in slide-in-from-bottom-2 duration-300">
+                {!leadSaved && !saveError && (
+                  <button
+                    onClick={() => handleWhatsAppClick()}
+                    disabled={savingLead}
+                    className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-[#25D366] hover:bg-[#1ebe57] text-white font-semibold text-sm transition-all shadow-lg active:scale-95 disabled:opacity-70"
+                  >
+                    {savingLead ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        Salvando seus dados...
+                      </>
+                    ) : (
+                      <>
+                        Continuar pelo WhatsApp
+                        <ArrowRight className="w-4 h-4" />
+                      </>
+                    )}
+                  </button>
+                )}
+
+                {leadSaved && (
+                  <div className="bg-green-500/10 border border-green-500/20 rounded-xl p-4 text-center space-y-3">
+                    <div className="flex flex-col items-center gap-2 text-green-400">
+                      <CheckCircle2 className="w-8 h-8" />
+                      <p className="font-semibold text-sm">Dados salvos com sucesso!</p>
+                    </div>
+                    <p className="text-white/60 text-xs px-2">
+                      Sua solicitação foi registrada. Clique abaixo para iniciar a conversa no WhatsApp.
+                    </p>
+                    <button
+                      onClick={openWhatsApp}
+                      className="w-full py-2.5 rounded-lg bg-[#25D366] hover:bg-[#1ebe57] text-white font-bold text-sm transition-colors"
+                    >
+                      Abrir WhatsApp agora
+                    </button>
+                  </div>
+                )}
+
+                {saveError && (
+                  <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-4 text-center space-y-3">
+                    <div className="flex flex-col items-center gap-2 text-red-400">
+                      <AlertCircle className="w-8 h-8" />
+                      <p className="font-semibold text-sm">Ops! Erro ao salvar dados</p>
+                    </div>
+                    <p className="text-white/60 text-xs px-2">
+                      Não conseguimos registrar seus dados, mas você ainda pode falar conosco.
+                    </p>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => handleWhatsAppClick()}
+                        className="flex-1 py-2 rounded-lg bg-white/10 hover:bg-white/20 text-white text-xs font-medium transition-colors"
+                      >
+                        Tentar novamente
+                      </button>
+                      <button
+                        onClick={openWhatsApp}
+                        className="flex-1 py-2 rounded-lg bg-[#25D366] hover:bg-[#1ebe57] text-white text-xs font-medium transition-colors"
+                      >
+                        Ir para WhatsApp
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
             )}
           </div>
 
