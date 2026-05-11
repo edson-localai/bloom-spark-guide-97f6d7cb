@@ -598,11 +598,32 @@ export function ChatWindow({ conversation }: ChatWindowProps) {
             </button>
 
             <div className="flex-1 relative">
+              {quickMatches.length > 0 && (
+                <div className="absolute bottom-full left-0 right-0 mb-2 bg-[#0F1117] border border-cyan-500/20 rounded-xl overflow-hidden shadow-2xl z-20 max-h-60 overflow-y-auto custom-scrollbar">
+                  <div className="px-3 py-1.5 border-b border-[#1F232E] text-[9px] font-bold uppercase tracking-widest text-cyan-400/80 flex items-center gap-1.5">
+                    <Command className="h-3 w-3" /> Respostas rápidas
+                  </div>
+                  {quickMatches.map((r) => (
+                    <button
+                      key={r.id}
+                      type="button"
+                      onClick={() => { setInput(r.content); supabase.from('quick_replies').update({ use_count: (r.use_count || 0) + 1 }).eq('id', r.id); }}
+                      className="w-full text-left px-3 py-2 hover:bg-cyan-500/5 border-b border-[#1F232E]/40 last:border-0"
+                    >
+                      <div className="flex items-center gap-2">
+                        <span className="text-[10px] font-mono text-cyan-400 bg-cyan-500/10 px-1.5 py-0.5 rounded">/{r.shortcut}</span>
+                        <span className="text-xs font-medium text-zinc-200">{r.title}</span>
+                      </div>
+                      <p className="text-[10px] text-zinc-500 mt-1 line-clamp-1">{r.content}</p>
+                    </button>
+                  ))}
+                </div>
+              )}
               <input
                 type="text"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                placeholder={isInternal ? "Escrever nota interna..." : "Digite sua mensagem..."}
+                placeholder={isInternal ? "Escrever nota interna..." : 'Digite sua mensagem... ("/" para respostas rápidas)'}
                 className={`w-full bg-[#151821] border rounded-xl py-2.5 px-4 text-sm transition-colors focus:outline-none ${
                   isInternal 
                     ? 'border-amber-500/50 text-amber-100 placeholder:text-amber-500/40' 
