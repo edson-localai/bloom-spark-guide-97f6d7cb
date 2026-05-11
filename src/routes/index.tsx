@@ -27,6 +27,7 @@ function Index() {
       <TestimonialsSection />
       <CTASection />
       <Footer />
+      <LandingChatBubble />
     </div>
   );
 }
