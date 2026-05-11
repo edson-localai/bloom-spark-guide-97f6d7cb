@@ -105,6 +105,7 @@ export type LeadData = {
   need: string | null;
   city: string | null;
   chat_transcript?: string | null;
+  avatar_url?: string | null;
 };
 
 const leadSchema = z.object({
