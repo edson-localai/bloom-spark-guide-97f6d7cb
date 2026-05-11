@@ -127,30 +127,10 @@ export const deleteWhatsAppInstance = createServerFn({ method: 'POST' })
     name: z.string().min(1),
   }).parse(data))
   .handler(async ({ data, context }) => {
-    await requireAdminOrSupervisor(context.supabase, context.userId);
     const sb = context.supabase;
 
-    // Locate the instance row (by id when provided, else by name).
-    let target: { id: string; name: string } | null = null;
-    if (data.id) {
-      const { data: row } = await sb
-        .from('whatsapp_instances')
-        .select('id, name')
-        .eq('id', data.id)
-        .maybeSingle();
-      target = row as any;
-    }
-    if (!target) {
-      const { data: row } = await sb
-        .from('whatsapp_instances')
-        .select('id, name')
-        .eq('name', data.name)
-        .maybeSingle();
-      target = row as any;
-    }
-    if (!target) return { ok: true, alreadyDeleted: true };
-
-    // Best-effort: drop the instance from the Evolution API. Never block delete on this.
+    // Best-effort: limpar a instância na Evolution API antes de remover do banco.
+    // Nunca bloqueia a exclusão se a API externa falhar/estiver indisponível.
     try {
       const { data: settings } = await sb
         .from('app_settings')
@@ -159,8 +139,8 @@ export const deleteWhatsAppInstance = createServerFn({ method: 'POST' })
       const map = Object.fromEntries((settings || []).map((r: any) => [r.key, r.value]));
       const url = (map.whatsapp_api_url || '').replace(/\/+$/, '');
       const apiKey = map.whatsapp_api_key || '';
-      if (url && apiKey) {
-        await fetch(`${url}/instance/delete/${encodeURIComponent(target.name)}`, {
+      if (url && apiKey && data.name) {
+        await fetch(`${url}/instance/delete/${encodeURIComponent(data.name)}`, {
           method: 'DELETE',
           headers: { 'Content-Type': 'application/json', apikey: apiKey },
         }).catch(() => {});
@@ -169,22 +149,18 @@ export const deleteWhatsAppInstance = createServerFn({ method: 'POST' })
       console.warn('[deleteWhatsAppInstance] Evolution cleanup skipped:', (e as any)?.message);
     }
 
-    // Detach references in conversations so FK doesn't block deletion.
-    await sb
-      .from('conversations')
-      .update({ instance_id: null, updated_at: new Date().toISOString() })
-      .eq('instance_id', target.id);
+    // Exclusão definitiva via RPC SECURITY DEFINER (verifica papel admin/supervisor,
+    // limpa vínculos em conversations e remove a instância em uma única transação).
+    const { data: result, error } = await sb.rpc('delete_whatsapp_instance', {
+      _instance_id: data.id ?? null,
+      _instance_name: data.name ?? null,
+    });
 
-    const { error: delErr } = await sb
-      .from('whatsapp_instances')
-      .delete()
-      .eq('id', target.id);
-
-    if (delErr) {
-      console.error('[deleteWhatsAppInstance] DB delete failed:', delErr);
-      throw AppError.internal(`Falha ao excluir instância: ${delErr.message}`);
+    if (error) {
+      console.error('[deleteWhatsAppInstance] RPC failed:', error);
+      throw AppError.internal(`Falha ao excluir instância: ${error.message}`);
     }
-    return { ok: true };
+    return result ?? { ok: true };
   });
 
 // --- Send a text message via WhatsApp (called from the chat) ---
