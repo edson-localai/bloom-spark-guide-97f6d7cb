@@ -164,15 +164,71 @@ export default function LandingChatBubble() {
               </div>
             )}
             {handoff && (
-              <a
-                href={whatsappLink}
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={handleWhatsAppClick}
-                className="block w-full text-center mt-2 px-4 py-3 rounded-xl bg-[#25D366] hover:bg-[#1ebe57] text-white font-semibold text-sm transition-colors shadow-lg"
-              >
-                {savingLead ? "Salvando seus dados..." : "Continuar pelo WhatsApp →"}
-              </a>
+              <div className="space-y-3 animate-in fade-in slide-in-from-bottom-2 duration-300">
+                {!leadSaved && !saveError && (
+                  <button
+                    onClick={() => handleWhatsAppClick()}
+                    disabled={savingLead}
+                    className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-[#25D366] hover:bg-[#1ebe57] text-white font-semibold text-sm transition-all shadow-lg active:scale-95 disabled:opacity-70"
+                  >
+                    {savingLead ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        Salvando seus dados...
+                      </>
+                    ) : (
+                      <>
+                        Continuar pelo WhatsApp
+                        <ArrowRight className="w-4 h-4" />
+                      </>
+                    )}
+                  </button>
+                )}
+
+                {leadSaved && (
+                  <div className="bg-green-500/10 border border-green-500/20 rounded-xl p-4 text-center space-y-3">
+                    <div className="flex flex-col items-center gap-2 text-green-400">
+                      <CheckCircle2 className="w-8 h-8" />
+                      <p className="font-semibold text-sm">Dados salvos com sucesso!</p>
+                    </div>
+                    <p className="text-white/60 text-xs px-2">
+                      Sua solicitação foi registrada. Clique abaixo para iniciar a conversa no WhatsApp.
+                    </p>
+                    <button
+                      onClick={openWhatsApp}
+                      className="w-full py-2.5 rounded-lg bg-[#25D366] hover:bg-[#1ebe57] text-white font-bold text-sm transition-colors"
+                    >
+                      Abrir WhatsApp agora
+                    </button>
+                  </div>
+                )}
+
+                {saveError && (
+                  <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-4 text-center space-y-3">
+                    <div className="flex flex-col items-center gap-2 text-red-400">
+                      <AlertCircle className="w-8 h-8" />
+                      <p className="font-semibold text-sm">Ops! Erro ao salvar dados</p>
+                    </div>
+                    <p className="text-white/60 text-xs px-2">
+                      Não conseguimos registrar seus dados, mas você ainda pode falar conosco.
+                    </p>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => handleWhatsAppClick()}
+                        className="flex-1 py-2 rounded-lg bg-white/10 hover:bg-white/20 text-white text-xs font-medium transition-colors"
+                      >
+                        Tentar novamente
+                      </button>
+                      <button
+                        onClick={openWhatsApp}
+                        className="flex-1 py-2 rounded-lg bg-[#25D366] hover:bg-[#1ebe57] text-white text-xs font-medium transition-colors"
+                      >
+                        Ir para WhatsApp
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
             )}
           </div>
 
