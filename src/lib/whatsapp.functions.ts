@@ -35,49 +35,16 @@ export const createWhatsAppInstance = createServerFn({ method: 'POST' })
   .handler(async ({ data, context }) => {
     await requireAdminOrSupervisor(context.supabase, context.userId);
     const { supabaseAdmin } = await import('@/integrations/supabase/client.server');
-    const { evoFetch, normalizeStatus } = await import('./whatsapp.server');
-
+    const { WhatsAppService } = await import('@/services/WhatsAppService');
+    const service = WhatsAppService.getInstance();
     const webhookUrl = publicWebhookUrl();
 
-    // Create the instance in Evolution API
-    const created = await evoFetch('/instance/create', {
-      method: 'POST',
-      body: JSON.stringify({
-        instanceName: data.name,
-        qrcode: true,
-        token: data.apiKey,
-        integration: 'WHATSAPP-BAILEYS',
-        webhookUrl,
-        webhookByEvents: false,
-        webhookBase64: false,
-        events: [
-          'MESSAGES_UPSERT',
-          'CONNECTION_UPDATE',
-          'QRCODE_UPDATED',
-        ],
-      }),
+    return await service.createInstance({
+      name: data.name,
+      displayName: data.displayName,
+      apiKey: data.apiKey,
+      webhookUrl
     });
-
-    const qr = created?.qrcode?.base64 || created?.qrcode?.code || null;
-    const status = normalizeStatus(created?.instance?.status);
-
-    // Persist locally
-    const { data: row, error } = await supabaseAdmin
-      .from('whatsapp_instances')
-      .insert({
-        name: data.name,
-        display_name: data.displayName,
-        status,
-        qr_code: qr,
-        instance_key: data.apiKey || created?.instance?.token || created?.hash || null,
-        webhook_url: webhookUrl,
-        instance_data: created as any,
-      })
-      .select()
-      .single();
-
-    if (error) throw new Error(error.message);
-    return { instance: row, qr };
   });
 
 // --- Refresh QR code / connection ---
@@ -103,25 +70,8 @@ export const syncWhatsAppInstance = createServerFn({ method: 'POST' })
   .inputValidator((data) => z.object({ name: z.string().min(1) }).parse(data))
   .handler(async ({ data, context }) => {
     await requireAdminOrSupervisor(context.supabase, context.userId);
-    const { supabaseAdmin } = await import('@/integrations/supabase/client.server');
-    const { evoFetch, normalizeStatus, jidToPhone } = await import('./whatsapp.server');
-
-    const state = await evoFetch(`/instance/connectionState/${encodeURIComponent(data.name)}`);
-    const status = normalizeStatus(state?.instance?.state || state?.state);
-
-    let phone: string | null = null;
-    try {
-      const list = await evoFetch(`/instance/fetchInstances?instanceName=${encodeURIComponent(data.name)}`);
-      const inst = Array.isArray(list) ? list[0] : list;
-      phone = inst?.instance?.owner ? jidToPhone(inst.instance.owner) : (inst?.owner ? jidToPhone(inst.owner) : null);
-    } catch {}
-
-    const update: any = { status, updated_at: new Date().toISOString(), last_seen: new Date().toISOString() };
-    if (phone) update.phone_number = phone;
-    if (status === 'connected') update.qr_code = null;
-
-    await supabaseAdmin.from('whatsapp_instances').update(update).eq('name', data.name);
-    return { status, phone };
+    const { WhatsAppService } = await import('@/services/WhatsAppService');
+    return await WhatsAppService.getInstance().syncInstance(data.name);
   });
 
 // --- Restart ---
@@ -146,14 +96,8 @@ export const disconnectWhatsAppInstance = createServerFn({ method: 'POST' })
   .inputValidator((data) => z.object({ name: z.string().min(1) }).parse(data))
   .handler(async ({ data, context }) => {
     await requireAdminOrSupervisor(context.supabase, context.userId);
-    const { supabaseAdmin } = await import('@/integrations/supabase/client.server');
-    const { evoFetch } = await import('./whatsapp.server');
-    await evoFetch(`/instance/logout/${encodeURIComponent(data.name)}`, { method: 'DELETE' });
-    await supabaseAdmin
-      .from('whatsapp_instances')
-      .update({ status: 'disconnected', qr_code: null, phone_number: null, updated_at: new Date().toISOString() })
-      .eq('name', data.name);
-    return { ok: true };
+    const { WhatsAppService } = await import('@/services/WhatsAppService');
+    return await WhatsAppService.getInstance().logoutInstance(data.name);
   });
 
 // --- Delete instance entirely ---
@@ -165,64 +109,8 @@ export const deleteWhatsAppInstance = createServerFn({ method: 'POST' })
   }).parse(data))
   .handler(async ({ data, context }) => {
     await requireAdminOrSupervisor(context.supabase, context.userId);
-    const { supabaseAdmin } = await import('@/integrations/supabase/client.server');
-    const { evoFetch } = await import('./whatsapp.server');
-    
-    console.log(`[WhatsAppDelete] Starting deletion for ID: ${data.id}, Name: ${data.name}`);
-    
-    // 1. Find the target in DB first to be sure
-    const { data: target, error: findError } = await supabaseAdmin
-      .from('whatsapp_instances')
-      .select('id, name')
-      .eq(data.id ? 'id' : 'name', data.id || data.name)
-      .maybeSingle();
-
-    if (findError) {
-      console.error(`[WhatsAppDelete] Database lookup failed:`, findError);
-      throw new Error(`Erro ao localizar instância: ${findError.message}`);
-    }
-
-    if (!target) {
-      console.warn(`[WhatsAppDelete] No local instance found for ${data.id || data.name}`);
-      return { ok: true, count: 0, alreadyDeleted: true };
-    }
-
-    // 2. Clear references in conversations FIRST to avoid FK constraint errors
-    console.log(`[WhatsAppDelete] Clearing conversation references for instance ${target.id}`);
-    const { error: convError } = await supabaseAdmin
-      .from('conversations')
-      .update({ instance_id: null, updated_at: new Date().toISOString() })
-      .eq('instance_id', target.id);
-
-    if (convError) {
-      console.error(`[WhatsAppDelete] Failed to clear conversations:`, convError);
-      // We continue anyway, maybe they can be deleted? No, FK will block.
-      // But maybe there were no conversations.
-    }
-
-    // 3. Try to delete from Evolution API (optional, we don't want to block the DB delete if API is down)
-    console.log(`[WhatsAppDelete] Attempting Evolution API cleanup for ${target.name}`);
-    try { 
-      // Evolution's delete usually handles logout too
-      await evoFetch(`/instance/delete/${encodeURIComponent(target.name)}`, { method: 'DELETE' }).catch(() => {});
-    } catch (e) {
-      console.warn(`[WhatsAppDelete] Evolution cleanup failed (ignoring):`, e);
-    }
-    
-    // 4. Delete from local database - This is the "source of truth"
-    console.log(`[WhatsAppDelete] Deleting row from whatsapp_instances: ${target.id}`);
-    const { error, count } = await supabaseAdmin
-      .from('whatsapp_instances')
-      .delete({ count: 'exact' })
-      .eq('id', target.id);
-
-    if (error) {
-      console.error(`[WhatsAppDelete] Database delete failed:`, error);
-      throw new Error(`Erro ao excluir no banco: ${error.message}`);
-    }
-
-    console.log(`[WhatsAppDelete] Successfully deleted ${count} row(s)`);
-    return { ok: true, count };
+    const { WhatsAppService } = await import('@/services/WhatsAppService');
+    return await WhatsAppService.getInstance().deleteInstance(data.id || data.name);
   });
 
 // --- Send a text message via WhatsApp (called from the chat) ---
