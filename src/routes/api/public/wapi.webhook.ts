@@ -96,28 +96,62 @@ export const Route = createFileRoute('/api/public/wapi/webhook')({
           const isOutbound = payload?.fromMe === true || payload?.data?.fromMe === true;
           if (isOutbound) return Response.json({ ok: true, skipped: 'fromMe' });
 
+          // Log full payload (debug) — primeira chave de cada nível ajuda a entender estruturas novas
+          console.log('[wapi-webhook] payload:', JSON.stringify(payload).slice(0, 2000));
+
           // Extrai dados da mensagem
           const msgRoot = payload?.msgContent || payload?.message || payload?.data?.msgContent || payload?.data?.message || payload?.data || payload;
-          const fromRaw =
-            payload?.phone ||
-            payload?.from ||
+
+          // chat.id = identificador da conversa (pode ser número@s.whatsapp.net, @lid ou @g.us)
+          const chatIdRaw =
             payload?.chat?.id ||
-            payload?.sender?.id ||
-            payload?.data?.phone ||
-            payload?.data?.from ||
             payload?.data?.chat?.id ||
+            payload?.from ||
+            payload?.data?.from ||
+            payload?.sender?.id ||
             payload?.data?.sender?.id ||
-            msgRoot?.phone ||
             msgRoot?.from ||
             null;
+
+          // Telefone numérico real — procurar campos não-LID
+          const numericPhoneCandidates = [
+            payload?.sender?.phone,
+            payload?.data?.sender?.phone,
+            payload?.sender?.phoneNumber,
+            payload?.data?.sender?.phoneNumber,
+            payload?.phone,
+            payload?.data?.phone,
+            payload?.senderPhone,
+            payload?.data?.senderPhone,
+            // Caso o sender.id NÃO seja @lid, ele já é o telefone real
+            !String(payload?.sender?.id || '').endsWith('@lid') ? payload?.sender?.id : null,
+            // Idem para chat.id
+            !String(chatIdRaw || '').endsWith('@lid') && !String(chatIdRaw || '').endsWith('@g.us') ? chatIdRaw : null,
+          ];
+          let realPhone = '';
+          for (const c of numericPhoneCandidates) {
+            if (!c) continue;
+            const digits = String(c).replace(/[^0-9]/g, '');
+            if (digits && digits.length >= 8 && digits.length <= 15) {
+              realPhone = digits;
+              break;
+            }
+          }
+
           const waMsgId =
             payload?.messageId || payload?.id || msgRoot?.messageId || msgRoot?.id || null;
           const pushName =
-            payload?.senderName || payload?.pushName || payload?.notifyName ||
-            payload?.sender?.pushName || payload?.data?.senderName ||
-            payload?.data?.sender?.pushName || msgRoot?.senderName || '';
+            payload?.sender?.pushName ||
+            payload?.data?.sender?.pushName ||
+            payload?.senderName ||
+            payload?.pushName ||
+            payload?.notifyName ||
+            payload?.chat?.name ||
+            payload?.data?.chat?.name ||
+            msgRoot?.senderName ||
+            '';
 
-          if (!fromRaw || !waMsgId) {
+          if (!chatIdRaw || !waMsgId) {
             console.warn('W-API webhook ignored: no_message_payload', {
               event: eventRaw,
               hasChat: !!payload?.chat,
@@ -127,12 +161,17 @@ export const Route = createFileRoute('/api/public/wapi/webhook')({
             return Response.json({ ok: true, ignored: 'no_message_payload', event: eventRaw });
           }
 
-          // Normalizar telefone (sem @, sem +, só dígitos)
-          const phone = String(fromRaw).replace(/[^0-9]/g, '');
-          const remoteJid = String(fromRaw).includes('@') ? String(fromRaw) : `${phone}@s.whatsapp.net`;
+          // Normalizar chat_id (preservar sufixos @lid e @g.us)
+          const chatStr = String(chatIdRaw);
+          const remoteJid = chatStr.includes('@')
+            ? chatStr
+            : `${chatStr.replace(/[^0-9]/g, '')}@s.whatsapp.net`;
           if (remoteJid.endsWith('@g.us')) {
             return Response.json({ ok: true, skipped: 'group' });
           }
+
+          // Telefone para chave do contato: preferir o real; fallback para os dígitos do chat (mesmo que LID)
+          const phone = realPhone || chatStr.replace(/[^0-9]/g, '');
 
           // Extrair conteúdo / mídia
           let content = '';
@@ -180,17 +219,20 @@ export const Route = createFileRoute('/api/public/wapi/webhook')({
             content = '[Mensagem não suportada]';
           }
 
-          // 1) contato
+          // 1) contato — chave por phone (real quando possível). Atualiza nome se vier melhor pelo WhatsApp.
           let contactId: string | null = null;
           {
             const { data: existing } = await supabaseAdmin
               .from('contacts')
-              .select('id, name')
+              .select('id, name, phone')
               .eq('phone', phone)
               .maybeSingle();
+            const looksLikeJustDigits = (n: string | null | undefined) =>
+              !n || /^[0-9]+$/.test(String(n).trim());
             if (existing?.id) {
               contactId = existing.id;
-              if (!existing.name && pushName) {
+              // Atualiza o nome quando o atual está vazio ou é só dígitos (LID), e temos pushName real
+              if (pushName && looksLikeJustDigits(existing.name)) {
                 await supabaseAdmin.from('contacts').update({ name: pushName }).eq('id', existing.id);
               }
             } else {
