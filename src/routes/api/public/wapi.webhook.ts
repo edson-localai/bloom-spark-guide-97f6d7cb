@@ -272,7 +272,17 @@ export const Route = createFileRoute('/api/public/wapi/webhook')({
             status: 'delivered',
           });
 
-          return Response.json({ ok: true });
+          // 4) atribuição automática (Chatwoot-style)
+          if (needsAssignment) {
+            try {
+              const { assignConversation } = await import('@/lib/routing.server');
+              await assignConversation(conversationId, contactId);
+            } catch (e) {
+              console.error('assignConversation failed:', e);
+            }
+          }
+
+          return Response.json({ ok: true, newConversation: isNewConversation });
         } catch (err: any) {
           console.error('W-API webhook error:', err);
           return new Response(JSON.stringify({ ok: false, error: err.message }), {
