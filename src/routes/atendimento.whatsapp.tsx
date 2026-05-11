@@ -175,21 +175,21 @@ function WhatsAppPage() {
                 <div className="pt-4 flex flex-wrap gap-2">
                   <button
                     disabled={!!busy}
-                    onClick={() => runAction(`sync-${inst.name}`, () => syncWhatsAppInstance({ data: { name: inst.name } }), 'Status atualizado')}
+                    onClick={() => runAction(`sync-${inst.name}`, () => syncWhatsAppInstance({ name: inst.name }), 'Status atualizado')}
                     className="flex-1 min-w-[120px] bg-[#151821] hover:bg-[#1F232E] text-zinc-200 border border-[#1F232E] py-2.5 rounded-xl text-sm font-semibold transition-all"
                   >
                     Sincronizar
                   </button>
                   <button
                     disabled={!!busy}
-                    onClick={() => runAction(`restart-${inst.name}`, () => restartWhatsAppInstance({ data: { name: inst.name } }), 'Instância reiniciada')}
+                    onClick={() => runAction(`restart-${inst.name}`, () => restartWhatsAppInstance({ name: inst.name }), 'Instância reiniciada')}
                     className="flex-1 min-w-[120px] bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-400 border border-cyan-500/20 py-2.5 rounded-xl text-sm font-semibold transition-all"
                   >
                     Reiniciar
                   </button>
                   <button
                     disabled={!!busy}
-                    onClick={() => runAction(`logout-${inst.name}`, () => disconnectWhatsAppInstance({ data: { name: inst.name } }), 'Desconectado')}
+                    onClick={() => runAction(`logout-${inst.name}`, () => disconnectWhatsAppInstance({ name: inst.name }), 'Desconectado')}
                     className="flex-1 min-w-[120px] bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20 py-2.5 rounded-xl text-sm font-semibold transition-all"
                   >
                     Desconectar
@@ -199,7 +199,7 @@ function WhatsAppPage() {
                       disabled={!!busy}
                       onClick={() => {
                         if (!confirm(`Excluir definitivamente a instância "${inst.name}"?`)) return;
-                        runAction(`del-${inst.name}`, () => deleteWhatsAppInstance({ data: { id: inst.id, name: inst.name } }), 'Instância excluída');
+                        runAction(`del-${inst.name}`, () => deleteWhatsAppInstance({ id: inst.id, name: inst.name }), 'Instância excluída');
                       }}
                       className="p-2.5 bg-red-500/5 hover:bg-red-500/15 text-red-500 border border-red-500/10 rounded-xl transition-all"
                       title="Excluir instância"
