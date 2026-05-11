@@ -23,23 +23,28 @@ export const requireSupabaseAuth = createMiddleware({ type: 'function' }).server
     }
     
     const request = getRequest();
+    console.log('[AuthMiddleware] Checking request for path:', request?.url);
 
     if (!request?.headers) {
+      console.error('[AuthMiddleware] No headers found');
       throw new Response('Unauthorized: No request headers available', { status: 401 });
     }
 
     const authHeader = request.headers.get('authorization');
+    console.log('[AuthMiddleware] Authorization header present:', !!authHeader);
 
     if (!authHeader) {
       throw new Response('Unauthorized: No authorization header provided', { status: 401 });
     }
 
     if (!authHeader.startsWith('Bearer ')) {
+      console.error('[AuthMiddleware] Invalid auth format');
       throw new Response('Unauthorized: Only Bearer tokens are supported', { status: 401 });
     }
 
     const token = authHeader.replace('Bearer ', '');
     if (!token) {
+      console.error('[AuthMiddleware] Token empty');
       throw new Response('Unauthorized: No token provided', { status: 401 });
     }
 

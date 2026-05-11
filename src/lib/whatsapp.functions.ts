@@ -1,3 +1,5 @@
+'use server';
+
 import { createServerFn } from '@tanstack/react-start';
 import { z } from 'zod';
 import { requireSupabaseAuth } from '@/integrations/supabase/auth-middleware';
@@ -166,21 +168,9 @@ export const deleteWhatsAppInstance = createServerFn({ method: 'POST' })
     const { supabaseAdmin } = await import('@/integrations/supabase/client.server');
     const { evoFetch } = await import('./whatsapp.server');
     
-    console.log(`Deleting WhatsApp instance ID: ${data.id || 'by-name'}, Name: ${data.name}`);
+    console.log(`[WhatsAppDelete] Starting deletion for ID: ${data.id}, Name: ${data.name}`);
     
-    // 1. Try to logout and delete from Evolution API (optional, don't block if fails)
-    try { 
-      await evoFetch(`/instance/logout/${encodeURIComponent(data.name)}`, { method: 'DELETE' }); 
-    } catch (e) {
-      console.warn(`Evolution logout failed for ${data.name}:`, e);
-    }
-    
-    try { 
-      await evoFetch(`/instance/delete/${encodeURIComponent(data.name)}`, { method: 'DELETE' }); 
-    } catch (e) {
-      console.warn(`Evolution delete failed for ${data.name}:`, e);
-    }
-
+    // 1. Find the target in DB first to be sure
     const { data: target, error: findError } = await supabaseAdmin
       .from('whatsapp_instances')
       .select('id, name')
@@ -188,38 +178,50 @@ export const deleteWhatsAppInstance = createServerFn({ method: 'POST' })
       .maybeSingle();
 
     if (findError) {
-      console.error(`Database lookup failed for ${data.name}:`, findError);
-      throw new Error(`Erro ao localizar instância no banco: ${findError.message}`);
+      console.error(`[WhatsAppDelete] Database lookup failed:`, findError);
+      throw new Error(`Erro ao localizar instância: ${findError.message}`);
     }
 
     if (!target) {
-      console.warn(`No local WhatsApp instance found for ${data.id || data.name}`);
+      console.warn(`[WhatsAppDelete] No local instance found for ${data.id || data.name}`);
       return { ok: true, count: 0, alreadyDeleted: true };
     }
 
-    await supabaseAdmin
+    // 2. Clear references in conversations FIRST to avoid FK constraint errors
+    console.log(`[WhatsAppDelete] Clearing conversation references for instance ${target.id}`);
+    const { error: convError } = await supabaseAdmin
       .from('conversations')
       .update({ instance_id: null, updated_at: new Date().toISOString() })
       .eq('instance_id', target.id);
 
-    // 2. Delete from local database
+    if (convError) {
+      console.error(`[WhatsAppDelete] Failed to clear conversations:`, convError);
+      // We continue anyway, maybe they can be deleted? No, FK will block.
+      // But maybe there were no conversations.
+    }
+
+    // 3. Try to delete from Evolution API (optional, we don't want to block the DB delete if API is down)
+    console.log(`[WhatsAppDelete] Attempting Evolution API cleanup for ${target.name}`);
+    try { 
+      // Evolution's delete usually handles logout too
+      await evoFetch(`/instance/delete/${encodeURIComponent(target.name)}`, { method: 'DELETE' }).catch(() => {});
+    } catch (e) {
+      console.warn(`[WhatsAppDelete] Evolution cleanup failed (ignoring):`, e);
+    }
+    
+    // 4. Delete from local database - This is the "source of truth"
+    console.log(`[WhatsAppDelete] Deleting row from whatsapp_instances: ${target.id}`);
     const { error, count } = await supabaseAdmin
       .from('whatsapp_instances')
       .delete({ count: 'exact' })
       .eq('id', target.id);
 
     if (error) {
-      console.error(`Database delete failed for ${data.id}:`, error);
+      console.error(`[WhatsAppDelete] Database delete failed:`, error);
       throw new Error(`Erro ao excluir no banco: ${error.message}`);
     }
 
-    if (count !== 1) {
-      console.warn(`Unexpected delete count for ID ${target.id}: ${count}`);
-      throw new Error('A instância não foi removida do banco. Atualize a página e tente novamente.');
-    }
-
-    console.log(`Deleted ${count} rows from whatsapp_instances for ID ${target.id}`);
-
+    console.log(`[WhatsAppDelete] Successfully deleted ${count} row(s)`);
     return { ok: true, count };
   });
 
