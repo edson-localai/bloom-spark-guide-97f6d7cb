@@ -90,6 +90,16 @@ export const createWhatsAppInstance = createServerFn({ method: 'POST' })
           .select()
           .single();
         if (error) throw new Error(error.message);
+        // Register webhook event URLs at W-API (best-effort).
+        try {
+          const { wapiSetWebhooks } = await import('./wapi.server');
+          await wapiSetWebhooks(
+            { instanceId: data.wapiInstanceId, token: data.wapiToken },
+            publicWebhookUrl('wapi'),
+          );
+        } catch (e: any) {
+          console.warn('[createWhatsAppInstance] wapiSetWebhooks failed:', e?.message);
+        }
         return { instance: row, qr };
       }
 
