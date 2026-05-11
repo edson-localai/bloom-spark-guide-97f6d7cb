@@ -320,16 +320,23 @@ export const sendWhatsAppMessage = createServerFn({ method: 'POST' })
     }
     if (!inst) return { skipped: true, reason: 'no_instance' };
 
-    const number = jidToPhone(conv.whatsapp_chat_id);
+    const chatId = String(conv.whatsapp_chat_id);
+    // W-API: preservar sufixo @lid (LID universal) e @g.us (grupo); apenas @s.whatsapp.net/@c.us viram número puro.
+    const wapiPhone =
+      chatId.endsWith('@lid') || chatId.endsWith('@g.us')
+        ? chatId
+        : jidToPhone(chatId);
+    const number = jidToPhone(chatId);
 
     try {
       if (inst.provider === 'wapi') {
         const { wapiFetch } = await import('./wapi.server');
         const res = await wapiFetch(
           `/v1/message/send-text`,
-          { method: 'POST', body: JSON.stringify({ phone: number, message: data.content }) },
+          { method: 'POST', body: JSON.stringify({ phone: wapiPhone, message: data.content }) },
           wapiCredsFrom(inst),
         );
+        console.log('[sendWhatsAppMessage] wapi send-text →', { phone: wapiPhone, response: res });
         return { ok: true, id: res?.messageId || res?.insertedId || null };
       }
       const { evoFetch } = await import('./whatsapp.server');
