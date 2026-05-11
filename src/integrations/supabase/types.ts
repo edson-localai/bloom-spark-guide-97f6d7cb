@@ -122,13 +122,55 @@ export type Database = {
         }
         Relationships: []
       }
+      contact_followups: {
+        Row: {
+          attempt: number
+          conversation_id: string
+          created_at: string
+          id: string
+          last_sent_at: string | null
+          next_run_at: string
+          status: string
+        }
+        Insert: {
+          attempt?: number
+          conversation_id: string
+          created_at?: string
+          id?: string
+          last_sent_at?: string | null
+          next_run_at?: string
+          status?: string
+        }
+        Update: {
+          attempt?: number
+          conversation_id?: string
+          created_at?: string
+          id?: string
+          last_sent_at?: string | null
+          next_run_at?: string
+          status?: string
+        }
+        Relationships: []
+      }
       contacts: {
         Row: {
+          birthdate: string | null
+          cep: string | null
+          city: string | null
+          complement: string | null
+          cpf: string | null
           created_at: string | null
+          district: string | null
+          email: string | null
           id: string
           name: string | null
           notes: string | null
           phone: string
+          source: string | null
+          stage: string | null
+          state: string | null
+          street: string | null
+          street_number: string | null
           tags: string[] | null
           total_conversations: number | null
           updated_at: string | null
@@ -137,11 +179,23 @@ export type Database = {
           vehicle_year: number | null
         }
         Insert: {
+          birthdate?: string | null
+          cep?: string | null
+          city?: string | null
+          complement?: string | null
+          cpf?: string | null
           created_at?: string | null
+          district?: string | null
+          email?: string | null
           id?: string
           name?: string | null
           notes?: string | null
           phone: string
+          source?: string | null
+          stage?: string | null
+          state?: string | null
+          street?: string | null
+          street_number?: string | null
           tags?: string[] | null
           total_conversations?: number | null
           updated_at?: string | null
@@ -150,11 +204,23 @@ export type Database = {
           vehicle_year?: number | null
         }
         Update: {
+          birthdate?: string | null
+          cep?: string | null
+          city?: string | null
+          complement?: string | null
+          cpf?: string | null
           created_at?: string | null
+          district?: string | null
+          email?: string | null
           id?: string
           name?: string | null
           notes?: string | null
           phone?: string
+          source?: string | null
+          stage?: string | null
+          state?: string | null
+          street?: string | null
+          street_number?: string | null
           tags?: string[] | null
           total_conversations?: number | null
           updated_at?: string | null
