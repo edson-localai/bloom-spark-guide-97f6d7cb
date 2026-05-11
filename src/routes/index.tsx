@@ -9,6 +9,7 @@ import WhyUsSection from '../components/WhyUsSection';
 import CTASection from '../components/CTASection';
 import TestimonialsSection from '../components/TestimonialsSection';
 import Footer from '../components/Footer';
+import LandingChatBubble from '../components/LandingChatBubble';
 
 export const Route = createFileRoute("/")({
   component: Index,
@@ -26,6 +27,7 @@ function Index() {
       <TestimonialsSection />
       <CTASection />
       <Footer />
+      <LandingChatBubble />
     </div>
   );
 }
