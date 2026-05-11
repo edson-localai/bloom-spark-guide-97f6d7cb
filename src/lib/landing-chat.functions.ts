@@ -119,14 +119,24 @@ export const saveLandingLead = createServerFn({ method: "POST" })
   .inputValidator((data) => leadSchema.parse(data))
   .handler(async ({ data }) => {
     // Deduplicação: busca lead existente com mesmos dados básicos
-    const { data: existing } = await supabaseAdmin
+    let query = supabaseAdmin
       .from('contacts')
       .select('id, phone')
-      .eq('name', data.name || 'Lead do site')
-      .eq('vehicle_brand', data.vehicle_brand || null)
-      .eq('vehicle_model', data.vehicle_model || null)
-      .eq('vehicle_year', data.vehicle_year || null)
-      .eq('city', data.city || null)
+      .eq('name', data.name || 'Lead do site');
+
+    if (data.vehicle_brand) query = query.eq('vehicle_brand', data.vehicle_brand);
+    else query = query.is('vehicle_brand', null);
+
+    if (data.vehicle_model) query = query.eq('vehicle_model', data.vehicle_model);
+    else query = query.is('vehicle_model', null);
+
+    if (data.vehicle_year) query = query.eq('vehicle_year', data.vehicle_year);
+    else query = query.is('vehicle_year', null);
+
+    if (data.city) query = query.eq('city', data.city);
+    else query = query.is('city', null);
+
+    const { data: existing } = await query
       .order('created_at', { ascending: false })
       .limit(1)
       .maybeSingle();
