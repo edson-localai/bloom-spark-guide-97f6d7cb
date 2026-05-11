@@ -127,7 +127,7 @@ export const getWhatsAppQrCode = createServerFn({ method: 'POST' })
           updated_at: new Date().toISOString(),
         })
         .eq('name', data.name);
-      return { qr };
+      return { qr, connected };
     }
 
     const { evoFetch } = await import('./whatsapp.server');
