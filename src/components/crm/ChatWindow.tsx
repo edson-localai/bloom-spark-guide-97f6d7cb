@@ -334,12 +334,20 @@ export function ChatWindow({ conversation }: ChatWindowProps) {
           >
             <UserPlus className="h-5 w-5" />
           </button>
-          <button className="p-2 text-zinc-400 hover:text-white transition-colors">
-            <ShieldCheck className="h-5 w-5" />
-          </button>
-          <button className="p-2 text-zinc-400 hover:text-white transition-colors">
-            <MoreVertical className="h-5 w-5" />
-          </button>
+          {conversation.status !== 'resolved' && conversation.status !== 'archived' ? (
+            <>
+              <button onClick={() => updateStatus('resolved')} className="p-2 text-zinc-400 hover:text-emerald-400 transition-colors" title="Resolver atendimento">
+                <CheckCircle2 className="h-5 w-5" />
+              </button>
+              <button onClick={() => updateStatus('archived')} className="p-2 text-zinc-400 hover:text-amber-400 transition-colors" title="Arquivar">
+                <Archive className="h-5 w-5" />
+              </button>
+            </>
+          ) : (
+            <button onClick={() => updateStatus('active')} className="p-2 text-zinc-400 hover:text-cyan-400 transition-colors" title="Reabrir">
+              <RotateCcw className="h-5 w-5" />
+            </button>
+          )}
         </div>
       </div>
 
