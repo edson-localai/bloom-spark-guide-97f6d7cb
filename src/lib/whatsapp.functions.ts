@@ -3,17 +3,22 @@
 import { createServerFn } from '@tanstack/react-start';
 import { z } from 'zod';
 import { requireSupabaseAuth } from '@/integrations/supabase/auth-middleware';
+import { AppError, handleServerError } from './errors';
 
 async function requireAdminOrSupervisor(supabase: any, userId: string) {
-  const { data: roles } = await supabase
-    .from('user_roles')
-    .select('role')
-    .eq('user_id', userId);
-  const list = (roles || []).map((r: any) => r.role);
-  if (!list.includes('admin') && !list.includes('supervisor')) {
-    throw new Error('Forbidden: requires admin or supervisor role.');
+  try {
+    const { data: roles } = await supabase
+      .from('user_roles')
+      .select('role')
+      .eq('user_id', userId);
+    const list = (roles || []).map((r: any) => r.role);
+    if (!list.includes('admin') && !list.includes('supervisor')) {
+      throw AppError.forbidden('Você precisa ser administrador ou supervisor para realizar esta ação.');
+    }
+    return list;
+  } catch (err) {
+    handleServerError(err);
   }
-  return list;
 }
 
 function publicWebhookUrl(): string {
@@ -35,16 +40,20 @@ export const createWhatsAppInstance = createServerFn({ method: 'POST' })
   .handler(async ({ data, context }) => {
     await requireAdminOrSupervisor(context.supabase, context.userId);
     const { supabaseAdmin } = await import('@/integrations/supabase/client.server');
-    const { WhatsAppService } = await import('@/services/WhatsAppService');
-    const service = WhatsAppService.getInstance();
-    const webhookUrl = publicWebhookUrl();
+    try {
+      const { WhatsAppService } = await import('@/services/WhatsAppService');
+      const service = WhatsAppService.getInstance();
+      const webhookUrl = publicWebhookUrl();
 
-    return await service.createInstance({
-      name: data.name,
-      displayName: data.displayName,
-      apiKey: data.apiKey,
-      webhookUrl
-    });
+      return await service.createInstance({
+        name: data.name,
+        displayName: data.displayName,
+        apiKey: data.apiKey,
+        webhookUrl
+      });
+    } catch (err) {
+      handleServerError(err);
+    }
   });
 
 // --- Refresh QR code / connection ---
@@ -70,8 +79,12 @@ export const syncWhatsAppInstance = createServerFn({ method: 'POST' })
   .inputValidator((data) => z.object({ name: z.string().min(1) }).parse(data))
   .handler(async ({ data, context }) => {
     await requireAdminOrSupervisor(context.supabase, context.userId);
-    const { WhatsAppService } = await import('@/services/WhatsAppService');
-    return await WhatsAppService.getInstance().syncInstance(data.name);
+    try {
+      const { WhatsAppService } = await import('@/services/WhatsAppService');
+      return await WhatsAppService.getInstance().syncInstance(data.name);
+    } catch (err) {
+      handleServerError(err);
+    }
   });
 
 // --- Restart ---
@@ -96,8 +109,12 @@ export const disconnectWhatsAppInstance = createServerFn({ method: 'POST' })
   .inputValidator((data) => z.object({ name: z.string().min(1) }).parse(data))
   .handler(async ({ data, context }) => {
     await requireAdminOrSupervisor(context.supabase, context.userId);
-    const { WhatsAppService } = await import('@/services/WhatsAppService');
-    return await WhatsAppService.getInstance().logoutInstance(data.name);
+    try {
+      const { WhatsAppService } = await import('@/services/WhatsAppService');
+      return await WhatsAppService.getInstance().logoutInstance(data.name);
+    } catch (err) {
+      handleServerError(err);
+    }
   });
 
 // --- Delete instance entirely ---
@@ -109,8 +126,12 @@ export const deleteWhatsAppInstance = createServerFn({ method: 'POST' })
   }).parse(data))
   .handler(async ({ data, context }) => {
     await requireAdminOrSupervisor(context.supabase, context.userId);
-    const { WhatsAppService } = await import('@/services/WhatsAppService');
-    return await WhatsAppService.getInstance().deleteInstance(data.id || data.name);
+    try {
+      const { WhatsAppService } = await import('@/services/WhatsAppService');
+      return await WhatsAppService.getInstance().deleteInstance(data.id || data.name);
+    } catch (err) {
+      handleServerError(err);
+    }
   });
 
 // --- Send a text message via WhatsApp (called from the chat) ---
