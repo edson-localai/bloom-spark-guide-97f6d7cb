@@ -25,6 +25,7 @@ export default function LandingChatBubble() {
   const [leadSaved, setLeadSaved] = useState<string | null>(null);
   const [isReused, setIsReused] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+  const [validationError, setValidationError] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const chat = useServerFn(landingChat);
   const saveLead = useServerFn(saveLandingLead);
