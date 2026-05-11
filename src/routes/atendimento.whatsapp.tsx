@@ -418,8 +418,27 @@ function CreateInstanceModal({ onClose, onCreated }: { onClose: () => void; onCr
 }
 
 function QrModal({ data, onClose }: { data: { name: string; qr: string | null }; onClose: () => void }) {
-  const src = data.qr
-    ? (data.qr.startsWith('data:') ? data.qr : `data:image/png;base64,${data.qr.replace(/^data:image\/[^;]+;base64,/, '')}`)
+  const [qr, setQr] = useState<string | null>(data.qr);
+  useEffect(() => {
+    if (qr) return;
+    let stopped = false;
+    let attempts = 0;
+    async function poll() {
+      while (!stopped && attempts < 20) {
+        attempts++;
+        try {
+          const res: any = await getWhatsAppQrCode({ data: { name: data.name } });
+          if (res?.qr) { setQr(res.qr); return; }
+          if (res?.connected) { onClose(); return; }
+        } catch { /* ignore and retry */ }
+        await new Promise((r) => setTimeout(r, 2500));
+      }
+    }
+    poll();
+    return () => { stopped = true; };
+  }, [data.name]);
+  const src = qr
+    ? (qr.startsWith('data:') ? qr : `data:image/png;base64,${qr.replace(/^data:image\/[^;]+;base64,/, '')}`)
     : null;
 
   return (

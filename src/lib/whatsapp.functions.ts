@@ -71,18 +71,10 @@ export const createWhatsAppInstance = createServerFn({ method: 'POST' })
         if (!data.wapiInstanceId || !data.wapiToken) {
           throw AppError.validation('Para W-API informe instance_id e token.');
         }
-        const { wapiGetQr, normalizeWapiStatus } = await import('./wapi.server');
-        const creds = { instanceId: data.wapiInstanceId, token: data.wapiToken };
-        let qr: string | null = null;
-        let status: 'connected' | 'disconnected' | 'connecting' = 'connecting';
-        try {
-          const r = await wapiGetQr(creds);
-          qr = r.qr;
-          status = r.connected ? 'connected' : 'connecting';
-        } catch (e) {
-          console.warn('[wapi] qr-code initial fetch failed:', (e as any)?.message);
-          status = 'disconnected';
-        }
+        // Não buscar QR durante a criação para evitar timeout do worker.
+        // O frontend chama getWhatsAppQr() logo em seguida.
+        const qr: string | null = null;
+        const status: 'connected' | 'disconnected' | 'connecting' = 'connecting';
         const { data: row, error } = await supabaseAdmin
           .from('whatsapp_instances')
           .insert({
