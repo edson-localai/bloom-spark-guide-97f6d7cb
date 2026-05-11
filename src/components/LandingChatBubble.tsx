@@ -33,6 +33,8 @@ export default function LandingChatBubble() {
   const chat = useServerFn(landingChat);
   const saveLead = useServerFn(saveLandingLead);
   const [uploading, setUploading] = useState(false);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [compressedBlob, setCompressedBlob] = useState<Blob | null>(null);
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
@@ -115,8 +117,24 @@ export default function LandingChatBubble() {
 
     setUploading(true);
     try {
-      const compressedBlob = await compressImage(file);
-      const fileExt = "jpg"; // We compress to jpeg in the utility
+      const blob = await compressImage(file);
+      setCompressedBlob(blob);
+      if (previewUrl) URL.revokeObjectURL(previewUrl);
+      setPreviewUrl(URL.createObjectURL(blob));
+    } catch (err) {
+      console.error('Error compressing image:', err);
+      setValidationError("Erro ao processar a imagem. Tente novamente.");
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const handleConfirmUpload = async () => {
+    if (!compressedBlob || !lead) return;
+    
+    setUploading(true);
+    try {
+      const fileExt = "jpg";
       const fileName = `${Math.random().toString(36).slice(2, 10)}.${fileExt}`;
       const filePath = `leads/${fileName}`;
 
@@ -134,12 +152,21 @@ export default function LandingChatBubble() {
         .getPublicUrl(filePath);
 
       setLead({ ...lead, avatar_url: publicUrl });
+      setPreviewUrl(null);
+      setCompressedBlob(null);
     } catch (err) {
       console.error('Error uploading avatar:', err);
-      setValidationError("Erro ao carregar a foto. Tente novamente.");
+      setValidationError("Erro ao salvar a foto. Tente novamente.");
     } finally {
       setUploading(false);
     }
+  };
+
+  const handleCancelPreview = () => {
+    if (previewUrl) URL.revokeObjectURL(previewUrl);
+    setPreviewUrl(null);
+    setCompressedBlob(null);
+    if (fileInputRef.current) fileInputRef.current.value = "";
   };
   
   const handleRemoveAvatar = () => {
@@ -278,29 +305,58 @@ export default function LandingChatBubble() {
                     <div className="space-y-2 max-h-[180px] overflow-y-auto pr-1 custom-scrollbar">
                       <div className="flex items-center gap-3 py-2 border-b border-white/5">
                         <div className="relative group">
-                          {lead.avatar_url ? (
+                          {(previewUrl || lead.avatar_url) ? (
                             <div className="relative">
-                              <img src={lead.avatar_url} alt="Sua foto" className="w-10 h-10 rounded-full object-cover border border-white/20" />
-                              <button 
-                                onClick={handleRemoveAvatar}
-                                className="absolute -top-1 -right-1 p-1 rounded-full bg-red-500 text-white shadow-lg hover:bg-red-600 transition-colors opacity-0 group-hover:opacity-100"
-                                title="Remover foto"
-                              >
-                                <Trash2 className="w-2.5 h-2.5" />
-                              </button>
+                              <img 
+                                src={previewUrl || lead.avatar_url || ''} 
+                                alt="Sua foto" 
+                                className={`w-10 h-10 rounded-full object-cover border-2 ${previewUrl ? 'border-yellow-500 animate-pulse' : 'border-white/20'}`} 
+                              />
+                              {!previewUrl && (
+                                <button 
+                                  onClick={handleRemoveAvatar}
+                                  className="absolute -top-1 -right-1 p-1 rounded-full bg-red-500 text-white shadow-lg hover:bg-red-600 transition-colors opacity-0 group-hover:opacity-100"
+                                  title="Remover foto"
+                                >
+                                  <Trash2 className="w-2.5 h-2.5" />
+                                </button>
+                              )}
                             </div>
                           ) : (
                             <div className="w-10 h-10 rounded-full bg-white/10 border border-white/20 flex items-center justify-center">
                               <User className="w-5 h-5 text-white/30" />
                             </div>
                           )}
-                          <button 
-                            onClick={() => fileInputRef.current?.click()}
-                            disabled={uploading}
-                            className="absolute -bottom-1 -right-1 p-1 rounded-full bg-[#0066CC] text-white shadow-lg hover:bg-[#3385ff] transition-colors disabled:opacity-50"
-                          >
-                            {uploading ? <Loader2 className="w-3 h-3 animate-spin" /> : <Camera className="w-3 h-3" />}
-                          </button>
+                          
+                          {previewUrl ? (
+                            <div className="absolute -bottom-1 -right-4 flex gap-1">
+                              <button 
+                                onClick={handleConfirmUpload}
+                                disabled={uploading}
+                                className="p-1 rounded-full bg-green-500 text-white shadow-lg hover:bg-green-600 transition-colors disabled:opacity-50"
+                                title="Confirmar upload"
+                              >
+                                {uploading ? <Loader2 className="w-3 h-3 animate-spin" /> : <CheckCircle2 className="w-3 h-3" />}
+                              </button>
+                              <button 
+                                onClick={handleCancelPreview}
+                                disabled={uploading}
+                                className="p-1 rounded-full bg-red-500 text-white shadow-lg hover:bg-red-600 transition-colors disabled:opacity-50"
+                                title="Cancelar"
+                              >
+                                <X className="w-3 h-3" />
+                              </button>
+                            </div>
+                          ) : (
+                            <button 
+                              onClick={() => fileInputRef.current?.click()}
+                              disabled={uploading}
+                              className="absolute -bottom-1 -right-1 p-1 rounded-full bg-[#0066CC] text-white shadow-lg hover:bg-[#3385ff] transition-colors disabled:opacity-50"
+                            >
+                              {uploading ? <Loader2 className="w-3 h-3 animate-spin" /> : <Camera className="w-3 h-3" />}
+                            </button>
+                          )}
+                          
                           <input 
                             type="file" 
                             ref={fileInputRef} 
@@ -310,9 +366,13 @@ export default function LandingChatBubble() {
                           />
                         </div>
                         <div className="flex-1">
-                          <p className="text-[10px] text-white font-medium">Sua foto de perfil</p>
-                          <p className="text-[9px] text-white/40 leading-tight">Será usada no chat se a do WhatsApp não carregar.</p>
-                          {lead.avatar_url && (
+                          <p className="text-[10px] text-white font-medium">
+                            {previewUrl ? 'Pré-visualização (otimizada)' : 'Sua foto de perfil'}
+                          </p>
+                          <p className="text-[9px] text-white/40 leading-tight">
+                            {previewUrl ? 'Clique no check verde para salvar esta versão.' : 'Será usada no chat se a do WhatsApp não carregar.'}
+                          </p>
+                          {(lead.avatar_url && !previewUrl) && (
                             <button 
                               onClick={handleRemoveAvatar}
                               className="text-[9px] text-red-400 hover:text-red-300 mt-0.5 font-medium flex items-center gap-1 sm:hidden"
