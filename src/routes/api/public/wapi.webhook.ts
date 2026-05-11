@@ -359,6 +359,89 @@ export const Route = createFileRoute('/api/public/wapi/webhook')({
             } catch (e) { console.error('welcome flow failed:', e); }
           }
 
+          // 5) Auto-reply via IA (Lovable AI Gateway)
+          try {
+            const { data: aiActive } = await supabaseAdmin
+              .from('app_settings')
+              .select('value')
+              .eq('key', 'auto_reply_active')
+              .maybeSingle();
+
+            if (aiActive?.value === 'true') {
+              const { data: convRow } = await supabaseAdmin
+                .from('conversations')
+                .select('agent_id, bot_active, auto_reply_enabled')
+                .eq('id', conversationId)
+                .single();
+
+              const botEnabled = convRow && (convRow.bot_active !== false) && (convRow.auto_reply_enabled !== false);
+              if (botEnabled) {
+                const { data: promptRow } = await supabaseAdmin
+                  .from('app_settings')
+                  .select('value')
+                  .eq('key', 'system_prompt')
+                  .maybeSingle();
+
+                const { data: hist } = await supabaseAdmin
+                  .from('messages')
+                  .select('content, sender_type')
+                  .eq('conversation_id', conversationId)
+                  .order('created_at', { ascending: false })
+                  .limit(10);
+
+                const history = (hist || [])
+                  .reverse()
+                  .map((m: any) => `${m.sender_type}: ${m.content}`)
+                  .join('\n');
+
+                const aiResp = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${process.env.LOVABLE_API_KEY}`,
+                  },
+                  body: JSON.stringify({
+                    model: 'google/gemini-2.5-flash',
+                    messages: [
+                      { role: 'system', content: promptRow?.value || 'Você é um assistente prestativo. Responda de forma breve e amigável em português.' },
+                      { role: 'user', content: `Histórico da conversa:\n${history}\n\nResponda à última mensagem do contato.` },
+                    ],
+                  }),
+                });
+
+                if (aiResp.ok) {
+                  const aiData = await aiResp.json();
+                  const reply = aiData?.choices?.[0]?.message?.content?.trim();
+                  if (reply) {
+                    await supabaseAdmin.from('messages').insert({
+                      conversation_id: conversationId,
+                      content: reply,
+                      sender_type: 'bot',
+                      status: 'sent',
+                    });
+                    try {
+                      if (inst?.provider === 'wapi') {
+                        const { wapiFetch } = await import('@/lib/wapi.server');
+                        const data = inst?.instance_data || {};
+                        const credentials = {
+                          instanceId: data?.wapi?.instance_id || inst.name,
+                          token: inst.instance_key,
+                        };
+                        const phoneTo = remoteJid.endsWith('@lid') || remoteJid.endsWith('@g.us') ? remoteJid : remoteJid.replace(/[^0-9]/g, '');
+                        await wapiFetch('/v1/message/send-text', {
+                          method: 'POST',
+                          body: JSON.stringify({ phone: phoneTo, message: reply }),
+                        }, credentials as any);
+                      }
+                    } catch (e) { console.warn('AI reply wapi send failed:', (e as any)?.message); }
+                  }
+                } else {
+                  console.warn('AI gateway error:', aiResp.status, await aiResp.text());
+                }
+              }
+            }
+          } catch (e) { console.error('auto-reply failed:', e); }
+
           return Response.json({ ok: true, newConversation: isNewConversation });
         } catch (err: any) {
           console.error('W-API webhook error:', err);
