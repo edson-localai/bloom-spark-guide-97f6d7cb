@@ -116,6 +116,7 @@ const leadSchema = z.object({
   need: z.string().trim().max(500).nullable(),
   city: z.string().trim().max(80).nullable(),
   chat_transcript: z.string().nullable().optional(),
+  avatar_url: z.string().nullable().optional(),
 });
 
 export const saveLandingLead = createServerFn({ method: "POST" })
