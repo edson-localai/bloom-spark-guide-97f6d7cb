@@ -23,6 +23,7 @@ export default function LandingChatBubble() {
   const [savingLead, setSavingLead] = useState(false);
   const [saveError, setSaveError] = useState(false);
   const [leadSaved, setLeadSaved] = useState<string | null>(null);
+  const [isEditing, setIsEditing] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const chat = useServerFn(landingChat);
   const saveLead = useServerFn(saveLandingLead);
