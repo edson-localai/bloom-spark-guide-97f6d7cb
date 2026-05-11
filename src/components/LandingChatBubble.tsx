@@ -69,7 +69,20 @@ export default function LandingChatBubble() {
     setSavingLead(true);
     setSaveError(false);
     try {
-      const res = await saveLead({ data: lead });
+      const transcript = [
+        "RESUMO:",
+        currentSummary,
+        "",
+        "HISTÓRICO DA CONVERSA:",
+        ...messages.map(m => `${m.role === 'user' ? 'Cliente' : 'Clara'}: ${m.content}`)
+      ].join('\n');
+
+      const res = await saveLead({ 
+        data: { 
+          ...lead, 
+          chat_transcript: transcript 
+        } 
+      });
       if (res.ok && res.leadId) {
         setLeadSaved(res.leadId as any);
       } else {
