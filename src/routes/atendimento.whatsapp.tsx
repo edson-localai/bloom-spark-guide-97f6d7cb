@@ -277,16 +277,26 @@ function WhatsAppPage() {
 // ============== MODALS ==============
 
 function CreateInstanceModal({ onClose, onCreated }: { onClose: () => void; onCreated: (qr: string | null, name: string) => void }) {
+  const [provider, setProvider] = useState<'evolution' | 'wapi'>('evolution');
   const [name, setName] = useState('');
   const [displayName, setDisplayName] = useState('');
   const [apiKey, setApiKey] = useState('');
+  const [wapiInstanceId, setWapiInstanceId] = useState('');
+  const [wapiToken, setWapiToken] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setSubmitting(true);
     try {
-      const res: any = await createWhatsAppInstance({ data: { name: name.trim(), displayName: displayName.trim(), apiKey: apiKey.trim() || undefined } });
+      const payload: any = { provider, name: name.trim(), displayName: displayName.trim() };
+      if (provider === 'evolution') {
+        payload.apiKey = apiKey.trim() || undefined;
+      } else {
+        payload.wapiInstanceId = wapiInstanceId.trim();
+        payload.wapiToken = wapiToken.trim();
+      }
+      const res: any = await createWhatsAppInstance({ data: payload });
       toast.success('Instância criada! Escaneie o QR Code para conectar.');
       onCreated(res?.qr || null, name.trim());
     } catch (err: any) {
