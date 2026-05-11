@@ -104,6 +104,7 @@ export type LeadData = {
   vehicle_year: number | null;
   need: string | null;
   city: string | null;
+  chat_transcript?: string | null;
 };
 
 const leadSchema = z.object({
@@ -113,6 +114,7 @@ const leadSchema = z.object({
   vehicle_year: z.number().int().min(1900).max(2100).nullable(),
   need: z.string().trim().max(500).nullable(),
   city: z.string().trim().max(80).nullable(),
+  chat_transcript: z.string().nullable().optional(),
 });
 
 export const saveLandingLead = createServerFn({ method: "POST" })
@@ -160,7 +162,7 @@ export const saveLandingLead = createServerFn({ method: "POST" })
         vehicle_model: data.vehicle_model,
         vehicle_year: data.vehicle_year,
         city: data.city,
-        notes: data.need ? `Necessidade: ${data.need}` : null,
+        notes: data.chat_transcript || (data.need ? `Necessidade: ${data.need}` : null),
         source: 'landing_chat',
         stage: 'novo',
       })
