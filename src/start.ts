@@ -10,7 +10,9 @@ async function fetchWithSupabaseAuth(input: RequestInfo | URL, init?: RequestIni
   const token = data.session?.access_token;
   if (!token) return fetch(input, init);
 
-  const headers = new Headers(init?.headers || (input instanceof Request ? input.headers : undefined));
+  const headers = new Headers(
+    init?.headers || (input instanceof Request ? input.headers : undefined),
+  );
   if (!headers.has("authorization")) headers.set("authorization", `Bearer ${token}`);
 
   return fetch(input, { ...init, headers });
