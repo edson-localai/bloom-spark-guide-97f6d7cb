@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useMemo } from "react";
-import { MessageCircle, X, Send, Loader2, CheckCircle2, AlertCircle, ArrowRight, Pencil, Save, User, Camera, Upload } from "lucide-react";
+import { MessageCircle, X, Send, Loader2, CheckCircle2, AlertCircle, ArrowRight, Pencil, Save, User, Camera, Upload, Trash2 } from "lucide-react";
 import { useServerFn } from "@tanstack/react-start";
 import { landingChat, saveLandingLead, type LeadData } from "@/lib/landing-chat.functions";
 import { supabase } from "@/integrations/supabase/client";
@@ -136,6 +136,12 @@ export default function LandingChatBubble() {
       setUploading(false);
     }
   };
+  
+  const handleRemoveAvatar = () => {
+    if (!lead) return;
+    setLead({ ...lead, avatar_url: null });
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
 
   const openWhatsApp = () => {
     window.open(whatsappLink, "_blank", "noopener,noreferrer");
@@ -268,7 +274,16 @@ export default function LandingChatBubble() {
                       <div className="flex items-center gap-3 py-2 border-b border-white/5">
                         <div className="relative group">
                           {lead.avatar_url ? (
-                            <img src={lead.avatar_url} alt="Sua foto" className="w-10 h-10 rounded-full object-cover border border-white/20" />
+                            <div className="relative">
+                              <img src={lead.avatar_url} alt="Sua foto" className="w-10 h-10 rounded-full object-cover border border-white/20" />
+                              <button 
+                                onClick={handleRemoveAvatar}
+                                className="absolute -top-1 -right-1 p-1 rounded-full bg-red-500 text-white shadow-lg hover:bg-red-600 transition-colors opacity-0 group-hover:opacity-100"
+                                title="Remover foto"
+                              >
+                                <Trash2 className="w-2.5 h-2.5" />
+                              </button>
+                            </div>
                           ) : (
                             <div className="w-10 h-10 rounded-full bg-white/10 border border-white/20 flex items-center justify-center">
                               <User className="w-5 h-5 text-white/30" />
@@ -292,6 +307,14 @@ export default function LandingChatBubble() {
                         <div className="flex-1">
                           <p className="text-[10px] text-white font-medium">Sua foto de perfil</p>
                           <p className="text-[9px] text-white/40 leading-tight">Será usada no chat se a do WhatsApp não carregar.</p>
+                          {lead.avatar_url && (
+                            <button 
+                              onClick={handleRemoveAvatar}
+                              className="text-[9px] text-red-400 hover:text-red-300 mt-0.5 font-medium flex items-center gap-1 sm:hidden"
+                            >
+                              <Trash2 className="w-2 h-2" /> Remover foto
+                            </button>
+                          )}
                         </div>
                       </div>
 
