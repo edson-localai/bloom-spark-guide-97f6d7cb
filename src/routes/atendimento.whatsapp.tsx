@@ -419,27 +419,57 @@ function CreateInstanceModal({ onClose, onCreated }: { onClose: () => void; onCr
 
 function QrModal({ data, onClose }: { data: { name: string; qr: string | null }; onClose: () => void }) {
   const [qr, setQr] = useState<string | null>(data.qr);
+  const [status, setStatus] = useState<'connecting' | 'connected' | 'disconnected'>('connecting');
+  const [attempts, setAttempts] = useState(0);
+  const [lastPollAt, setLastPollAt] = useState<Date | null>(null);
+  const [stopped, setStopped] = useState(false);
+
   useEffect(() => {
-    if (qr) return;
-    let stopped = false;
-    let attempts = 0;
+    let cancelled = false;
+    let n = 0;
     async function poll() {
-      while (!stopped && attempts < 20) {
-        attempts++;
+      while (!cancelled && n < 40) {
+        n++;
+        setAttempts(n);
         try {
           const res: any = await getWhatsAppQrCode({ data: { name: data.name } });
-          if (res?.qr) { setQr(res.qr); return; }
-          if (res?.connected) { onClose(); return; }
-        } catch { /* ignore and retry */ }
+          if (cancelled) return;
+          setLastPollAt(new Date());
+          if (res?.connected) {
+            setStatus('connected');
+            setQr(null);
+            setTimeout(() => { if (!cancelled) onClose(); }, 1500);
+            return;
+          }
+          if (res?.qr) {
+            setQr(res.qr);
+            setStatus('connecting');
+          } else {
+            setStatus('connecting');
+          }
+        } catch {
+          if (cancelled) return;
+          setLastPollAt(new Date());
+          setStatus('disconnected');
+        }
         await new Promise((r) => setTimeout(r, 2500));
       }
+      if (!cancelled) setStopped(true);
     }
     poll();
-    return () => { stopped = true; };
+    return () => { cancelled = true; };
   }, [data.name]);
+
   const src = qr
     ? (qr.startsWith('data:') ? qr : `data:image/png;base64,${qr.replace(/^data:image\/[^;]+;base64,/, '')}`)
     : null;
+
+  const statusMeta =
+    status === 'connected'
+      ? { dot: 'bg-emerald-400', text: 'text-emerald-300', label: 'Conectado' }
+      : status === 'disconnected'
+      ? { dot: 'bg-red-400', text: 'text-red-300', label: 'Desconectado' }
+      : { dot: 'bg-amber-400 animate-pulse', text: 'text-amber-300', label: 'Conectando...' };
 
   return (
     <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={onClose}>
@@ -448,7 +478,22 @@ function QrModal({ data, onClose }: { data: { name: string; qr: string | null };
           <h3 className="text-lg font-bold text-white">Escaneie no WhatsApp</h3>
           <button onClick={onClose} className="text-zinc-500 hover:text-white"><X className="h-5 w-5" /></button>
         </div>
-        {src ? (
+
+        <div className="flex items-center justify-center gap-2 text-xs">
+          <span className={`h-2 w-2 rounded-full ${statusMeta.dot}`} />
+          <span className={`font-semibold ${statusMeta.text}`}>{statusMeta.label}</span>
+          <span className="text-zinc-600">•</span>
+          <span className="text-zinc-500">tentativa {attempts}{stopped ? ' (parado)' : ''}</span>
+        </div>
+
+        {status === 'connected' ? (
+          <div className="py-12">
+            <div className="h-12 w-12 rounded-full bg-emerald-500/20 border border-emerald-500/40 mx-auto flex items-center justify-center">
+              <span className="text-emerald-300 text-2xl">✓</span>
+            </div>
+            <p className="text-sm text-emerald-300 mt-3 font-semibold">WhatsApp conectado!</p>
+          </div>
+        ) : src ? (
           <div className="bg-white p-4 rounded-xl">
             <img src={src} alt="QR Code" className="w-full h-auto" />
           </div>
@@ -458,9 +503,15 @@ function QrModal({ data, onClose }: { data: { name: string; qr: string | null };
             <p className="text-xs text-zinc-500 mt-3">Aguardando QR Code...</p>
           </div>
         )}
+
         <p className="text-xs text-zinc-500 leading-relaxed">
           Abra o WhatsApp no celular → <b>Aparelhos conectados</b> → <b>Conectar um aparelho</b> e escaneie o código.
         </p>
+        {lastPollAt && (
+          <p className="text-[10px] text-zinc-600">
+            Última verificação: {lastPollAt.toLocaleTimeString()}
+          </p>
+        )}
       </div>
     </div>
   );
