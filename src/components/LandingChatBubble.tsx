@@ -1,7 +1,8 @@
 import { useState, useRef, useEffect, useMemo } from "react";
-import { MessageCircle, X, Send, Loader2, CheckCircle2, AlertCircle, ArrowRight, Pencil, Save, User } from "lucide-react";
+import { MessageCircle, X, Send, Loader2, CheckCircle2, AlertCircle, ArrowRight, Pencil, Save, User, Camera, Upload } from "lucide-react";
 import { useServerFn } from "@tanstack/react-start";
 import { landingChat, saveLandingLead, type LeadData } from "@/lib/landing-chat.functions";
+import { supabase } from "@/integrations/supabase/client";
 import attendantImg from "@/assets/attendant.jpg";
 
 const WHATSAPP_NUMBER = "5591985161991";
