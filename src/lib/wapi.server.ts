@@ -49,17 +49,32 @@ export async function wapiFetch(
   return body;
 }
 
+// Status check: returns true if WhatsApp is connected to the instance.
+export async function wapiIsConnected(creds: WapiCreds): Promise<boolean> {
+  try {
+    const r = await wapiFetch(`/v1/instance/status-instance`, { method: 'GET' }, creds);
+    return !!(r?.connected === true || r?.status === 'connected' || r?.connectionStatus === 'connected');
+  } catch {
+    return false;
+  }
+}
+
 // QR code: W-API documents image=disable for base64 and image=enable for raw PNG.
 export async function wapiGetQr(creds: WapiCreds): Promise<{ qr: string | null; connected: boolean }> {
+  // First check connection status — once paired, qr-code endpoint stops returning a QR.
+  const alreadyConnected = await wapiIsConnected(creds);
+  if (alreadyConnected) return { qr: null, connected: true };
+
   try {
     const r = await wapiFetch(`/v1/instance/qr-code?image=disable`, { method: 'GET' }, creds);
-    // Common shapes: { qrcode: 'data:image/png;base64,...' }, { qrCode: '...' }, { base64: '...' } or { connected: true }
     const qr = typeof r === 'string' ? r : (r?.qrcode || r?.qrCode || r?.qr || r?.base64 || r?.image || r?.value || null);
     const connected = !!(r?.connected || r?.status === 'connected');
     return { qr, connected };
   } catch (e: any) {
-    // If already connected, the endpoint may 4xx; treat as connected unknown.
     if (/conectad|connected|already/i.test(e?.message || '')) return { qr: null, connected: true };
+    // Re-check status in case the QR endpoint errored because we just paired.
+    const c = await wapiIsConnected(creds);
+    if (c) return { qr: null, connected: true };
     throw e;
   }
 }
