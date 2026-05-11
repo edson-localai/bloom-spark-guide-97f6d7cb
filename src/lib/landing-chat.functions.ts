@@ -167,6 +167,7 @@ export const saveLandingLead = createServerFn({ method: "POST" })
         notes: data.chat_transcript || (data.need ? `Necessidade: ${data.need}` : null),
         source: 'landing_chat',
         stage: 'novo',
+        avatar_url: data.avatar_url,
       })
       .select('id')
       .single();
