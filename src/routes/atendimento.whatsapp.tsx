@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useWhatsApp } from '@/hooks/useWhatsApp';
 import {
   Smartphone, RefreshCw, Plus, CheckCircle2, XCircle, Loader2, QrCode,
@@ -432,6 +432,11 @@ function QrModal({ data, onClose }: { data: { name: string; qr: string | null };
   const [attempts, setAttempts] = useState(0);
   const [lastPollAt, setLastPollAt] = useState<Date | null>(null);
   const [stopped, setStopped] = useState(false);
+  const onCloseRef = useRef(onClose);
+
+  useEffect(() => {
+    onCloseRef.current = onClose;
+  }, [onClose]);
 
   useEffect(() => {
     let cancelled = false;
@@ -444,7 +449,7 @@ function QrModal({ data, onClose }: { data: { name: string; qr: string | null };
           if (first?.connected) {
             setStatus('connected');
             setQr(null);
-            setTimeout(() => { if (!cancelled) onClose(); }, 1500);
+            setTimeout(() => { if (!cancelled) onCloseRef.current(); }, 1500);
             return;
           }
           if (first?.qr) setQr(first.qr);
@@ -463,7 +468,7 @@ function QrModal({ data, onClose }: { data: { name: string; qr: string | null };
           if (res?.status === 'connected') {
             setStatus('connected');
             setQr(null);
-            setTimeout(() => { if (!cancelled) onClose(); }, 1500);
+            setTimeout(() => { if (!cancelled) onCloseRef.current(); }, 1500);
             return;
           }
           setStatus(res?.status === 'disconnected' ? 'disconnected' : 'connecting');
@@ -478,7 +483,7 @@ function QrModal({ data, onClose }: { data: { name: string; qr: string | null };
     }
     poll();
     return () => { cancelled = true; };
-  }, [data.name]);
+  }, [data.name, data.qr]);
 
   const src = qr
     ? (qr.startsWith('data:') ? qr : `data:image/png;base64,${qr.replace(/^data:image\/[^;]+;base64,/, '')}`)
