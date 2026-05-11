@@ -211,9 +211,17 @@ export default function LandingChatBubble() {
                 className={`flex items-end gap-2 ${m.role === "user" ? "flex-row-reverse" : "flex-row"}`}
               >
                 {m.role === "user" ? (
-                  <div className="w-6 h-6 rounded-full bg-white/10 border border-white/20 flex items-center justify-center shrink-0 mb-1">
-                    <User className="w-3.5 h-3.5 text-white/50" />
-                  </div>
+                  lead?.avatar_url ? (
+                    <img
+                      src={lead.avatar_url}
+                      alt="Sua foto"
+                      className="w-6 h-6 rounded-full object-cover border border-white/20 shrink-0 mb-1"
+                    />
+                  ) : (
+                    <div className="w-6 h-6 rounded-full bg-white/10 border border-white/20 flex items-center justify-center shrink-0 mb-1">
+                      <User className="w-3.5 h-3.5 text-white/50" />
+                    </div>
+                  )
                 ) : (
                   <img
                     src={attendantImg}
