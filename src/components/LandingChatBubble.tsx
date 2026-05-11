@@ -208,7 +208,7 @@ export default function LandingChatBubble() {
                       <div className="flex flex-col gap-0.5">
                         <label className="text-[9px] text-white/40 uppercase font-semibold">Veículo</label>
                         {isEditing ? (
-                          <div className="grid grid-cols-2 gap-2">
+                          <div className="grid grid-cols-3 gap-2">
                             <input 
                               placeholder="Marca"
                               className="w-full bg-white/5 border border-white/10 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-[#0066CC]"
@@ -220,6 +220,13 @@ export default function LandingChatBubble() {
                               className="w-full bg-white/5 border border-white/10 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-[#0066CC]"
                               value={lead.vehicle_model || ''} 
                               onChange={e => setLead({...lead, vehicle_model: e.target.value})} 
+                            />
+                            <input 
+                              placeholder="Ano"
+                              type="number"
+                              className="w-full bg-white/5 border border-white/10 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-[#0066CC]"
+                              value={lead.vehicle_year || ''} 
+                              onChange={e => setLead({...lead, vehicle_year: parseInt(e.target.value) || null})} 
                             />
                           </div>
                         ) : (
