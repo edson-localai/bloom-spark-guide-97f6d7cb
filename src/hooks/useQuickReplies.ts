@@ -8,6 +8,11 @@ export function useQuickReplies() {
 
   useEffect(() => {
     fetchReplies();
+    const ch = supabase
+      .channel('public:quick_replies')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'quick_replies' }, () => fetchReplies())
+      .subscribe();
+    return () => { supabase.removeChannel(ch); };
   }, []);
 
   async function fetchReplies() {
@@ -27,20 +32,27 @@ export function useQuickReplies() {
   }
 
   async function createReply(title: string, content: string, shortcut: string) {
-    try {
-      const { data, error } = await supabase
-        .from('quick_replies')
-        .insert({ title, content, shortcut })
-        .select()
-        .single();
-      if (error) throw error;
-      setReplies(prev => [...prev, data as QuickReply]);
-      return data;
-    } catch (err) {
-      console.error('Error creating quick reply:', err);
-      throw err;
-    }
+    const { data, error } = await supabase
+      .from('quick_replies')
+      .insert({ title, content, shortcut })
+      .select()
+      .single();
+    if (error) throw error;
+    setReplies(prev => [...prev, data as QuickReply]);
+    return data;
   }
 
-  return { replies, loading, fetchReplies, createReply };
+  async function updateReply(id: string, updates: Partial<QuickReply>) {
+    const { error } = await supabase.from('quick_replies').update(updates).eq('id', id);
+    if (error) throw error;
+    setReplies(prev => prev.map(r => r.id === id ? { ...r, ...updates } as QuickReply : r));
+  }
+
+  async function deleteReply(id: string) {
+    const { error } = await supabase.from('quick_replies').delete().eq('id', id);
+    if (error) throw error;
+    setReplies(prev => prev.filter(r => r.id !== id));
+  }
+
+  return { replies, loading, fetchReplies, createReply, updateReply, deleteReply };
 }
