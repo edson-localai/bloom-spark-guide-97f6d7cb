@@ -28,8 +28,10 @@ export default function LandingChatBubble() {
   const [isEditing, setIsEditing] = useState(false);
   const [validationError, setValidationError] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const chat = useServerFn(landingChat);
   const saveLead = useServerFn(saveLandingLead);
+  const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
