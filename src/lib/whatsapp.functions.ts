@@ -150,14 +150,14 @@ export const syncWhatsAppInstance = createServerFn({ method: 'POST' })
       const inst = await getInstance(data.name);
       if (inst.provider === 'wapi') {
         const { supabaseAdmin } = await import('@/integrations/supabase/client.server');
-        const { wapiGetQr } = await import('./wapi.server');
-        const { qr, connected } = await wapiGetQr(wapiCredsFrom(inst));
-        const status = connected ? 'connected' : (qr ? 'connecting' : 'disconnected');
+        const { wapiIsConnected } = await import('./wapi.server');
+        const connected = await wapiIsConnected(wapiCredsFrom(inst));
+        const status = connected ? 'connected' : (inst.qr_code ? 'connecting' : 'disconnected');
         await supabaseAdmin
           .from('whatsapp_instances')
           .update({
             status,
-            qr_code: connected ? null : qr,
+            qr_code: connected ? null : inst.qr_code,
             updated_at: new Date().toISOString(),
             last_seen: new Date().toISOString(),
           })

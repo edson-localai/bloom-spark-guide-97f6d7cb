@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useWhatsApp } from '@/hooks/useWhatsApp';
 import {
   Smartphone, RefreshCw, Plus, CheckCircle2, XCircle, Loader2, QrCode,
@@ -432,30 +432,46 @@ function QrModal({ data, onClose }: { data: { name: string; qr: string | null };
   const [attempts, setAttempts] = useState(0);
   const [lastPollAt, setLastPollAt] = useState<Date | null>(null);
   const [stopped, setStopped] = useState(false);
+  const onCloseRef = useRef(onClose);
+
+  useEffect(() => {
+    onCloseRef.current = onClose;
+  }, [onClose]);
 
   useEffect(() => {
     let cancelled = false;
     let n = 0;
     async function poll() {
+      if (!data.qr && !cancelled) {
+        try {
+          const first: any = await getWhatsAppQrCode({ data: { name: data.name } });
+          if (cancelled) return;
+          if (first?.connected) {
+            setStatus('connected');
+            setQr(null);
+            setTimeout(() => { if (!cancelled) onCloseRef.current(); }, 1500);
+            return;
+          }
+          if (first?.qr) setQr(first.qr);
+        } catch {
+          if (cancelled) return;
+          setStatus('disconnected');
+        }
+      }
       while (!cancelled && n < 40) {
         n++;
         setAttempts(n);
         try {
-          const res: any = await getWhatsAppQrCode({ data: { name: data.name } });
+          const res: any = await syncWhatsAppInstance({ data: { name: data.name } });
           if (cancelled) return;
           setLastPollAt(new Date());
-          if (res?.connected) {
+          if (res?.status === 'connected') {
             setStatus('connected');
             setQr(null);
-            setTimeout(() => { if (!cancelled) onClose(); }, 1500);
+            setTimeout(() => { if (!cancelled) onCloseRef.current(); }, 1500);
             return;
           }
-          if (res?.qr) {
-            setQr(res.qr);
-            setStatus('connecting');
-          } else {
-            setStatus('connecting');
-          }
+          setStatus(res?.status === 'disconnected' ? 'disconnected' : 'connecting');
         } catch {
           if (cancelled) return;
           setLastPollAt(new Date());
@@ -467,7 +483,7 @@ function QrModal({ data, onClose }: { data: { name: string; qr: string | null };
     }
     poll();
     return () => { cancelled = true; };
-  }, [data.name]);
+  }, [data.name, data.qr]);
 
   const src = qr
     ? (qr.startsWith('data:') ? qr : `data:image/png;base64,${qr.replace(/^data:image\/[^;]+;base64,/, '')}`)
