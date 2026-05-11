@@ -85,3 +85,22 @@ export function normalizeWapiStatus(raw: any): 'connected' | 'disconnected' | 'c
   if (s === 'connecting' || s === 'qr' || s === 'qrcode' || s === 'pairing') return 'connecting';
   return 'disconnected';
 }
+
+// Register all webhook event URLs on the W-API instance.
+// W-API does NOT push events until each event-type webhook URL is set per event.
+export async function wapiSetWebhooks(creds: WapiCreds, url: string): Promise<void> {
+  const endpoints = [
+    'update-webhook-received',
+    'update-webhook-connected',
+    'update-webhook-disconnected',
+    'update-webhook-delivery',
+    'update-webhook-message-status',
+  ];
+  await Promise.all(
+    endpoints.map((ep) =>
+      wapiFetch(`/v1/webhook/${ep}`, { method: 'PUT', body: JSON.stringify({ value: url }) }, creds)
+        .catch((e) => console.warn(`[wapiSetWebhooks] ${ep} failed:`, e?.message)),
+    ),
+  );
+}
+
