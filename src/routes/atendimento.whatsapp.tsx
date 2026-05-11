@@ -441,21 +441,16 @@ function QrModal({ data, onClose }: { data: { name: string; qr: string | null };
         n++;
         setAttempts(n);
         try {
-          const res: any = await getWhatsAppQrCode({ data: { name: data.name } });
+          const res: any = await syncWhatsAppInstance({ data: { name: data.name } });
           if (cancelled) return;
           setLastPollAt(new Date());
-          if (res?.connected) {
+          if (res?.status === 'connected') {
             setStatus('connected');
             setQr(null);
             setTimeout(() => { if (!cancelled) onClose(); }, 1500);
             return;
           }
-          if (res?.qr) {
-            setQr(res.qr);
-            setStatus('connecting');
-          } else {
-            setStatus('connecting');
-          }
+          setStatus(res?.status === 'disconnected' ? 'disconnected' : 'connecting');
         } catch {
           if (cancelled) return;
           setLastPollAt(new Date());
