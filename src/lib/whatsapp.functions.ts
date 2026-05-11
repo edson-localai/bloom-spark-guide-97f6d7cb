@@ -152,8 +152,8 @@ export const deleteWhatsAppInstance = createServerFn({ method: 'POST' })
     // Exclusão definitiva via RPC SECURITY DEFINER (verifica papel admin/supervisor,
     // limpa vínculos em conversations e remove a instância em uma única transação).
     const { data: result, error } = await sb.rpc('delete_whatsapp_instance', {
-      _instance_id: data.id ?? null,
-      _instance_name: data.name ?? null,
+      _instance_id: data.id ?? undefined,
+      _instance_name: data.name ?? undefined,
     });
 
     if (error) {
