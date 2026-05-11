@@ -34,6 +34,11 @@ export async function wapiFetch(
     throw e;
   }
   clearTimeout(t);
+  const contentType = res.headers.get('content-type') || '';
+  if (res.ok && contentType.startsWith('image/')) {
+    const bytes = await res.arrayBuffer();
+    return `data:${contentType.split(';')[0]};base64,${Buffer.from(bytes).toString('base64')}`;
+  }
   const text = await res.text();
   let body: any = null;
   try { body = text ? JSON.parse(text) : null; } catch { body = text; }
@@ -44,12 +49,12 @@ export async function wapiFetch(
   return body;
 }
 
-// QR code (image=enable returns base64 PNG; disable returns code text)
+// QR code: W-API documents image=disable for base64 and image=enable for raw PNG.
 export async function wapiGetQr(creds: WapiCreds): Promise<{ qr: string | null; connected: boolean }> {
   try {
-    const r = await wapiFetch(`/v1/instance/qr-code?image=enable`, { method: 'GET' }, creds);
+    const r = await wapiFetch(`/v1/instance/qr-code?image=disable`, { method: 'GET' }, creds);
     // Common shapes: { qrcode: 'data:image/png;base64,...' }, { qrCode: '...' }, { base64: '...' } or { connected: true }
-    const qr = r?.qrcode || r?.qrCode || r?.qr || r?.base64 || r?.image || r?.value || null;
+    const qr = typeof r === 'string' ? r : (r?.qrcode || r?.qrCode || r?.qr || r?.base64 || r?.image || r?.value || null);
     const connected = !!(r?.connected || r?.status === 'connected');
     return { qr, connected };
   } catch (e: any) {
