@@ -13,6 +13,7 @@ import { toast } from 'sonner';
 interface ContactSidebarProps {
   contact: Contact | null;
   conversationId?: string | null;
+  variant?: 'desktop' | 'mobile';
 }
 
 const STAGE_COLORS: Record<LeadStage, string> = {
@@ -23,7 +24,7 @@ const STAGE_COLORS: Record<LeadStage, string> = {
   perdido: 'bg-red-500/10 text-red-400 border-red-500/20',
 };
 
-export function ContactSidebar({ contact, conversationId }: ContactSidebarProps) {
+export function ContactSidebar({ contact, conversationId, variant = 'desktop' }: ContactSidebarProps) {
   const [editing, setEditing] = useState(false);
   const [local, setLocal] = useState<Contact | null>(contact);
   const [newTag, setNewTag] = useState('');
@@ -57,7 +58,7 @@ export function ContactSidebar({ contact, conversationId }: ContactSidebarProps)
 
   return (
     <>
-      <div className="w-80 shrink-0 h-full flex flex-col overflow-y-auto custom-scrollbar" style={{ background: '#0F1117', borderLeft: '1px solid #1F232E' }}>
+      <div className={`${variant === 'mobile' ? 'w-full' : 'w-80 shrink-0'} h-full flex flex-col overflow-y-auto custom-scrollbar`} style={{ background: '#0F1117', borderLeft: variant === 'mobile' ? 'none' : '1px solid #1F232E' }}>
         {/* Profile */}
         <div className="p-6 text-center border-b border-[#1F232E] relative">
           <button onClick={() => setEditing(true)} className="absolute top-3 right-3 p-1.5 text-zinc-500 hover:text-cyan-400 transition-colors" title="Editar contato">

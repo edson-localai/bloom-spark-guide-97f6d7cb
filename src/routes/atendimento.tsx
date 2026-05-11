@@ -1,9 +1,10 @@
 import { createFileRoute, Outlet, useNavigate, Link, useLocation, redirect } from '@tanstack/react-router';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useCrmAuth } from '@/hooks/useCrmAuth';
 import { useNotifications } from '@/hooks/useNotifications';
 import { supabase } from '@/integrations/supabase/client';
 import { motion, AnimatePresence } from 'framer-motion';
+import { InstallAppPrompt } from '@/components/InstallAppPrompt';
 import {
   Inbox,
   KanbanSquare,
@@ -17,6 +18,8 @@ import {
   FileText,
   GraduationCap,
   ShieldCheck,
+  Menu,
+  X,
 } from 'lucide-react';
 
 export const Route = createFileRoute('/atendimento')({
@@ -56,12 +59,18 @@ export const Route = createFileRoute('/atendimento')({
 function AtendimentoLayout() {
   const { loading, isAuthenticated, hasAnyRole, user, roles } = useCrmAuth();
   const navigate = useNavigate();
-  
+  const location = useLocation();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
   useNotifications(isAuthenticated && hasAnyRole);
 
   useEffect(() => {
     if (!loading && !isAuthenticated) navigate({ to: '/login' });
   }, [loading, isAuthenticated, navigate]);
+
+  useEffect(() => {
+    setMobileMenuOpen(false);
+  }, [location.pathname]);
 
   if (loading) {
     return (
@@ -94,9 +103,66 @@ function AtendimentoLayout() {
   }
 
   return (
-    <div className="min-h-screen flex" style={{ background: '#0A0A0F', color: '#F4F4F5' }}>
+    <div
+      className="h-[100dvh] flex flex-col md:flex-row overflow-hidden"
+      style={{ background: '#0A0A0F', color: '#F4F4F5' }}
+    >
+      {/* Mobile Top Bar */}
+      <div
+        className="md:hidden h-14 px-4 flex items-center justify-between border-b shrink-0"
+        style={{ background: '#0F1117', borderColor: '#1F232E' }}
+      >
+        <div className="flex items-center gap-2">
+          <div className="h-8 w-8 rounded-lg flex items-center justify-center" style={{ background: 'rgba(0,204,238,0.15)', color: '#00CCEE' }}>
+            <MessageSquare className="h-4 w-4" />
+          </div>
+          <p className="text-sm font-semibold text-white">HCB CRM</p>
+        </div>
+        <button
+          onClick={() => setMobileMenuOpen(true)}
+          className="p-2 text-zinc-400 hover:text-white"
+          aria-label="Menu"
+        >
+          <Menu className="h-5 w-5" />
+        </button>
+      </div>
+
+      {/* Desktop / Tablet Sidebar */}
       <Sidebar email={user?.email ?? ''} role={roles[0]} />
-      <main className="flex-1 min-w-0 overflow-hidden relative">
+
+      {/* Mobile Drawer */}
+      <AnimatePresence>
+        {mobileMenuOpen && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setMobileMenuOpen(false)}
+              className="md:hidden fixed inset-0 bg-black/60 z-40"
+            />
+            <motion.div
+              initial={{ x: '-100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '-100%' }}
+              transition={{ type: 'tween', duration: 0.2 }}
+              className="md:hidden fixed top-0 left-0 bottom-0 w-72 z-50 flex flex-col"
+              style={{ background: '#0F1117', borderRight: '1px solid #1F232E' }}
+            >
+              <div className="flex items-center justify-between px-5 py-4 border-b" style={{ borderColor: '#1F232E' }}>
+                <p className="text-sm font-semibold text-white">Menu</p>
+                <button onClick={() => setMobileMenuOpen(false)} className="p-1 text-zinc-400">
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+              <SidebarLinks role={roles[0]} />
+              <SidebarFooter email={user?.email ?? ''} role={roles[0]} />
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+
+      <main className="flex-1 min-w-0 overflow-hidden relative pb-16 md:pb-0">
         <AnimatePresence mode="wait">
           <motion.div
             key={location.pathname}
@@ -110,31 +176,114 @@ function AtendimentoLayout() {
           </motion.div>
         </AnimatePresence>
       </main>
+
+      {/* Mobile Bottom Nav */}
+      <MobileBottomNav role={roles[0]} />
+
+      <InstallAppPrompt />
+    </div>
+  );
+}
+
+function getNavItems(role?: string) {
+  const all: { to: string; icon: typeof Inbox; label: string; exact?: boolean; roles?: string[] }[] = [
+    { to: '/atendimento', icon: Inbox, label: 'Inbox', exact: true },
+    { to: '/atendimento/kanban', icon: KanbanSquare, label: 'Kanban' },
+    { to: '/atendimento/contatos', icon: Users, label: 'Contatos' },
+    { to: '/atendimento/propostas', icon: FileText, label: 'Propostas' },
+    { to: '/atendimento/respostas', icon: MessageSquare, label: 'Respostas' },
+    { to: '/atendimento/whatsapp', icon: Smartphone, label: 'WhatsApp', roles: ['admin', 'supervisor'] },
+    { to: '/atendimento/dashboard', icon: BarChart3, label: 'Dashboard', roles: ['admin', 'supervisor'] },
+    { to: '/atendimento/treinamento', icon: GraduationCap, label: 'Treinamento' },
+    { to: '/atendimento/usuarios', icon: ShieldCheck, label: 'Usuários', roles: ['admin'] },
+    { to: '/atendimento/config', icon: Settings, label: 'Config', roles: ['admin'] },
+  ];
+  return all.filter(item => !item.roles || (role && item.roles.includes(role)));
+}
+
+function MobileBottomNav({ role }: { role?: string }) {
+  const location = useLocation();
+  const items = getNavItems(role).slice(0, 5);
+
+  return (
+    <nav
+      className="md:hidden fixed bottom-0 left-0 right-0 h-16 grid grid-cols-5 z-30 pb-[env(safe-area-inset-bottom)]"
+      style={{ background: '#0F1117', borderTop: '1px solid #1F232E' }}
+    >
+      {items.map(item => {
+        const Icon = item.icon;
+        const active = item.exact ? location.pathname === item.to : location.pathname.startsWith(item.to);
+        return (
+          <Link
+            key={item.to}
+            to={item.to}
+            className="flex flex-col items-center justify-center gap-0.5 transition-colors"
+            style={{ color: active ? '#00CCEE' : '#71717A' }}
+          >
+            <Icon className="h-5 w-5" />
+            <span className="text-[10px] font-medium">{item.label}</span>
+          </Link>
+        );
+      })}
+    </nav>
+  );
+}
+
+function SidebarLinks({ role }: { role?: string }) {
+  const location = useLocation();
+  const items = getNavItems(role);
+
+  return (
+    <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
+      {items.map(item => {
+        const Icon = item.icon;
+        const active = item.exact
+          ? location.pathname === item.to
+          : location.pathname.startsWith(item.to);
+        const style = {
+          background: active ? 'rgba(0,204,238,0.1)' : 'transparent',
+          color: active ? '#00CCEE' : '#A1A1AA',
+          fontWeight: active ? 600 : 500,
+        } as const;
+        return (
+          <Link
+            key={item.to}
+            to={item.to}
+            className="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm transition-colors"
+            style={style}
+          >
+            <Icon className="h-4 w-4" />
+            <span className="flex-1">{item.label}</span>
+          </Link>
+        );
+      })}
+    </nav>
+  );
+}
+
+function SidebarFooter({ email, role }: { email: string; role?: string }) {
+  return (
+    <div className="px-3 py-3 border-t" style={{ borderColor: '#1F232E' }}>
+      <div className="px-3 py-2 mb-2">
+        <p className="text-xs text-zinc-300 truncate">{email}</p>
+        {role && <p className="text-[10px] uppercase tracking-wider text-cyan-400 mt-0.5">{role}</p>}
+      </div>
+      <button
+        onClick={() => supabase.auth.signOut()}
+        className="w-full flex items-center gap-3 px-3 py-2 rounded-md text-sm text-zinc-400 hover:text-white transition-colors"
+        style={{ background: '#151821' }}
+      >
+        <LogOut className="h-4 w-4" />
+        Sair
+      </button>
     </div>
   );
 }
 
 function Sidebar({ email, role }: { email: string; role?: string }) {
-  const location = useLocation();
-
-  const allItems: { to: string; icon: typeof Inbox; label: string; exact?: boolean; ready?: boolean; roles?: string[] }[] = [
-    { to: '/atendimento', icon: Inbox, label: 'Inbox', exact: true, ready: true },
-    { to: '/atendimento/kanban', icon: KanbanSquare, label: 'Kanban', ready: true },
-    { to: '/atendimento/contatos', icon: Users, label: 'Contatos', ready: true },
-    { to: '/atendimento/propostas', icon: FileText, label: 'Propostas', ready: true },
-    { to: '/atendimento/respostas', icon: MessageSquare, label: 'Respostas', ready: true },
-    { to: '/atendimento/whatsapp', icon: Smartphone, label: 'WhatsApp', ready: true, roles: ['admin', 'supervisor'] },
-    { to: '/atendimento/dashboard', icon: BarChart3, label: 'Dashboard', ready: true, roles: ['admin', 'supervisor'] },
-    { to: '/atendimento/treinamento', icon: GraduationCap, label: 'Treinamento', ready: true },
-    { to: '/atendimento/usuarios', icon: ShieldCheck, label: 'Usuários', ready: true, roles: ['admin'] },
-    { to: '/atendimento/config', icon: Settings, label: 'Configurações', ready: true, roles: ['admin'] },
-  ];
-
-  const items = allItems.filter(item => !item.roles || (role && item.roles.includes(role)));
-
   return (
     <aside
-      className="w-60 shrink-0 flex flex-col"
+      className="hidden md:flex w-60 shrink-0 flex-col"
       style={{ background: '#0F1117', borderRight: '1px solid #1F232E' }}
     >
       <div className="px-5 py-5 flex items-center gap-3 border-b" style={{ borderColor: '#1F232E' }}>
@@ -150,53 +299,8 @@ function Sidebar({ email, role }: { email: string; role?: string }) {
         </div>
       </div>
 
-      <nav className="flex-1 px-3 py-4 space-y-1">
-        {items.map((item) => {
-          const Icon = item.icon;
-          const active = item.exact
-            ? location.pathname === item.to
-            : location.pathname.startsWith(item.to);
-          const style = {
-            background: active ? 'rgba(0,204,238,0.1)' : 'transparent',
-            color: active ? '#00CCEE' : item.ready ? '#A1A1AA' : '#52525B',
-            fontWeight: active ? 600 : 500,
-          } as const;
-          const className = 'flex items-center gap-3 px-3 py-2 rounded-md text-sm transition-colors';
-          const inner = (
-            <>
-              <Icon className="h-4 w-4" />
-              <span className="flex-1">{item.label}</span>
-              {!item.ready && (
-                <span className="text-[9px] uppercase tracking-wider opacity-60">em breve</span>
-              )}
-            </>
-          );
-          return item.ready ? (
-            <Link key={item.to} to={item.to} className={className} style={style}>
-              {inner}
-            </Link>
-          ) : (
-            <span key={item.to} className={className + ' cursor-not-allowed'} style={style}>
-              {inner}
-            </span>
-          );
-        })}
-      </nav>
-
-      <div className="px-3 py-3 border-t" style={{ borderColor: '#1F232E' }}>
-        <div className="px-3 py-2 mb-2">
-          <p className="text-xs text-zinc-300 truncate">{email}</p>
-          {role && <p className="text-[10px] uppercase tracking-wider text-cyan-400 mt-0.5">{role}</p>}
-        </div>
-        <button
-          onClick={() => supabase.auth.signOut()}
-          className="w-full flex items-center gap-3 px-3 py-2 rounded-md text-sm text-zinc-400 hover:text-white transition-colors"
-          style={{ background: '#151821' }}
-        >
-          <LogOut className="h-4 w-4" />
-          Sair
-        </button>
-      </div>
+      <SidebarLinks role={role} />
+      <SidebarFooter email={email} role={role} />
     </aside>
   );
 }
