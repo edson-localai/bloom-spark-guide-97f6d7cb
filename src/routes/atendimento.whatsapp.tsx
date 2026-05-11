@@ -437,6 +437,22 @@ function QrModal({ data, onClose }: { data: { name: string; qr: string | null };
     let cancelled = false;
     let n = 0;
     async function poll() {
+      if (!data.qr && !cancelled) {
+        try {
+          const first: any = await getWhatsAppQrCode({ data: { name: data.name } });
+          if (cancelled) return;
+          if (first?.connected) {
+            setStatus('connected');
+            setQr(null);
+            setTimeout(() => { if (!cancelled) onClose(); }, 1500);
+            return;
+          }
+          if (first?.qr) setQr(first.qr);
+        } catch {
+          if (cancelled) return;
+          setStatus('disconnected');
+        }
+      }
       while (!cancelled && n < 40) {
         n++;
         setAttempts(n);
