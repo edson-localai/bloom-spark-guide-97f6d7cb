@@ -59,3 +59,69 @@ export function normalizeStatus(raw: string | undefined | null): 'connected' | '
 export function jidToPhone(jid: string): string {
   return (jid || '').split('@')[0].split(':')[0];
 }
+
+/**
+ * Procura por uma referência de lead (ex: [Ref: web-123]) no conteúdo da mensagem.
+ * Se encontrar, vincula o contato placeholder ao contato real do WhatsApp.
+ */
+export async function linkLeadToContact(content: string, realPhone: string): Promise<string | null> {
+  const refMatch = content.match(/\[Ref: (web-[a-zA-Z0-9-]+)\]/);
+  if (!refMatch) return null;
+
+  const leadId = refMatch[1];
+  console.log(`[linkLeadToContact] Found lead reference: ${leadId} for phone ${realPhone}`);
+
+  try {
+    // 1. Busca o contato do lead (placeholder)
+    const { data: leadContact } = await supabaseAdmin
+      .from('contacts')
+      .select('*')
+      .eq('phone', leadId)
+      .maybeSingle();
+
+    if (!leadContact) {
+      console.warn(`[linkLeadToContact] Lead contact not found for ID: ${leadId}`);
+      return null;
+    }
+
+    // 2. Busca se já existe um contato real com esse telefone
+    const { data: realContact } = await supabaseAdmin
+      .from('contacts')
+      .select('*')
+      .eq('phone', realPhone)
+      .maybeSingle();
+
+    if (realContact) {
+      // Se o contato real já existe, mesclamos as informações do lead nele
+      const updates: any = {};
+      if (!realContact.vehicle_brand) updates.vehicle_brand = leadContact.vehicle_brand;
+      if (!realContact.vehicle_model) updates.vehicle_model = leadContact.vehicle_model;
+      if (!realContact.vehicle_year) updates.vehicle_year = leadContact.vehicle_year;
+      if (!realContact.city) updates.city = leadContact.city;
+      if (!realContact.notes && leadContact.notes) updates.notes = leadContact.notes;
+      if (!realContact.source) updates.source = leadContact.source;
+      
+      if (Object.keys(updates).length > 0) {
+        await supabaseAdmin.from('contacts').update(updates).eq('id', realContact.id);
+      }
+
+      // Removemos o contato placeholder para não poluir a base
+      await supabaseAdmin.from('contacts').delete().eq('id', leadContact.id);
+      
+      return realContact.id;
+    } else {
+      // Se não existe o contato real, transformamos o contato do lead no real
+      const { data: updated } = await supabaseAdmin
+        .from('contacts')
+        .update({ phone: realPhone })
+        .eq('id', leadContact.id)
+        .select('id')
+        .single();
+      
+      return updated?.id || leadContact.id;
+    }
+  } catch (err) {
+    console.error('[linkLeadToContact] Error linking lead:', err);
+    return null;
+  }
+}
