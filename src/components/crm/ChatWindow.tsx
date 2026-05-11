@@ -283,7 +283,7 @@ export function ChatWindow({ conversation }: ChatWindowProps) {
   return (
     <div className="h-full flex flex-col" style={{ background: '#0A0A0F' }}>
       {/* Header */}
-      <div className="h-16 px-6 flex items-center justify-between border-b border-[#1F232E]" style={{ background: '#0F1117' }}>
+      <div className="h-14 sm:h-16 px-3 sm:px-6 flex items-center justify-between border-b border-[#1F232E] gap-2" style={{ background: '#0F1117' }}>
         <div className="flex items-center gap-3">
           <div className="h-9 w-9 rounded-full bg-[#1F232E] flex items-center justify-center border border-cyan-500/20">
             <User className="h-5 w-5 text-cyan-500" />
@@ -307,8 +307,8 @@ export function ChatWindow({ conversation }: ChatWindowProps) {
             </div>
           </div>
         </div>
-        <div className="flex items-center gap-2">
-          <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[#151821] border border-[#1F232E] mr-2">
+        <div className="flex items-center gap-1 sm:gap-2 shrink-0">
+          <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[#151821] border border-[#1F232E] mr-2">
             <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">IA Auto</span>
             <button
               onClick={async () => {
@@ -407,7 +407,7 @@ export function ChatWindow({ conversation }: ChatWindowProps) {
       </AnimatePresence>
 
       {/* Messages Area */}
-      <div className="flex-1 overflow-y-auto p-6 space-y-4 custom-scrollbar" ref={scrollRef}>
+      <div className="flex-1 overflow-y-auto p-3 sm:p-6 space-y-4 custom-scrollbar" ref={scrollRef}>
         {loading ? (
           <div className="flex justify-center py-4">
             <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-cyan-500"></div>
@@ -429,7 +429,7 @@ export function ChatWindow({ conversation }: ChatWindowProps) {
 
             return (
               <div key={msg.id} className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}>
-                <div className={`max-w-[70%] space-y-1`}>
+                <div className={`max-w-[85%] sm:max-w-[70%] space-y-1`}>
                   {msg.is_internal && (
                     <div className="flex items-center gap-1.5 px-2 py-0.5 rounded bg-amber-500/10 border border-amber-500/20 text-[9px] font-bold text-amber-500 uppercase tracking-widest w-fit ml-auto mb-1">
                       <StickyNote className="h-2.5 w-2.5" />
@@ -468,7 +468,7 @@ export function ChatWindow({ conversation }: ChatWindowProps) {
       </div>
 
       {/* Input Area */}
-      <div className="p-4 border-t border-[#1F232E]" style={{ background: '#0F1117' }}>
+      <div className="p-3 sm:p-4 border-t border-[#1F232E]" style={{ background: '#0F1117' }}>
         <form onSubmit={handleSend} className="flex flex-col gap-3">
           <div className="flex flex-col gap-2">
             <div className="flex items-center gap-2 mb-1">
