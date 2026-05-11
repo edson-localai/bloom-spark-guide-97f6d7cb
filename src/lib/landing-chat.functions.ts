@@ -105,6 +105,7 @@ export type LeadData = {
   need: string | null;
   city: string | null;
   chat_transcript?: string | null;
+  avatar_url?: string | null;
 };
 
 const leadSchema = z.object({
@@ -115,6 +116,7 @@ const leadSchema = z.object({
   need: z.string().trim().max(500).nullable(),
   city: z.string().trim().max(80).nullable(),
   chat_transcript: z.string().nullable().optional(),
+  avatar_url: z.string().nullable().optional(),
 });
 
 export const saveLandingLead = createServerFn({ method: "POST" })
@@ -165,6 +167,7 @@ export const saveLandingLead = createServerFn({ method: "POST" })
         notes: data.chat_transcript || (data.need ? `Necessidade: ${data.need}` : null),
         source: 'landing_chat',
         stage: 'novo',
+        avatar_url: data.avatar_url,
       })
       .select('id')
       .single();

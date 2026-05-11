@@ -1,7 +1,8 @@
 import { useState, useRef, useEffect, useMemo } from "react";
-import { MessageCircle, X, Send, Loader2, CheckCircle2, AlertCircle, ArrowRight, Pencil, Save, User } from "lucide-react";
+import { MessageCircle, X, Send, Loader2, CheckCircle2, AlertCircle, ArrowRight, Pencil, Save, User, Camera, Upload } from "lucide-react";
 import { useServerFn } from "@tanstack/react-start";
 import { landingChat, saveLandingLead, type LeadData } from "@/lib/landing-chat.functions";
+import { supabase } from "@/integrations/supabase/client";
 import attendantImg from "@/assets/attendant.jpg";
 
 const WHATSAPP_NUMBER = "5591985161991";
@@ -27,8 +28,10 @@ export default function LandingChatBubble() {
   const [isEditing, setIsEditing] = useState(false);
   const [validationError, setValidationError] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const chat = useServerFn(landingChat);
   const saveLead = useServerFn(saveLandingLead);
+  const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
@@ -103,6 +106,34 @@ export default function LandingChatBubble() {
       setSaveError(true);
     } finally {
       setSavingLead(false);
+    }
+  };
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !lead) return;
+
+    setUploading(true);
+    try {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${Math.random().toString(36).slice(2, 10)}.${fileExt}`;
+      const filePath = `leads/${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('avatars')
+        .upload(filePath, file);
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('avatars')
+        .getPublicUrl(filePath);
+
+      setLead({ ...lead, avatar_url: publicUrl });
+    } catch (err) {
+      console.error('Error uploading avatar:', err);
+      setValidationError("Erro ao carregar a foto. Tente novamente.");
+    } finally {
+      setUploading(false);
     }
   };
 
@@ -180,9 +211,17 @@ export default function LandingChatBubble() {
                 className={`flex items-end gap-2 ${m.role === "user" ? "flex-row-reverse" : "flex-row"}`}
               >
                 {m.role === "user" ? (
-                  <div className="w-6 h-6 rounded-full bg-white/10 border border-white/20 flex items-center justify-center shrink-0 mb-1">
-                    <User className="w-3.5 h-3.5 text-white/50" />
-                  </div>
+                  lead?.avatar_url ? (
+                    <img
+                      src={lead.avatar_url}
+                      alt="Sua foto"
+                      className="w-6 h-6 rounded-full object-cover border border-white/20 shrink-0 mb-1"
+                    />
+                  ) : (
+                    <div className="w-6 h-6 rounded-full bg-white/10 border border-white/20 flex items-center justify-center shrink-0 mb-1">
+                      <User className="w-3.5 h-3.5 text-white/50" />
+                    </div>
+                  )
                 ) : (
                   <img
                     src={attendantImg}
@@ -226,6 +265,36 @@ export default function LandingChatBubble() {
                     </div>
                     
                     <div className="space-y-2 max-h-[180px] overflow-y-auto pr-1 custom-scrollbar">
+                      <div className="flex items-center gap-3 py-2 border-b border-white/5">
+                        <div className="relative group">
+                          {lead.avatar_url ? (
+                            <img src={lead.avatar_url} alt="Sua foto" className="w-10 h-10 rounded-full object-cover border border-white/20" />
+                          ) : (
+                            <div className="w-10 h-10 rounded-full bg-white/10 border border-white/20 flex items-center justify-center">
+                              <User className="w-5 h-5 text-white/30" />
+                            </div>
+                          )}
+                          <button 
+                            onClick={() => fileInputRef.current?.click()}
+                            disabled={uploading}
+                            className="absolute -bottom-1 -right-1 p-1 rounded-full bg-[#0066CC] text-white shadow-lg hover:bg-[#3385ff] transition-colors disabled:opacity-50"
+                          >
+                            {uploading ? <Loader2 className="w-3 h-3 animate-spin" /> : <Camera className="w-3 h-3" />}
+                          </button>
+                          <input 
+                            type="file" 
+                            ref={fileInputRef} 
+                            onChange={handleFileChange} 
+                            accept="image/*" 
+                            className="hidden" 
+                          />
+                        </div>
+                        <div className="flex-1">
+                          <p className="text-[10px] text-white font-medium">Sua foto de perfil</p>
+                          <p className="text-[9px] text-white/40 leading-tight">Será usada no chat se a do WhatsApp não carregar.</p>
+                        </div>
+                      </div>
+
                       <div className="flex flex-col gap-0.5">
                         <label className="text-[9px] text-white/40 uppercase font-semibold">Nome</label>
                         {isEditing ? (
