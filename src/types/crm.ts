@@ -31,10 +31,24 @@ export interface WhatsAppInstance {
   instance_key?: string | null;
 }
 
+export type LeadStage = 'novo' | 'qualificado' | 'proposta' | 'fechado' | 'perdido';
+
 export interface Contact {
   id: string;
   phone: string;
   name: string | null;
+  email: string | null;
+  cpf: string | null;
+  birthdate: string | null;
+  cep: string | null;
+  street: string | null;
+  street_number: string | null;
+  complement: string | null;
+  district: string | null;
+  city: string | null;
+  state: string | null;
+  source: string | null;
+  stage: LeadStage | null;
   vehicle_brand: string | null;
   vehicle_model: string | null;
   vehicle_year: number | null;

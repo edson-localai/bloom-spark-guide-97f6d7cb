@@ -314,7 +314,7 @@ export const Route = createFileRoute('/api/public/wapi/webhook')({
             status: 'delivered',
           });
 
-          // 4) atribuição automática (Chatwoot-style)
+          // 4) atribuição automática + saudação na 1ª mensagem (Chatwoot-style)
           if (needsAssignment) {
             try {
               const { assignConversation } = await import('@/lib/routing.server');
@@ -322,6 +322,41 @@ export const Route = createFileRoute('/api/public/wapi/webhook')({
             } catch (e) {
               console.error('assignConversation failed:', e);
             }
+          }
+
+          if (isNewConversation) {
+            try {
+              const { data: welcome } = await supabaseAdmin
+                .from('app_settings')
+                .select('value')
+                .eq('key', 'welcome_message')
+                .maybeSingle();
+              const text = (welcome?.value || '').trim();
+              if (text) {
+                await supabaseAdmin.from('messages').insert({
+                  conversation_id: conversationId,
+                  content: text,
+                  sender_type: 'bot',
+                  status: 'sent',
+                });
+                // Encaminha pelo WhatsApp via instância
+                try {
+                  if (inst?.provider === 'wapi') {
+                    const { wapiFetch } = await import('@/lib/wapi.server');
+                    const data = inst?.instance_data || {};
+                    const credentials = {
+                      instanceId: data?.wapi?.instance_id || inst.name,
+                      token: inst.instance_key,
+                    };
+                    const phoneTo = remoteJid.endsWith('@lid') || remoteJid.endsWith('@g.us') ? remoteJid : remoteJid.replace(/[^0-9]/g, '');
+                    await wapiFetch('/v1/message/send-text', {
+                      method: 'POST',
+                      body: JSON.stringify({ phone: phoneTo, message: text }),
+                    }, credentials as any);
+                  }
+                } catch (e) { console.warn('welcome wapi send failed:', (e as any)?.message); }
+              }
+            } catch (e) { console.error('welcome flow failed:', e); }
           }
 
           return Response.json({ ok: true, newConversation: isNewConversation });

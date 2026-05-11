@@ -1,9 +1,10 @@
-import { useState, useRef, useEffect } from 'react';
-import { Send, User, Bot, Paperclip, MoreVertical, ShieldCheck, Clock, Sparkles, Loader2, Smile, Zap, Hammer, StickyNote, MessageCircle, CalendarClock, Image as ImageIcon, File as FileIcon, X, UserPlus } from 'lucide-react';
+import { useState, useRef, useEffect, useMemo } from 'react';
+import { Send, User, Bot, Paperclip, MoreVertical, ShieldCheck, Clock, Sparkles, Loader2, Smile, Zap, Hammer, StickyNote, MessageCircle, CalendarClock, File as FileIcon, UserPlus, CheckCircle2, Archive, RotateCcw, Command } from 'lucide-react';
 import { Message, Conversation, Contact } from '@/types/crm';
 import { useMessages } from '@/hooks/useMessages';
 import { useAgents } from '@/hooks/useAgents';
 import { useWaitingQueue } from '@/hooks/useWaitingQueue';
+import { useQuickReplies } from '@/hooks/useQuickReplies';
 import { getAiSuggestions, AiSuggestions } from '@/services/aiService';
 import { extractContactData } from '@/lib/ai.functions';
 import { supabase } from '@/integrations/supabase/client';
@@ -78,8 +79,36 @@ export function ChatWindow({ conversation }: ChatWindowProps) {
   const { messages, loading, sendMessage } = useMessages(conversation?.id ?? null);
   const { agents, onlineAgents } = useAgents();
   const { addToQueue } = useWaitingQueue();
+  const { replies: quickReplies } = useQuickReplies();
   const scrollRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Quick-reply autocomplete: type "/" then shortcut to filter
+  const slashMatch = useMemo(() => {
+    const m = input.match(/^\/(\S*)$/);
+    return m ? m[1].toLowerCase() : null;
+  }, [input]);
+  const quickMatches = useMemo(() => {
+    if (slashMatch === null) return [];
+    return quickReplies.filter(
+      (r) =>
+        (r.shortcut || '').toLowerCase().startsWith(slashMatch) ||
+        r.title.toLowerCase().includes(slashMatch),
+    ).slice(0, 5);
+  }, [slashMatch, quickReplies]);
+
+  const updateStatus = async (status: 'resolved' | 'archived' | 'active') => {
+    if (!conversation) return;
+    const updates: any = { status, updated_at: new Date().toISOString() };
+    if (status === 'resolved') updates.resolved_at = new Date().toISOString();
+    if (status === 'active') updates.resolved_at = null;
+    const { error } = await supabase.from('conversations').update(updates).eq('id', conversation.id);
+    if (error) return toast.error('Erro ao atualizar status');
+    toast.success(
+      status === 'resolved' ? 'Atendimento resolvido!' :
+      status === 'archived' ? 'Conversa arquivada' : 'Conversa reaberta'
+    );
+  };
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -305,12 +334,20 @@ export function ChatWindow({ conversation }: ChatWindowProps) {
           >
             <UserPlus className="h-5 w-5" />
           </button>
-          <button className="p-2 text-zinc-400 hover:text-white transition-colors">
-            <ShieldCheck className="h-5 w-5" />
-          </button>
-          <button className="p-2 text-zinc-400 hover:text-white transition-colors">
-            <MoreVertical className="h-5 w-5" />
-          </button>
+          {conversation.status !== 'resolved' && conversation.status !== 'archived' ? (
+            <>
+              <button onClick={() => updateStatus('resolved')} className="p-2 text-zinc-400 hover:text-emerald-400 transition-colors" title="Resolver atendimento">
+                <CheckCircle2 className="h-5 w-5" />
+              </button>
+              <button onClick={() => updateStatus('archived')} className="p-2 text-zinc-400 hover:text-amber-400 transition-colors" title="Arquivar">
+                <Archive className="h-5 w-5" />
+              </button>
+            </>
+          ) : (
+            <button onClick={() => updateStatus('active')} className="p-2 text-zinc-400 hover:text-cyan-400 transition-colors" title="Reabrir">
+              <RotateCcw className="h-5 w-5" />
+            </button>
+          )}
         </div>
       </div>
 
@@ -561,11 +598,32 @@ export function ChatWindow({ conversation }: ChatWindowProps) {
             </button>
 
             <div className="flex-1 relative">
+              {quickMatches.length > 0 && (
+                <div className="absolute bottom-full left-0 right-0 mb-2 bg-[#0F1117] border border-cyan-500/20 rounded-xl overflow-hidden shadow-2xl z-20 max-h-60 overflow-y-auto custom-scrollbar">
+                  <div className="px-3 py-1.5 border-b border-[#1F232E] text-[9px] font-bold uppercase tracking-widest text-cyan-400/80 flex items-center gap-1.5">
+                    <Command className="h-3 w-3" /> Respostas rápidas
+                  </div>
+                  {quickMatches.map((r) => (
+                    <button
+                      key={r.id}
+                      type="button"
+                      onClick={() => { setInput(r.content); supabase.from('quick_replies').update({ use_count: (r.use_count || 0) + 1 }).eq('id', r.id); }}
+                      className="w-full text-left px-3 py-2 hover:bg-cyan-500/5 border-b border-[#1F232E]/40 last:border-0"
+                    >
+                      <div className="flex items-center gap-2">
+                        <span className="text-[10px] font-mono text-cyan-400 bg-cyan-500/10 px-1.5 py-0.5 rounded">/{r.shortcut}</span>
+                        <span className="text-xs font-medium text-zinc-200">{r.title}</span>
+                      </div>
+                      <p className="text-[10px] text-zinc-500 mt-1 line-clamp-1">{r.content}</p>
+                    </button>
+                  ))}
+                </div>
+              )}
               <input
                 type="text"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                placeholder={isInternal ? "Escrever nota interna..." : "Digite sua mensagem..."}
+                placeholder={isInternal ? "Escrever nota interna..." : 'Digite sua mensagem... ("/" para respostas rápidas)'}
                 className={`w-full bg-[#151821] border rounded-xl py-2.5 px-4 text-sm transition-colors focus:outline-none ${
                   isInternal 
                     ? 'border-amber-500/50 text-amber-100 placeholder:text-amber-500/40' 
