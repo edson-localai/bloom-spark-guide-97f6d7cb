@@ -118,6 +118,34 @@ const leadSchema = z.object({
 export const saveLandingLead = createServerFn({ method: "POST" })
   .inputValidator((data) => leadSchema.parse(data))
   .handler(async ({ data }) => {
+    // Deduplicação: busca lead existente com mesmos dados básicos
+    let query = supabaseAdmin
+      .from('contacts')
+      .select('id, phone')
+      .eq('name', data.name || 'Lead do site');
+
+    if (data.vehicle_brand) query = query.eq('vehicle_brand', data.vehicle_brand);
+    else query = query.is('vehicle_brand', null);
+
+    if (data.vehicle_model) query = query.eq('vehicle_model', data.vehicle_model);
+    else query = query.is('vehicle_model', null);
+
+    if (data.vehicle_year) query = query.eq('vehicle_year', data.vehicle_year);
+    else query = query.is('vehicle_year', null);
+
+    if (data.city) query = query.eq('city', data.city);
+    else query = query.is('city', null);
+
+    const { data: existing } = await query
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    if (existing) {
+      console.log('[saveLandingLead] lead repetido encontrado:', existing.id);
+      return { ok: true, id: existing.id, leadId: existing.phone };
+    }
+
     // Phone é NOT NULL na tabela; usamos um placeholder único até o cliente
     // mandar a primeira mensagem real pelo WhatsApp (que cria outro contato
     // com o telefone verdadeiro via webhook).
