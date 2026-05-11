@@ -79,8 +79,36 @@ export function ChatWindow({ conversation }: ChatWindowProps) {
   const { messages, loading, sendMessage } = useMessages(conversation?.id ?? null);
   const { agents, onlineAgents } = useAgents();
   const { addToQueue } = useWaitingQueue();
+  const { replies: quickReplies } = useQuickReplies();
   const scrollRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Quick-reply autocomplete: type "/" then shortcut to filter
+  const slashMatch = useMemo(() => {
+    const m = input.match(/^\/(\S*)$/);
+    return m ? m[1].toLowerCase() : null;
+  }, [input]);
+  const quickMatches = useMemo(() => {
+    if (slashMatch === null) return [];
+    return quickReplies.filter(
+      (r) =>
+        (r.shortcut || '').toLowerCase().startsWith(slashMatch) ||
+        r.title.toLowerCase().includes(slashMatch),
+    ).slice(0, 5);
+  }, [slashMatch, quickReplies]);
+
+  const updateStatus = async (status: 'resolved' | 'archived' | 'active') => {
+    if (!conversation) return;
+    const updates: any = { status, updated_at: new Date().toISOString() };
+    if (status === 'resolved') updates.resolved_at = new Date().toISOString();
+    if (status === 'active') updates.resolved_at = null;
+    const { error } = await supabase.from('conversations').update(updates).eq('id', conversation.id);
+    if (error) return toast.error('Erro ao atualizar status');
+    toast.success(
+      status === 'resolved' ? 'Atendimento resolvido!' :
+      status === 'archived' ? 'Conversa arquivada' : 'Conversa reaberta'
+    );
+  };
 
   useEffect(() => {
     if (scrollRef.current) {
