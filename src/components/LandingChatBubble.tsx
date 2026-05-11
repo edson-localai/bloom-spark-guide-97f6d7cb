@@ -151,6 +151,7 @@ export default function LandingChatBubble() {
         .from('avatars')
         .getPublicUrl(filePath);
 
+      if (previewUrl) URL.revokeObjectURL(previewUrl);
       setLead({ ...lead, avatar_url: publicUrl });
       setPreviewUrl(null);
       setCompressedBlob(null);
