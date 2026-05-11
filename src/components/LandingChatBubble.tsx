@@ -54,8 +54,12 @@ export default function LandingChatBubble() {
     }
   };
 
-  const whatsappLink = handoff
-    ? `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(handoff + (leadSaved ? `\n\n[Ref: ${leadSaved}]` : ""))}`
+  const currentSummary = lead 
+    ? `Olá! Sou ${lead.name || 'cliente'}, tenho um ${lead.vehicle_brand || ''} ${lead.vehicle_model || ''} ${lead.vehicle_year || ''}. Preciso de: ${lead.need || 'suporte'}. Estou em ${lead.city || 'região'}.`
+    : handoff;
+
+  const whatsappLink = currentSummary
+    ? `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(currentSummary + (leadSaved ? `\n\n[Ref: ${leadSaved}]` : ""))}`
     : `https://wa.me/${WHATSAPP_NUMBER}`;
 
   const handleWhatsAppClick = async (e?: React.MouseEvent) => {
