@@ -21,10 +21,31 @@ async function requireAdminOrSupervisor(supabase: any, userId: string) {
   }
 }
 
-function publicWebhookUrl(): string {
-  // Stable published URL pattern recommended by Lovable for public callbacks.
+function publicWebhookUrl(provider: 'evolution' | 'wapi'): string {
   const projectId = process.env.LOVABLE_PROJECT_ID || '1437f3b0-fe7f-4f6b-8c41-2858d825f265';
-  return `https://project--${projectId}.lovable.app/api/public/whatsapp/webhook`;
+  const path = provider === 'wapi' ? '/api/public/wapi/webhook' : '/api/public/whatsapp/webhook';
+  return `https://project--${projectId}.lovable.app${path}`;
+}
+
+async function getInstance(name: string) {
+  const { supabaseAdmin } = await import('@/integrations/supabase/client.server');
+  const { data, error } = await supabaseAdmin
+    .from('whatsapp_instances')
+    .select('*')
+    .eq('name', name)
+    .single();
+  if (error || !data) throw AppError.validation('Instância não encontrada');
+  return data as any;
+}
+
+function wapiCredsFrom(inst: any): { instanceId: string; token: string } {
+  const data = inst?.instance_data || {};
+  const instanceId = data?.wapi?.instance_id || data?.wapi_instance_id || inst.name;
+  const token = inst.instance_key || data?.wapi?.token;
+  if (!instanceId || !token) {
+    throw AppError.validation('Credenciais W-API ausentes (instance_id e token).');
+  }
+  return { instanceId, token };
 }
 
 // --- Create / connect a new instance ---
@@ -32,24 +53,62 @@ export const createWhatsAppInstance = createServerFn({ method: 'POST' })
   .middleware([requireSupabaseAuth])
   .inputValidator((data) =>
     z.object({
+      provider: z.enum(['evolution', 'wapi']).default('evolution'),
       name: z.string().min(2).max(60).regex(/^[a-zA-Z0-9_-]+$/, 'Use letras, números, _ ou -'),
       displayName: z.string().min(1).max(100),
       apiKey: z.string().optional(),
+      // W-API only:
+      wapiInstanceId: z.string().min(1).optional(),
+      wapiToken: z.string().min(1).optional(),
     }).parse(data),
   )
   .handler(async ({ data, context }) => {
     await requireAdminOrSupervisor(context.supabase, context.userId);
     const { supabaseAdmin } = await import('@/integrations/supabase/client.server');
+
     try {
+      if (data.provider === 'wapi') {
+        if (!data.wapiInstanceId || !data.wapiToken) {
+          throw AppError.validation('Para W-API informe instance_id e token.');
+        }
+        const { wapiGetQr, normalizeWapiStatus } = await import('./wapi.server');
+        const creds = { instanceId: data.wapiInstanceId, token: data.wapiToken };
+        let qr: string | null = null;
+        let status: 'connected' | 'disconnected' | 'connecting' = 'connecting';
+        try {
+          const r = await wapiGetQr(creds);
+          qr = r.qr;
+          status = r.connected ? 'connected' : 'connecting';
+        } catch (e) {
+          console.warn('[wapi] qr-code initial fetch failed:', (e as any)?.message);
+          status = 'disconnected';
+        }
+        const { data: row, error } = await supabaseAdmin
+          .from('whatsapp_instances')
+          .insert({
+            provider: 'wapi',
+            name: data.name,
+            display_name: data.displayName,
+            status,
+            qr_code: qr,
+            instance_key: data.wapiToken,
+            webhook_url: publicWebhookUrl('wapi'),
+            instance_data: { wapi: { instance_id: data.wapiInstanceId } } as any,
+          })
+          .select()
+          .single();
+        if (error) throw new Error(error.message);
+        return { instance: row, qr };
+      }
+
+      // evolution (default)
       const { WhatsAppService } = await import('@/services/WhatsAppService');
       const service = WhatsAppService.getInstance();
-      const webhookUrl = publicWebhookUrl();
-
       return await service.createInstance({
         name: data.name,
         displayName: data.displayName,
         apiKey: data.apiKey,
-        webhookUrl
+        webhookUrl: publicWebhookUrl('evolution'),
       });
     } catch (err) {
       handleServerError(err);
@@ -63,6 +122,22 @@ export const getWhatsAppQrCode = createServerFn({ method: 'POST' })
   .handler(async ({ data, context }) => {
     await requireAdminOrSupervisor(context.supabase, context.userId);
     const { supabaseAdmin } = await import('@/integrations/supabase/client.server');
+    const inst = await getInstance(data.name);
+
+    if (inst.provider === 'wapi') {
+      const { wapiGetQr } = await import('./wapi.server');
+      const { qr, connected } = await wapiGetQr(wapiCredsFrom(inst));
+      await supabaseAdmin
+        .from('whatsapp_instances')
+        .update({
+          qr_code: qr,
+          status: connected ? 'connected' : 'connecting',
+          updated_at: new Date().toISOString(),
+        })
+        .eq('name', data.name);
+      return { qr };
+    }
+
     const { evoFetch } = await import('./whatsapp.server');
     const res = await evoFetch(`/instance/connect/${encodeURIComponent(data.name)}`);
     const qr = res?.base64 || res?.qrcode?.base64 || res?.code || null;
@@ -80,6 +155,23 @@ export const syncWhatsAppInstance = createServerFn({ method: 'POST' })
   .handler(async ({ data, context }) => {
     await requireAdminOrSupervisor(context.supabase, context.userId);
     try {
+      const inst = await getInstance(data.name);
+      if (inst.provider === 'wapi') {
+        const { supabaseAdmin } = await import('@/integrations/supabase/client.server');
+        const { wapiGetQr } = await import('./wapi.server');
+        const { qr, connected } = await wapiGetQr(wapiCredsFrom(inst));
+        const status = connected ? 'connected' : (qr ? 'connecting' : 'disconnected');
+        await supabaseAdmin
+          .from('whatsapp_instances')
+          .update({
+            status,
+            qr_code: connected ? null : qr,
+            updated_at: new Date().toISOString(),
+            last_seen: new Date().toISOString(),
+          })
+          .eq('name', data.name);
+        return { status };
+      }
       const { WhatsAppService } = await import('@/services/WhatsAppService');
       return await WhatsAppService.getInstance().syncInstance(data.name);
     } catch (err) {
@@ -94,6 +186,17 @@ export const restartWhatsAppInstance = createServerFn({ method: 'POST' })
   .handler(async ({ data, context }) => {
     await requireAdminOrSupervisor(context.supabase, context.userId);
     const { supabaseAdmin } = await import('@/integrations/supabase/client.server');
+    const inst = await getInstance(data.name);
+    if (inst.provider === 'wapi') {
+      // No documented restart endpoint — just refresh QR.
+      const { wapiGetQr } = await import('./wapi.server');
+      const { qr } = await wapiGetQr(wapiCredsFrom(inst));
+      await supabaseAdmin
+        .from('whatsapp_instances')
+        .update({ qr_code: qr, status: 'connecting', updated_at: new Date().toISOString() })
+        .eq('name', data.name);
+      return { ok: true };
+    }
     const { evoFetch } = await import('./whatsapp.server');
     await evoFetch(`/instance/restart/${encodeURIComponent(data.name)}`, { method: 'POST' });
     await supabaseAdmin
@@ -110,6 +213,16 @@ export const disconnectWhatsAppInstance = createServerFn({ method: 'POST' })
   .handler(async ({ data, context }) => {
     await requireAdminOrSupervisor(context.supabase, context.userId);
     try {
+      const inst = await getInstance(data.name);
+      if (inst.provider === 'wapi') {
+        // W-API não expõe logout público — apenas marcar como desconectado localmente.
+        const { supabaseAdmin } = await import('@/integrations/supabase/client.server');
+        await supabaseAdmin
+          .from('whatsapp_instances')
+          .update({ status: 'disconnected', qr_code: null, phone_number: null, updated_at: new Date().toISOString() })
+          .eq('name', data.name);
+        return { ok: true };
+      }
       const { WhatsAppService } = await import('@/services/WhatsAppService');
       return await WhatsAppService.getInstance().logoutInstance(data.name);
     } catch (err) {
@@ -118,8 +231,6 @@ export const disconnectWhatsAppInstance = createServerFn({ method: 'POST' })
   });
 
 // --- Delete instance entirely ---
-// Uses the caller's authenticated Supabase client (admin via RLS) to avoid
-// requiring SUPABASE_SERVICE_ROLE_KEY in the Worker runtime.
 export const deleteWhatsAppInstance = createServerFn({ method: 'POST' })
   .middleware([requireSupabaseAuth])
   .inputValidator((data) => z.object({
@@ -129,28 +240,32 @@ export const deleteWhatsAppInstance = createServerFn({ method: 'POST' })
   .handler(async ({ data, context }) => {
     const sb = context.supabase;
 
-    // Best-effort: limpar a instância na Evolution API antes de remover do banco.
-    // Nunca bloqueia a exclusão se a API externa falhar/estiver indisponível.
+    // Best-effort: cleanup remoto (apenas Evolution; W-API gerencia via painel).
     try {
-      const { data: settings } = await sb
-        .from('app_settings')
-        .select('key, value')
-        .in('key', ['whatsapp_api_url', 'whatsapp_api_key']);
-      const map = Object.fromEntries((settings || []).map((r: any) => [r.key, r.value]));
-      const url = (map.whatsapp_api_url || '').replace(/\/+$/, '');
-      const apiKey = map.whatsapp_api_key || '';
-      if (url && apiKey && data.name) {
-        await fetch(`${url}/instance/delete/${encodeURIComponent(data.name)}`, {
-          method: 'DELETE',
-          headers: { 'Content-Type': 'application/json', apikey: apiKey },
-        }).catch(() => {});
+      const { data: inst } = await sb
+        .from('whatsapp_instances')
+        .select('provider')
+        .eq('name', data.name)
+        .maybeSingle();
+      if (!inst || inst.provider === 'evolution') {
+        const { data: settings } = await sb
+          .from('app_settings')
+          .select('key, value')
+          .in('key', ['whatsapp_api_url', 'whatsapp_api_key']);
+        const map = Object.fromEntries((settings || []).map((r: any) => [r.key, r.value]));
+        const url = (map.whatsapp_api_url || '').replace(/\/+$/, '');
+        const apiKey = map.whatsapp_api_key || '';
+        if (url && apiKey && data.name) {
+          await fetch(`${url}/instance/delete/${encodeURIComponent(data.name)}`, {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json', apikey: apiKey },
+          }).catch(() => {});
+        }
       }
     } catch (e) {
-      console.warn('[deleteWhatsAppInstance] Evolution cleanup skipped:', (e as any)?.message);
+      console.warn('[deleteWhatsAppInstance] external cleanup skipped:', (e as any)?.message);
     }
 
-    // Exclusão definitiva via RPC SECURITY DEFINER (verifica papel admin/supervisor,
-    // limpa vínculos em conversations e remove a instância em uma única transação).
     const { data: result, error } = await sb.rpc('delete_whatsapp_instance', {
       _instance_id: data.id ?? undefined,
       _instance_name: data.name ?? undefined,
@@ -173,11 +288,10 @@ export const sendWhatsAppMessage = createServerFn({ method: 'POST' })
     }).parse(data),
   )
   .handler(async ({ data, context }) => {
-    // Caller must at least have a CRM role (any agent can reply).
     const { data: roles } = await context.supabase.from('user_roles').select('role').eq('user_id', context.userId);
     if (!roles || roles.length === 0) throw new Error('Forbidden');
     const { supabaseAdmin } = await import('@/integrations/supabase/client.server');
-    const { evoFetch, jidToPhone } = await import('./whatsapp.server');
+    const { jidToPhone } = await import('./whatsapp.server');
 
     const { data: conv, error: convErr } = await supabaseAdmin
       .from('conversations')
@@ -188,30 +302,36 @@ export const sendWhatsAppMessage = createServerFn({ method: 'POST' })
     if (convErr || !conv) throw new Error('Conversation not found');
     if (!conv.whatsapp_chat_id) return { skipped: true, reason: 'no_chat_id' };
 
-    let instanceName: string | null = null;
+    let inst: any = null;
     if (conv.instance_id) {
-      const { data: inst } = await supabaseAdmin
-        .from('whatsapp_instances')
-        .select('name, status')
-        .eq('id', conv.instance_id)
-        .single();
-      instanceName = inst?.name || null;
+      const { data: i } = await supabaseAdmin.from('whatsapp_instances').select('*').eq('id', conv.instance_id).single();
+      inst = i;
     }
-    if (!instanceName) {
-      const { data: anyConnected } = await supabaseAdmin
+    if (!inst) {
+      const { data: any2 } = await supabaseAdmin
         .from('whatsapp_instances')
-        .select('name')
+        .select('*')
         .eq('status', 'connected')
         .limit(1)
         .maybeSingle();
-      instanceName = anyConnected?.name || null;
+      inst = any2;
     }
-    if (!instanceName) return { skipped: true, reason: 'no_instance' };
+    if (!inst) return { skipped: true, reason: 'no_instance' };
 
     const number = jidToPhone(conv.whatsapp_chat_id);
 
     try {
-      const res = await evoFetch(`/message/sendText/${encodeURIComponent(instanceName)}`, {
+      if (inst.provider === 'wapi') {
+        const { wapiFetch } = await import('./wapi.server');
+        const res = await wapiFetch(
+          `/v1/message/send-text`,
+          { method: 'POST', body: JSON.stringify({ phone: number, message: data.content }) },
+          wapiCredsFrom(inst),
+        );
+        return { ok: true, id: res?.messageId || res?.insertedId || null };
+      }
+      const { evoFetch } = await import('./whatsapp.server');
+      const res = await evoFetch(`/message/sendText/${encodeURIComponent(inst.name)}`, {
         method: 'POST',
         body: JSON.stringify({ number, text: data.content }),
       });
