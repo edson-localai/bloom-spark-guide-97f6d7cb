@@ -68,6 +68,13 @@ export default function LandingChatBubble() {
     if (e) e.preventDefault();
     if (!lead || savingLead) return;
     
+    // Validation
+    if (!lead.name?.trim() || !lead.city?.trim()) {
+      setValidationError("Por favor, informe seu Nome e sua Cidade antes de continuar.");
+      return;
+    }
+
+    setValidationError(null);
     setSavingLead(true);
     setSaveError(false);
     try {
