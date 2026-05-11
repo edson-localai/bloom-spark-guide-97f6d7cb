@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { MessageCircle, X, Send, Loader2 } from "lucide-react";
 import { useServerFn } from "@tanstack/react-start";
-import { landingChat } from "@/lib/landing-chat.functions";
+import { landingChat, saveLandingLead, type LeadData } from "@/lib/landing-chat.functions";
 import attendantImg from "@/assets/attendant.jpg";
 
 const WHATSAPP_NUMBER = "5591985161991";
@@ -19,8 +19,12 @@ export default function LandingChatBubble() {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [handoff, setHandoff] = useState<string | null>(null);
+  const [lead, setLead] = useState<LeadData | null>(null);
+  const [savingLead, setSavingLead] = useState(false);
+  const [leadSaved, setLeadSaved] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const chat = useServerFn(landingChat);
+  const saveLead = useServerFn(saveLandingLead);
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
@@ -38,6 +42,7 @@ export default function LandingChatBubble() {
       setMessages((m) => [...m, { role: "assistant", content: res.reply }]);
       if (res.ready) {
         setHandoff(res.summary || "Olá! Vim pelo site e gostaria de mais informações.");
+        if (res.lead) setLead(res.lead);
       }
     } catch {
       setMessages((m) => [...m, { role: "assistant", content: "Tive um problema. Vamos continuar pelo WhatsApp?" }]);
@@ -50,6 +55,21 @@ export default function LandingChatBubble() {
   const whatsappLink = handoff
     ? `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(handoff)}`
     : `https://wa.me/${WHATSAPP_NUMBER}`;
+
+  const handleWhatsAppClick = async (e: React.MouseEvent<HTMLAnchorElement>) => {
+    if (!lead || leadSaved || savingLead) return;
+    e.preventDefault();
+    setSavingLead(true);
+    try {
+      await saveLead({ data: lead });
+      setLeadSaved(true);
+    } catch (err) {
+      console.warn('[landing-chat] save lead failed', err);
+    } finally {
+      setSavingLead(false);
+      window.open(whatsappLink, "_blank", "noopener,noreferrer");
+    }
+  };
 
   return (
     <>
@@ -137,9 +157,10 @@ export default function LandingChatBubble() {
                 href={whatsappLink}
                 target="_blank"
                 rel="noopener noreferrer"
+                onClick={handleWhatsAppClick}
                 className="block w-full text-center mt-2 px-4 py-3 rounded-xl bg-[#25D366] hover:bg-[#1ebe57] text-white font-semibold text-sm transition-colors shadow-lg"
               >
-                Continuar pelo WhatsApp →
+                {savingLead ? "Salvando seus dados..." : "Continuar pelo WhatsApp →"}
               </a>
             )}
           </div>
