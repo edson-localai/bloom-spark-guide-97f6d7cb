@@ -284,10 +284,12 @@ function CreateInstanceModal({ onClose, onCreated }: { onClose: () => void; onCr
   const [wapiInstanceId, setWapiInstanceId] = useState('');
   const [wapiToken, setWapiToken] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setSubmitting(true);
+    setError(null);
     try {
       const payload: any = { provider, name: name.trim(), displayName: displayName.trim() };
       if (provider === 'evolution') {
@@ -300,7 +302,9 @@ function CreateInstanceModal({ onClose, onCreated }: { onClose: () => void; onCr
       toast.success('Instância criada! Escaneie o QR Code para conectar.');
       onCreated(res?.qr || null, name.trim());
     } catch (err: any) {
-      toast.error(err?.message || 'Erro ao criar instância');
+      const message = err?.message || 'Erro ao criar instância';
+      setError(message);
+      toast.error(message);
     } finally {
       setSubmitting(false);
     }
@@ -404,6 +408,11 @@ function CreateInstanceModal({ onClose, onCreated }: { onClose: () => void; onCr
               </p>
             </div>
           </>
+        )}
+        {error && (
+          <div className="rounded-lg border border-red-500/20 bg-red-500/10 px-3 py-2 text-sm text-red-200">
+            {error}
+          </div>
         )}
         <button
           disabled={submitting}
