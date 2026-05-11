@@ -25,6 +25,7 @@ import { Route as AtendimentoContatosRouteImport } from './routes/atendimento.co
 import { Route as AtendimentoConfigRouteImport } from './routes/atendimento.config'
 import { Route as ApiPublicProcessScheduledRouteImport } from './routes/api/public/process-scheduled'
 import { Route as ApiPublicWhatsappWebhookRouteImport } from './routes/api/public/whatsapp.webhook'
+import { Route as ApiPublicWapiWebhookRouteImport } from './routes/api/public/wapi.webhook'
 
 const PropostaRoute = PropostaRouteImport.update({
   id: '/proposta',
@@ -108,6 +109,11 @@ const ApiPublicWhatsappWebhookRoute =
     path: '/api/public/whatsapp/webhook',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicWapiWebhookRoute = ApiPublicWapiWebhookRouteImport.update({
+  id: '/api/public/wapi/webhook',
+  path: '/api/public/wapi/webhook',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -125,6 +131,7 @@ export interface FileRoutesByFullPath {
   '/atendimento/whatsapp': typeof AtendimentoWhatsappRoute
   '/atendimento/': typeof AtendimentoIndexRoute
   '/api/public/process-scheduled': typeof ApiPublicProcessScheduledRoute
+  '/api/public/wapi/webhook': typeof ApiPublicWapiWebhookRoute
   '/api/public/whatsapp/webhook': typeof ApiPublicWhatsappWebhookRoute
 }
 export interface FileRoutesByTo {
@@ -142,6 +149,7 @@ export interface FileRoutesByTo {
   '/atendimento/whatsapp': typeof AtendimentoWhatsappRoute
   '/atendimento': typeof AtendimentoIndexRoute
   '/api/public/process-scheduled': typeof ApiPublicProcessScheduledRoute
+  '/api/public/wapi/webhook': typeof ApiPublicWapiWebhookRoute
   '/api/public/whatsapp/webhook': typeof ApiPublicWhatsappWebhookRoute
 }
 export interface FileRoutesById {
@@ -161,6 +169,7 @@ export interface FileRoutesById {
   '/atendimento/whatsapp': typeof AtendimentoWhatsappRoute
   '/atendimento/': typeof AtendimentoIndexRoute
   '/api/public/process-scheduled': typeof ApiPublicProcessScheduledRoute
+  '/api/public/wapi/webhook': typeof ApiPublicWapiWebhookRoute
   '/api/public/whatsapp/webhook': typeof ApiPublicWhatsappWebhookRoute
 }
 export interface FileRouteTypes {
@@ -181,6 +190,7 @@ export interface FileRouteTypes {
     | '/atendimento/whatsapp'
     | '/atendimento/'
     | '/api/public/process-scheduled'
+    | '/api/public/wapi/webhook'
     | '/api/public/whatsapp/webhook'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -198,6 +208,7 @@ export interface FileRouteTypes {
     | '/atendimento/whatsapp'
     | '/atendimento'
     | '/api/public/process-scheduled'
+    | '/api/public/wapi/webhook'
     | '/api/public/whatsapp/webhook'
   id:
     | '__root__'
@@ -216,6 +227,7 @@ export interface FileRouteTypes {
     | '/atendimento/whatsapp'
     | '/atendimento/'
     | '/api/public/process-scheduled'
+    | '/api/public/wapi/webhook'
     | '/api/public/whatsapp/webhook'
   fileRoutesById: FileRoutesById
 }
@@ -225,6 +237,7 @@ export interface RootRouteChildren {
   LoginRoute: typeof LoginRoute
   PropostaRoute: typeof PropostaRoute
   ApiPublicProcessScheduledRoute: typeof ApiPublicProcessScheduledRoute
+  ApiPublicWapiWebhookRoute: typeof ApiPublicWapiWebhookRoute
   ApiPublicWhatsappWebhookRoute: typeof ApiPublicWhatsappWebhookRoute
 }
 
@@ -342,6 +355,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicWhatsappWebhookRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/wapi/webhook': {
+      id: '/api/public/wapi/webhook'
+      path: '/api/public/wapi/webhook'
+      fullPath: '/api/public/wapi/webhook'
+      preLoaderRoute: typeof ApiPublicWapiWebhookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -381,8 +401,19 @@ const rootRouteChildren: RootRouteChildren = {
   LoginRoute: LoginRoute,
   PropostaRoute: PropostaRoute,
   ApiPublicProcessScheduledRoute: ApiPublicProcessScheduledRoute,
+  ApiPublicWapiWebhookRoute: ApiPublicWapiWebhookRoute,
   ApiPublicWhatsappWebhookRoute: ApiPublicWhatsappWebhookRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
