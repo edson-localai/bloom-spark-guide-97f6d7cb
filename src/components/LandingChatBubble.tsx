@@ -34,7 +34,7 @@ export default function LandingChatBubble() {
   const saveLead = useServerFn(saveLandingLead);
   const [uploading, setUploading] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  const [compressedBlob, setCompressedBlob] = useState<Blob | null>(null);
+  const [optimizedImage, setOptimizedImage] = useState<{ blob: Blob; contentType: string; extension: string } | null>(null);
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
