@@ -1,18 +1,32 @@
-To make WhatsApp functional, I will implement a connection to the Evolution API (the industry standard for WhatsApp CRMs). This includes handling both sending and receiving messages.
+# Plano de Refatoração e Otimização do Sistema
 
-### 1. Infrastructure & Backend
-- **Database Settings**: Add `whatsapp_api_url` and `whatsapp_api_key` to the `app_settings` table to store your Evolution API credentials securely.
-- **Outbound Messages (Edge Function)**: Create a `whatsapp-outbound` Edge Function. I will set up a Supabase Database Webhook to trigger this function whenever a new message is inserted in the `messages` table (by an agent or the AI bot). This function will then call the Evolution API to send the message to the client's phone.
-- **Inbound Messages (Edge Function)**: Create a `whatsapp-inbound` Edge Function to serve as a webhook receiver. You will configure this URL in your Evolution API panel. It will handle incoming messages, creating/updating contacts and conversations automatically.
+Este plano visa transformar a arquitetura atual em uma solução mais robusta, escalável e de fácil manutenção, focando na estabilidade das conexões de WhatsApp e na performance geral do CRM.
 
-### 2. UI Enhancements
-- **WhatsApp Management Page**: Update the page to allow you to configure the API URL and API Key.
-- **Instance Connection**: Implement the "Nova Conexão" button to actually create an instance in the Evolution API and display the QR Code in real-time for pairing.
-- **Status Sync**: Implement a sync button to refresh the connection status and phone number of each instance.
+## Etapa 1: Arquitetura e Estabilidade do Servidor
+*   **Centralização da Lógica de Negócio:** Migrar lógicas complexas espalhadas por `serverFn` para uma camada de serviços dedicada (`src/services/whatsapp/`), separando a infraestrutura da regra de negócio.
+*   **Padronização de Erros:** Implementar um middleware global de tratamento de erros no servidor para garantir respostas consistentes (JSON) e logs detalhados via `audit_logs`.
+*   **Isolamento de Credenciais:** Refatorar o `whatsapp.server.ts` para usar cache em memória (Short-term TTL) ao ler as `app_settings`, reduzindo a carga no banco de dados em cada chamada de API.
 
-### 3. Workflow
-- Once configured, any message you type in the CRM will go to the client's WhatsApp.
-- Any message the client sends will appear in your CRM in real-time.
-- The AI "Clara" will be able to respond automatically if the bot status is active.
+## Etapa 2: Otimização de Banco de Dados e Webhooks
+*   **Normalização de Tabelas:**
+    *   Criar índices GIN em campos JSONB para buscas rápidas.
+    *   Adicionar chaves estrangeiras com `ON DELETE SET NULL` ou `CASCADE` para evitar erros manuais de deleção.
+*   **Processamento Assíncrono:** Implementar uma fila de processamento para webhooks (MESSAGES_UPSERT) para evitar timeouts quando houver um volume alto de mensagens simultâneas.
+*   **Idempotência:** Refinar o controle de mensagens duplicadas utilizando uma chave única composta no PostgreSQL (`wa_message_id` + `instance_id`).
 
-**Do you have an Evolution API instance ready, or should I proceed with the generic implementation so you can fill in the credentials later?**
+## Etapa 3: Performance e UX no Frontend
+*   **Otimização de Querys:** Substituir seleções `select('*')` por campos específicos em todos os hooks, diminuindo o tráfego de dados.
+*   **Estado Global e Cache:** Implementar políticas de cache mais agressivas no `TanStack Query` para evitar re-renders desnecessários e loadings constantes.
+*   **Feedback em Tempo Real:** Melhorar o uso do Supabase Realtime para atualizar status de conexão e novas mensagens sem exigir "Sincronizar" manual com tanta frequência.
+
+## Etapa 4: Segurança e Monitoramento
+*   **Revisão de Políticas de RLS:** Auditar todas as tabelas para garantir que agentes só vejam o que lhes é permitido, protegendo dados sensíveis de instâncias admin.
+*   **Dashboard de Saúde:** Criar uma rota de monitoramento para administradores visualizarem o status de todas as instâncias e latência da Evolution API em um único lugar.
+
+---
+
+### Detalhes Técnicos (Para Desenvolvedores)
+*   **Service Pattern:** Criar `src/services/WhatsAppService.ts` como uma classe Singleton.
+*   **Middleware:** Refatorar `auth-middleware.ts` para incluir verificação de permissões (RBAC) granular.
+*   **Schema:** Migração SQL para adicionar `index` em `messages(wa_message_id)` e `conversations(whatsapp_chat_id)`.
+*   **Webhooks:** Mover lógica de processamento do webhook para uma Edge Function dedicada caso o volume cresça além dos limites do TanStack Start.
