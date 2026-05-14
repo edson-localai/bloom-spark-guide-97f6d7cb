@@ -455,14 +455,15 @@ export function ChatWindow({ conversation }: ChatWindowProps) {
                             : 'bg-[#151821] text-zinc-200 border border-[#1F232E] rounded-tl-none'
                       }`}
                     >
-                    {msg.media_url && (
-                      <MediaPreview 
-                        path={msg.media_url} 
-                        type={msg.content_type} 
-                        name={msg.content || 'Arquivo'} 
-                      />
-                    )}
-                    {msg.content}
+                      {msg.media_url && (
+                        <MediaPreview 
+                          path={msg.media_url} 
+                          type={msg.content_type} 
+                          name={msg.content || 'Arquivo'} 
+                        />
+                      )}
+                      {msg.content}
+                    </div>
                   </div>
                   <div className={`flex items-center gap-1 ${isMe ? 'justify-end' : 'justify-start'}`}>
                     <Clock className="h-3 w-3 text-zinc-600" />
