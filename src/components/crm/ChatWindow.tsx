@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useMemo } from 'react';
-import { Send, User, Bot, Paperclip, MoreVertical, ShieldCheck, Clock, Sparkles, Loader2, Smile, Zap, Hammer, StickyNote, MessageCircle, CalendarClock, File as FileIcon, UserPlus, CheckCircle2, Archive, RotateCcw, Command } from 'lucide-react';
+import { Send, User, Bot, Paperclip, MoreVertical, ShieldCheck, Clock, Sparkles, Loader2, Smile, Zap, Hammer, StickyNote, MessageCircle, CalendarClock, File as FileIcon, UserPlus, CheckCircle2, Archive, RotateCcw, Command, Trash2 } from 'lucide-react';
 import { Message, Conversation, Contact } from '@/types/crm';
 import { useMessages } from '@/hooks/useMessages';
 import { useAgents } from '@/hooks/useAgents';
@@ -76,7 +76,7 @@ export function ChatWindow({ conversation }: ChatWindowProps) {
   const [scheduledDate, setScheduledDate] = useState('');
   const [scheduledTime, setScheduledTime] = useState('');
   
-  const { messages, loading, sendMessage } = useMessages(conversation?.id ?? null);
+  const { messages, loading, sendMessage, deleteMessage } = useMessages(conversation?.id ?? null);
   const { agents, onlineAgents } = useAgents();
   const { addToQueue } = useWaitingQueue();
   const { replies: quickReplies } = useQuickReplies();
@@ -436,23 +436,34 @@ export function ChatWindow({ conversation }: ChatWindowProps) {
                       Nota Interna
                     </div>
                   )}
-                  <div
-                    className={`px-4 py-2 rounded-2xl text-sm ${
-                      msg.is_internal
-                        ? 'bg-amber-500/10 text-amber-200 border border-amber-500/30 italic'
-                        : isMe 
-                          ? 'bg-cyan-500 text-black font-medium rounded-tr-none shadow-[0_0_15px_rgba(0,204,238,0.2)]' 
-                          : 'bg-[#151821] text-zinc-200 border border-[#1F232E] rounded-tl-none'
-                    }`}
-                  >
-                    {msg.media_url && (
-                      <MediaPreview 
-                        path={msg.media_url} 
-                        type={msg.content_type} 
-                        name={msg.content || 'Arquivo'} 
-                      />
+                  <div className="group relative">
+                    {!isSystem && (
+                      <button
+                        onClick={() => deleteMessage(msg.id)}
+                        className={`absolute -top-2 ${isMe ? '-left-6' : '-right-6'} p-1.5 rounded-full bg-red-500/10 text-red-500 opacity-0 group-hover:opacity-100 transition-all hover:bg-red-500/20`}
+                        title="Apagar mensagem"
+                      >
+                        <Trash2 className="h-3 w-3" />
+                      </button>
                     )}
-                    {msg.content}
+                    <div
+                      className={`px-4 py-2 rounded-2xl text-sm ${
+                        msg.is_internal
+                          ? 'bg-amber-500/10 text-amber-200 border border-amber-500/30 italic'
+                          : isMe 
+                            ? 'bg-cyan-500 text-black font-medium rounded-tr-none shadow-[0_0_15px_rgba(0,204,238,0.2)]' 
+                            : 'bg-[#151821] text-zinc-200 border border-[#1F232E] rounded-tl-none'
+                      }`}
+                    >
+                      {msg.media_url && (
+                        <MediaPreview 
+                          path={msg.media_url} 
+                          type={msg.content_type} 
+                          name={msg.content || 'Arquivo'} 
+                        />
+                      )}
+                      {msg.content}
+                    </div>
                   </div>
                   <div className={`flex items-center gap-1 ${isMe ? 'justify-end' : 'justify-start'}`}>
                     <Clock className="h-3 w-3 text-zinc-600" />

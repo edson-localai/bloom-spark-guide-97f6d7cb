@@ -3,6 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Message } from '@/types/crm';
 import { handleAutoReply } from '@/lib/ai.functions';
 import { sendWhatsAppMessage } from '@/lib/whatsapp.functions';
+import { toast } from 'sonner';
 
 export function useMessages(conversationId: string | null) {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -90,5 +91,24 @@ export function useMessages(conversationId: string | null) {
     }
   }
 
-  return { messages, loading, sendMessage };
+  async function deleteMessage(messageId: string) {
+    if (!conversationId) return;
+    try {
+      const { error } = await supabase
+        .from('messages')
+        .delete()
+        .eq('id', messageId)
+        .eq('conversation_id', conversationId);
+      
+      if (error) throw error;
+      
+      setMessages(prev => prev.filter(m => m.id !== messageId));
+      toast.success('Mensagem apagada!');
+    } catch (err) {
+      console.error('Error deleting message:', err);
+      toast.error('Erro ao apagar mensagem.');
+    }
+  }
+
+  return { messages, loading, sendMessage, deleteMessage };
 }
