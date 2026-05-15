@@ -14,7 +14,7 @@ export async function getAiSuggestions(conversationId: string, messages: any[]):
       .eq('key', 'system_prompt')
       .single();
 
-    const prompt = settings?.value || 'Você é a Clara, assistente da HCB.';
+    const prompt = settings?.value || 'Você é a Ana, assistente da HCB.';
     
     const history = messages.map(m => `${m.sender_type === 'contact' ? 'Cliente' : 'Atendente'}: ${m.content}`).join('\n');
 

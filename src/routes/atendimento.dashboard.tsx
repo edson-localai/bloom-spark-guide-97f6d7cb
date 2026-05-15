@@ -183,7 +183,7 @@ function DashboardPage() {
         <div className="bg-[#0F1117] rounded-3xl border border-[#1F232E] p-8 flex flex-col">
           <h3 className="font-bold text-white mb-8">Top Agentes</h3>
           <div className="space-y-6">
-            <AgentRow name="Clara (IA)" role="Assistente" chats={842} score={98} />
+            <AgentRow name="Ana (IA)" role="Assistente" chats={842} score={98} />
             <AgentRow name="Rodrigo Souza" role="Admin" chats={312} score={95} />
             <AgentRow name="Márcia Lima" role="Agente" chats={130} score={92} />
           </div>

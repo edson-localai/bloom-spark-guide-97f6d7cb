@@ -79,7 +79,7 @@ function ConfigPage() {
       <div className="p-8 pb-4 flex justify-between items-center">
         <div>
           <h1 className="text-2xl font-bold text-white">Configurações do CRM</h1>
-          <p className="text-zinc-500 text-sm">Ajuste o comportamento da Clara e as regras do sistema.</p>
+          <p className="text-zinc-500 text-sm">Ajuste o comportamento da Ana e as regras do sistema.</p>
         </div>
         <button
           onClick={handleSave}
@@ -92,7 +92,7 @@ function ConfigPage() {
       </div>
 
       <div className="p-8 grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* IA / Clara Settings */}
+        {/* IA / Ana Settings */}
         <div className="space-y-6">
           <div className="bg-[#0F1117] rounded-3xl border border-[#1F232E] overflow-hidden">
             <div className="p-6 border-b border-[#1F232E] flex items-center gap-3">
@@ -100,7 +100,7 @@ function ConfigPage() {
                 <Bot className="h-5 w-5" />
               </div>
               <div>
-                <h3 className="font-bold text-white">Personalidade da Clara</h3>
+                <h3 className="font-bold text-white">Personalidade da Ana</h3>
                 <p className="text-[10px] text-zinc-500 uppercase font-bold tracking-widest">IA Engine Settings</p>
               </div>
             </div>
@@ -172,7 +172,7 @@ function ConfigPage() {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm font-semibold text-white">Auto-Resposta (Bot)</p>
-                    <p className="text-[10px] text-zinc-500">Clara responde sozinha em 'Bot'</p>
+                    <p className="text-[10px] text-zinc-500">Ana responde sozinha em 'Bot'</p>
                   </div>
                   <button
                     onClick={() => updateSetting('auto_reply_active', getSetting('auto_reply_active') === 'true' ? 'false' : 'true')}
