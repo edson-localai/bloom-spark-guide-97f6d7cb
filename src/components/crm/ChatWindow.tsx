@@ -232,10 +232,10 @@ export function ChatWindow({ conversation }: ChatWindowProps) {
       const data = await getAiSuggestions(conversation.id, messages);
       if (data) {
         setSuggestions(data);
-        toast.success('Clara gerou três opções de resposta!');
+        toast.success('Ana gerou três opções de resposta!');
       }
     } catch (error) {
-      toast.error('Erro ao buscar sugestão da Clara.');
+      toast.error('Erro ao buscar sugestão da Ana.');
     } finally {
       setIsAiLoading(false);
     }
@@ -258,7 +258,7 @@ export function ChatWindow({ conversation }: ChatWindowProps) {
         }
       }).then(res => {
         if (res && 'updated' in res && res.updated) {
-          toast.info('Clara atualizou dados do veículo!', {
+          toast.info('Ana atualizou dados do veículo!', {
             description: `Detectado: ${res.data.vehicle_brand || ''} ${res.data.vehicle_model || ''}`
           });
         }
@@ -296,7 +296,7 @@ export function ChatWindow({ conversation }: ChatWindowProps) {
                   <span className="h-1 w-1 rounded-full bg-cyan-400 animate-bounce" style={{ animationDelay: '0s' }}></span>
                   <span className="h-1 w-1 rounded-full bg-cyan-400 animate-bounce" style={{ animationDelay: '0.2s' }}></span>
                   <span className="h-1 w-1 rounded-full bg-cyan-400 animate-bounce" style={{ animationDelay: '0.4s' }}></span>
-                  <p className="text-[10px] text-cyan-400 ml-1 font-bold uppercase tracking-wider">Clara pensando...</p>
+                  <p className="text-[10px] text-cyan-400 ml-1 font-bold uppercase tracking-wider">Ana pensando...</p>
                 </div>
               ) : (
                 <>
@@ -488,10 +488,10 @@ export function ChatWindow({ conversation }: ChatWindowProps) {
                 onClick={handleAiSuggest}
                 disabled={isAiLoading || !conversation || messages.length === 0}
                 className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 text-[10px] font-bold uppercase tracking-wider hover:bg-cyan-500/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                title={messages.length === 0 ? "Aguardando primeira mensagem do cliente" : "Pedir opções para a Clara"}
+                title={messages.length === 0 ? "Aguardando primeira mensagem do cliente" : "Pedir opções para a Ana"}
               >
                 {isAiLoading ? <Loader2 className="h-3 w-3 animate-spin" /> : <Sparkles className="h-3 w-3" />}
-                Opções da Clara
+                Opções da Ana
               </button>
               <button
                 type="button"

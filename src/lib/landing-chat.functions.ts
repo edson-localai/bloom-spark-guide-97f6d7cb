@@ -26,7 +26,7 @@ export const landingChat = createServerFn({ method: "POST" })
       };
     }
 
-    const systemPrompt = `Você é Clara, atendente virtual da HCB Automotivo (oficina especializada).
+    const systemPrompt = `Você é Ana, atendente virtual da HCB Automotivo (oficina especializada).
 Seu objetivo é coletar de forma rápida, simpática e objetiva:
 1. Nome do cliente
 2. Veículo (marca, modelo e ano)

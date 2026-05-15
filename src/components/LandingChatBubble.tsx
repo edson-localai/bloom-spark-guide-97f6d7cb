@@ -12,7 +12,7 @@ type ChatMessage = { role: "user" | "assistant"; content: string };
 
 const initialAssistant: ChatMessage = {
   role: "assistant",
-  content: "Olá! 👋 Sou a Clara, da HCB Automotivo. Para te ajudar melhor, qual é o seu nome?",
+  content: "Olá! 👋 Sou a Ana, da HCB Automotivo. Para te ajudar melhor, qual é o seu nome?",
 };
 
 export default function LandingChatBubble() {
@@ -89,7 +89,7 @@ export default function LandingChatBubble() {
         currentSummary,
         "",
         "HISTÓRICO DA CONVERSA:",
-        ...messages.map(m => `${m.role === 'user' ? 'Cliente' : 'Clara'}: ${m.content}`)
+        ...messages.map(m => `${m.role === 'user' ? 'Cliente' : 'Ana'}: ${m.content}`)
       ].join('\n');
 
       const res = await saveLead({ 
@@ -207,7 +207,7 @@ export default function LandingChatBubble() {
           </span>
           <span className="hidden sm:flex flex-col items-start text-left">
             <span className="text-xs text-white/60 leading-tight">Atendimento online</span>
-            <span className="text-sm font-semibold text-white leading-tight">Fale com a Clara</span>
+            <span className="text-sm font-semibold text-white leading-tight">Fale com a Ana</span>
           </span>
           <MessageCircle className="w-5 h-5 text-white sm:hidden" />
         </button>
@@ -220,14 +220,14 @@ export default function LandingChatBubble() {
           <div className="flex items-center gap-3 p-4 bg-gradient-to-r from-[#0066CC] to-[#0052A3] border-b border-white/10">
             <img
               src={attendantImg}
-              alt="Clara"
+              alt="Ana"
               width={40}
               height={40}
               loading="lazy"
               className="w-10 h-10 rounded-full object-cover border border-white/30"
             />
             <div className="flex-1">
-              <p className="text-white font-semibold text-sm">Clara — HCB Automotivo</p>
+              <p className="text-white font-semibold text-sm">Ana — HCB Automotivo</p>
               <p className="text-white/80 text-xs flex items-center gap-1.5">
                 <span className="w-2 h-2 bg-green-400 rounded-full" /> Online agora
               </p>
@@ -263,7 +263,7 @@ export default function LandingChatBubble() {
                 ) : (
                   <img
                     src={attendantImg}
-                    alt="Clara"
+                    alt="Ana"
                     className="w-6 h-6 rounded-full object-cover border border-white/20 shrink-0 mb-1"
                   />
                 )}

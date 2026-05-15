@@ -61,7 +61,7 @@ export const handleAutoReply = createServerFn({ method: "POST" })
         body: JSON.stringify({
           model: 'google/gemini-2.0-flash-exp',
           messages: [
-            { role: 'system', content: promptSetting?.value || 'Você é a Clara.' },
+            { role: 'system', content: promptSetting?.value || 'Você é a Ana.' },
             { role: 'user', content: `Histórico:\n${history}\n\nResponda ao cliente:` }
           ]
         })
