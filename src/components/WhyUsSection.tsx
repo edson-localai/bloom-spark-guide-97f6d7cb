@@ -145,7 +145,7 @@ const WhyUsSection = () => {
                     <div className="font-['Rajdhani'] text-[15px] text-[#8A9BB5] uppercase font-bold mb-1">Horário</div>
                     <div className="font-['Rajdhani'] text-[15px] text-[#B8C8DC]">
                       Seg a Sex: 8h às 18h<br />
-                      Sábado: 8h às 13h
+                      Sábado: 8h às 12h
                     </div>
                   </div>
                 </div>
