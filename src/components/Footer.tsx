@@ -1,4 +1,4 @@
-import { MapPin, Phone, Camera } from 'lucide-react';
+import { MapPin, Phone, Camera, Clock } from 'lucide-react';
 import hcbLogo from '@/assets/hcb-logo.png';
 import Logo from './Logo';
 import { SCROLL_OFFSET } from '@/constants/scroll';
@@ -105,6 +105,13 @@ const Footer = () => {
                 <span className="font-['Rajdhani'] text-[15px] text-hcb-gray-light">
                   @hcb.automotivo
                 </span>
+              </li>
+              <li className="flex gap-3">
+                <Clock className="w-5 h-5 text-hcb-blue shrink-0" />
+                <div className="flex flex-col font-['Rajdhani'] text-[15px] text-hcb-gray-light">
+                  <span>Seg a Sex: 8h às 18h</span>
+                  <span>Sábado: 8h às 12h</span>
+                </div>
               </li>
             </ul>
           </div>
