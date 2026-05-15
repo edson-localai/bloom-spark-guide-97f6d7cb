@@ -15,7 +15,7 @@ const StatsBar = () => {
   const stats = [
     { icon: Snowflake, value: 'Linha Leve', label: 'Completa de Peças' },
     { icon: Truck, value: 'Linha Pesada', label: 'Caminhões & Ônibus' },
-    { icon: Shield, value: '8 Meses', label: 'Garantia Máxima' },
+    { icon: Shield, value: '6 Meses', label: 'Garantia Máxima' },
     { icon: Zap, value: 'Entrega', label: 'Rápida para Oficinas' },
   ];
 
