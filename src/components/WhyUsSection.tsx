@@ -6,11 +6,11 @@ const WhyUsSection = () => {
   const differentials = [
     {
       title: "Qualidade Premium",
-      description: "Peças de marcas referência mundial. Qualidade de até 6 meses garantida em cada componente."
+      description: "Peças de marcas referência mundial. Garantia de peças até 6 meses garantida em cada componente."
     },
     {
-      title: "Garantia de até 6 meses",
-      description: "Nossos produtos possuem garantia de até 6 meses. Trabalhe com tranquilidade sabendo que está protegido."
+      title: "Garantia de peças até 6 meses",
+      description: "Nossos produtos possuem garantia de peças até 6 meses. Trabalhe com tranquilidade sabendo que está protegido."
     },
     {
       title: "Entrega Rápida para Oficinas",

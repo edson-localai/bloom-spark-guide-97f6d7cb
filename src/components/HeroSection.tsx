@@ -171,7 +171,7 @@ const HeroSection = () => {
             className="absolute top-0 left-[-20px] sm:left-[-40px] bg-[#16191F] border border-[#1E2330] rounded-[12px] px-5 py-3 flex items-center gap-2 shadow-xl z-20"
           >
             <span className="text-[#0066CC]">✓</span>
-            <span className="font-['Rajdhani'] text-sm text-[#F5F8FF] font-medium">Garantia de até 6 meses</span>
+            <span className="font-['Rajdhani'] text-sm text-[#F5F8FF] font-medium">Garantia de peças até 6 meses</span>
           </motion.div>
 
           <motion.div 
