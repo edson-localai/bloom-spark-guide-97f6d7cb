@@ -5,8 +5,8 @@ import whyUsBg from '../assets/why-us-bg.jpg';
 const WhyUsSection = () => {
   const differentials = [
     {
-      title: "Revendedor Oficial Denso",
-      description: "Marca referência mundial utilizada em linhas de montagem. Qualidade garantida de fábrica em cada componente."
+      title: "Qualidade Premium",
+      description: "Peças de marcas referência mundial. Qualidade garantida de fábrica em cada componente."
     },
     {
       title: "Garantia de até 8 meses",
@@ -102,18 +102,18 @@ const WhyUsSection = () => {
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#C8A84B]/10 border border-[#C8A84B]/30 mb-8">
                 <Star className="w-3.5 h-3.5 text-[#C8A84B]" fill="currentColor" />
                 <span className="font-['Rajdhani'] text-[11px] font-bold tracking-[0.15em] text-[#C8A84B] uppercase">
-                  Denso Official Partner
+                  Qualidade Garantida
                 </span>
               </div>
 
               <p className="font-['Inter'] text-[20px] font-light text-[#B8C8DC] leading-[1.8] italic mb-10">
-                "Revendedores autorizados da Denso, marca japonesa líder mundial em peças para sistemas de ar-condicionado automotivo."
+                "Trabalhamos com marcas líderes mundiais em peças para sistemas de ar-condicionado automotivo."
               </p>
 
               <div className="flex items-center gap-4 mb-10">
                 <span className="font-['Bebas_Neue'] text-2xl text-[#F5F8FF]">HCB</span>
                 <div className="h-px flex-1 bg-gradient-to-r from-[#0066CC]/40 to-transparent" />
-                <span className="font-['Bebas_Neue'] text-2xl text-[#C8A84B]">DENSO</span>
+                <span className="font-['Bebas_Neue'] text-2xl text-[#C8A84B]">PREMIUM</span>
               </div>
 
               <div className="space-y-6">

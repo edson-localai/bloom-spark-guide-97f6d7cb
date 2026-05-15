@@ -47,7 +47,7 @@ const ProductsSection = () => {
     {
       icon: Settings,
       title: "Compressores",
-      description: "O coração do sistema. Compressores Denso para linha leve e pesada com alta durabilidade.",
+      description: "O coração do sistema. Compressores de alta performance para linha leve e pesada com alta durabilidade.",
       tag: "Linha Leve + Pesada"
     },
     {
