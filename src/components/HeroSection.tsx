@@ -107,7 +107,7 @@ const HeroSection = () => {
             className="font-['Inter'] text-lg font-light text-[#B8C8DC] leading-[1.7] max-w-[520px] mb-10"
           >
             Peças de ar-condicionado automotivo linha leve, pesada e fora de estrada. 
-            Revendedor oficial Denso. Atendemos varejo e oficinas com agilidade e qualidade.
+            Atendemos varejo e oficinas com agilidade e qualidade.
           </motion.p>
 
           {/* CTAs */}
@@ -141,8 +141,8 @@ const HeroSection = () => {
               <div className="font-['Rajdhani'] text-xs font-bold tracking-[0.1em] text-[#8A9BB5] uppercase">Caminhões & Ônibus</div>
             </div>
             <div className="">
-              <div className="font-['Bebas_Neue'] text-[28px] text-[#F5F8FF] leading-none mb-1">Denso®</div>
-              <div className="font-['Rajdhani'] text-xs font-bold tracking-[0.1em] text-[#8A9BB5] uppercase">Revendedor Oficial</div>
+              <div className="font-['Bebas_Neue'] text-[28px] text-[#F5F8FF] leading-none mb-1">Qualidade HCB</div>
+              <div className="font-['Rajdhani'] text-xs font-bold tracking-[0.1em] text-[#8A9BB5] uppercase">Produtos Premium</div>
             </div>
           </div>
         </motion.div>

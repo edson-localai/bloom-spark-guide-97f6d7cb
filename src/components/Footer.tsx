@@ -40,7 +40,7 @@ const Footer = () => {
             </div>
             <p className="font-['Inter'] text-[15px] text-hcb-gray-light leading-relaxed max-w-sm">
               Especialistas em refrigeração automotiva em Castanhal, Pará. <br className="hidden sm:block" />
-              Revendedor oficial Denso e parceiro das melhores oficinas da região.
+              Parceiro das melhores oficinas da região.
             </p>
             <div className="flex items-center gap-4">
               <a 
