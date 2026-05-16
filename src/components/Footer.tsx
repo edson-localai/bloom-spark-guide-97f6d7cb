@@ -29,14 +29,8 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 mb-16">
           {/* Column 1 - Brand */}
           <div className="space-y-6">
-            <div className="flex items-center gap-2 group cursor-pointer" onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); }}>
-              <Logo size="md" />
-              <div className="flex flex-col">
-                <span className="font-['Bebas_Neue'] text-[26px] leading-none text-hcb-white tracking-wide group-hover:text-hcb-blue transition-colors">HCB</span>
-                <span className="font-['Rajdhani'] text-[10px] font-semibold tracking-[0.1em] text-hcb-gray uppercase">
-                  Ar Condicionado Automotivo
-                </span>
-              </div>
+            <div className="flex items-center group cursor-pointer" onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); }}>
+              <Logo size="lg" />
             </div>
             <p className="font-['Inter'] text-[15px] text-hcb-gray-light leading-relaxed max-w-sm">
               Especialistas em refrigeração automotiva em Castanhal, Pará. <br className="hidden sm:block" />
