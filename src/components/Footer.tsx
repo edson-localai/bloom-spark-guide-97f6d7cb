@@ -38,7 +38,7 @@ const Footer = () => {
             </p>
             <div className="flex items-center gap-4">
               <a 
-                href="https://instagram.com/hcb.automotivo" 
+                href="https://www.instagram.com/hcb.automotivo/" 
                 target="_blank" 
                 rel="noopener noreferrer"
                 aria-label="Siga a HCB no Instagram"
