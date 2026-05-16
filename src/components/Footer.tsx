@@ -118,6 +118,9 @@ const Footer = () => {
             © {currentYear} HCB Ar Condicionado Automotivo. Todos os direitos reservados. <br className="sm:hidden" />
             CNPJ 59.493.129/0001-21
           </p>
+          <p className="font-['Inter'] text-[12px] text-hcb-gray/40 mt-4">
+            Desenvolvimento <a href="https://pno.com.br" target="_blank" rel="noopener noreferrer" className="hover:text-hcb-blue transition-colors">PNO Marketing</a>
+          </p>
         </div>
       </div>
     </footer>
