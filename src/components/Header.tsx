@@ -87,14 +87,8 @@ const Header = () => {
       </a>
 
       {/* Logo */}
-      <a href="/" className="flex items-center gap-2 group transition-transform duration-300 hover:scale-[1.02]" aria-label="HCB Ar Condicionado - Início">
-        <Logo size="md" />
-        <div className="hidden sm:flex flex-col">
-          <span className="font-['Bebas_Neue'] text-[26px] leading-none text-[#F5F8FF] tracking-wide group-hover:text-[#60C0FF] transition-colors">HCB</span>
-          <span className="font-['Rajdhani'] text-[10px] font-semibold tracking-[0.15em] text-[#8A9BB5] uppercase">
-            Ar Condicionado
-          </span>
-        </div>
+      <a href="/" className="flex items-center group transition-transform duration-300 hover:scale-[1.02]" aria-label="HCB Ar Condicionado - Início">
+        <Logo size="lg" />
       </a>
 
       {/* Desktop Nav */}
