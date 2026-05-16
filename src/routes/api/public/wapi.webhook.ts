@@ -25,6 +25,19 @@ export const Route = createFileRoute('/api/public/wapi/webhook')({
   server: {
     handlers: {
       POST: async ({ request }: { request: Request }) => {
+        // Optional shared-secret check. Configure WAPI_WEBHOOK_SECRET
+        // and set it as a header in the W-API webhook configuration.
+        const secret = process.env.WAPI_WEBHOOK_SECRET;
+        if (secret) {
+          const provided =
+            request.headers.get('x-webhook-secret') ||
+            request.headers.get('apikey') ||
+            request.headers.get('authorization')?.replace(/^Bearer\s+/i, '');
+          if (provided !== secret) {
+            return new Response('Unauthorized', { status: 401 });
+          }
+        }
+
         let payload: any;
         try {
           payload = await request.json();
