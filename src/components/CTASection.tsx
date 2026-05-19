@@ -88,7 +88,7 @@ const CTASection = () => {
             whileInView={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.2, duration: 0.8 }}
             viewport={{ once: true }}
-            className="mt-16 w-full h-[300px] sm:h-[400px] rounded-3xl overflow-hidden shadow-2xl border border-slate-200 dark:border-white/10"
+            className="mt-16 w-full h-[350px] md:h-[500px] rounded-2xl md:rounded-[40px] overflow-hidden shadow-2xl border-4 border-white dark:border-white/5 ring-1 ring-slate-200 dark:ring-white/10"
           >
             <MapComponent />
           </motion.div>
