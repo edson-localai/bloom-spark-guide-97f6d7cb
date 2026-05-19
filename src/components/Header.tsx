@@ -4,6 +4,8 @@ import { MessageCircle, Menu, X } from 'lucide-react';
 import hcbLogo from '@/assets/hcb-logo.png';
 import Logo from './Logo';
 import { SCROLL_OFFSET } from '@/constants/scroll';
+import { ThemeToggle } from './ThemeToggle';
+
 
 const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -77,9 +79,10 @@ const Header = () => {
     <header 
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 h-[72px] px-[max(24px,5vw)] flex items-center justify-between border-b ${
         isScrolled 
-          ? 'bg-[#0A0A0A]/90 backdrop-blur-[16px] border-[#0066CC]/20 shadow-[0_4px_30px_rgba(0,0,0,0.5)]' 
+          ? 'bg-white/90 dark:bg-[#0A0A0A]/90 backdrop-blur-[16px] border-slate-200 dark:border-[#0066CC]/20 shadow-lg dark:shadow-[0_4px_30px_rgba(0,0,0,0.5)]' 
           : 'bg-transparent border-transparent'
       }`}
+
     >
       {/* Skip to content for accessibility */}
       <a href="#hero" className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 bg-[#0066CC] text-white px-4 py-2 rounded-md z-[60]">
@@ -101,8 +104,9 @@ const Header = () => {
               href={link.href}
               onClick={(e) => handleScrollTo(e, link.href)}
               className={`px-4 py-2 font-['Rajdhani'] text-[15px] font-semibold transition-all relative group ${
-                isActive ? 'text-[#F5F8FF]' : 'text-[#8A9BB5] hover:text-[#F5F8FF]'
+                isActive ? 'text-[#0066CC] dark:text-[#F5F8FF]' : 'text-slate-600 dark:text-[#8A9BB5] hover:text-[#0066CC] dark:hover:text-[#F5F8FF]'
               }`}
+
             >
               <span className="relative z-10">{link.name}</span>
               <span className={`absolute inset-0 bg-[#0066CC]/5 rounded-lg transition-colors ${isActive ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`} />
@@ -113,7 +117,9 @@ const Header = () => {
       </nav>
 
       {/* CTA Button */}
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-2 md:gap-4">
+        <ThemeToggle />
+
         <a
           href="https://wa.me/5591985161991"
           target="_blank"
@@ -127,7 +133,7 @@ const Header = () => {
 
         {/* Hamburger */}
         <button 
-          className="md:hidden text-[#F5F8FF] p-2 hover:bg-white/5 rounded-full transition-colors"
+          className="md:hidden text-slate-800 dark:text-[#F5F8FF] p-2 hover:bg-black/5 dark:hover:bg-white/5 rounded-full transition-colors"
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           aria-expanded={isMobileMenuOpen}
           aria-controls="mobile-menu"
@@ -146,7 +152,7 @@ const Header = () => {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.3, ease: "easeOut" }}
-            className="fixed inset-0 z-40 bg-[#0A0A0A]/95 backdrop-blur-xl md:hidden flex flex-col items-center justify-center p-8 gap-8"
+            className="fixed inset-0 z-40 bg-white/98 dark:bg-[#0A0A0A]/95 backdrop-blur-xl md:hidden flex flex-col items-center justify-center p-8 gap-8"
           >
             {navLinks.map((link, i) => {
               const isActive = activeSection === link.href.replace('#', '');
@@ -159,8 +165,9 @@ const Header = () => {
                   transition={{ delay: i * 0.1 }}
                   onClick={(e) => handleScrollTo(e, link.href)}
                   className={`font-['Bebas_Neue'] text-4xl tracking-wider transition-colors ${
-                    isActive ? 'text-[#0066CC]' : 'text-[#F5F8FF] hover:text-[#0066CC]'
+                    isActive ? 'text-[#0066CC]' : 'text-slate-800 dark:text-[#F5F8FF] hover:text-[#0066CC]'
                   }`}
+
                 >
                   {link.name}
                 </motion.a>
@@ -181,7 +188,7 @@ const Header = () => {
             
             <button 
               onClick={() => setIsMobileMenuOpen(false)}
-              className="absolute top-6 right-6 p-2 text-[#8A9BB5] hover:text-[#F5F8FF]"
+              className="absolute top-6 right-6 p-2 text-slate-500 dark:text-[#8A9BB5] hover:text-[#0066CC] dark:hover:text-[#F5F8FF]"
               aria-label="Fechar menu"
             >
               <X size={32} />

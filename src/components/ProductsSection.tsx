@@ -15,7 +15,7 @@ const ProductCard = ({ icon: Icon, title, description, tag }: ProductCardProps) 
       hidden: { opacity: 0, scale: 0.95, y: 20 },
       visible: { opacity: 1, scale: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } }
     }}
-    className="bg-[#16191F]/40 backdrop-blur-sm border border-[#1E2330] rounded-[24px] p-8 transition-all duration-500 hover:border-[#0066CC]/60 hover:bg-[#1A1F28]/60 hover:shadow-[0_20px_40px_rgba(0,102,204,0.15)] group relative overflow-hidden"
+    className="bg-white/60 dark:bg-[#16191F]/40 backdrop-blur-sm border border-slate-200 dark:border-[#1E2330] rounded-[24px] p-8 transition-all duration-500 hover:border-[#0066CC]/60 hover:bg-white dark:hover:bg-[#1A1F28]/60 hover:shadow-xl dark:hover:shadow-[0_20px_40px_rgba(0,102,204,0.15)] group relative overflow-hidden"
   >
     {/* Background Glow */}
     <div className="absolute -right-4 -top-4 w-24 h-24 bg-[#0066CC]/10 rounded-full blur-2xl group-hover:bg-[#0066CC]/20 transition-colors duration-500" />
@@ -31,11 +31,11 @@ const ProductCard = ({ icon: Icon, title, description, tag }: ProductCardProps) 
         </span>
       </div>
       
-      <h3 className="font-['Rajdhani'] text-[24px] font-bold text-[#F5F8FF] mb-3 uppercase tracking-tight group-hover:text-[#60C0FF] transition-colors">
+      <h3 className="font-['Rajdhani'] text-[24px] font-bold text-slate-900 dark:text-[#F5F8FF] mb-3 uppercase tracking-tight group-hover:text-[#0066CC] dark:group-hover:text-[#60C0FF] transition-colors">
         {title}
       </h3>
       
-      <p className="font-['Inter'] text-[15px] font-light text-[#B8C8DC] leading-[1.6]">
+      <p className="font-['Inter'] text-[15px] font-light text-slate-600 dark:text-[#B8C8DC] leading-[1.6]">
         {description}
       </p>
     </div>
@@ -83,7 +83,7 @@ const ProductsSection = () => {
   ];
 
   return (
-    <section id="produtos" className="relative bg-[#0A0A0A] py-20 sm:py-32 px-[max(24px,5vw)] overflow-hidden">
+    <section id="produtos" className="relative bg-slate-50 dark:bg-[#0A0A0A] py-20 sm:py-32 px-[max(24px,5vw)] overflow-hidden transition-colors duration-500">
       {/* Background image */}
       <div className="absolute inset-0 pointer-events-none">
         <img 
@@ -96,7 +96,7 @@ const ProductsSection = () => {
           decoding="async"
           className="absolute top-0 right-0 w-full md:w-2/3 h-full object-cover opacity-15"
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-[#0A0A0A] via-[#0A0A0A]/90 to-[#0A0A0A]/60" />
+        <div className="absolute inset-0 bg-gradient-to-r from-slate-50 via-slate-50/90 to-slate-50/60 dark:from-[#0A0A0A] dark:via-[#0A0A0A]/90 dark:to-[#0A0A0A]/60" />
       </div>
 
       {/* Header */}
@@ -106,10 +106,11 @@ const ProductsSection = () => {
             Catálogo
           </span>
         </div>
-        <h2 className="font-['Bebas_Neue'] text-[clamp(48px,6vw,80px)] text-[#F5F8FF] leading-tight uppercase mb-4">
+        <h2 className="font-['Bebas_Neue'] text-[clamp(48px,6vw,80px)] text-slate-900 dark:text-[#F5F8FF] leading-tight uppercase mb-4">
           Nossas Peças
         </h2>
-        <p className="font-['Inter'] text-lg text-[#8A9BB5] max-w-2xl mx-auto">
+        <p className="font-['Inter'] text-lg text-slate-500 dark:text-[#8A9BB5] max-w-2xl mx-auto">
+
           Tudo que seu sistema de ar-condicionado precisa, em um só lugar.
         </p>
         <div className="hcb-divider w-[160px] mx-auto mt-8" />

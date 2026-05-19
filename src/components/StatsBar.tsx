@@ -16,7 +16,7 @@ const StatsBar = () => {
 
   return (
     <section id="estatisticas" className="relative z-20 -mt-10 sm:-mt-20 px-[max(24px,5vw)]">
-      <div className="max-w-7xl mx-auto relative overflow-hidden bg-[#16191F]/90 backdrop-blur-xl border border-[#0066CC]/20 rounded-2xl sm:rounded-[32px] p-8 sm:p-12 shadow-[0_20px_50px_rgba(0,0,0,0.6)]">
+      <div className="max-w-7xl mx-auto relative overflow-hidden bg-white/90 dark:bg-[#16191F]/90 backdrop-blur-xl border border-slate-200 dark:border-[#0066CC]/20 rounded-2xl sm:rounded-[32px] p-8 sm:p-12 shadow-xl dark:shadow-[0_20px_50px_rgba(0,0,0,0.6)] transition-all duration-500">
         {/* Background Image Overlay with Blue Tech Lighting */}
         <div className="absolute inset-0 z-0 opacity-15">
           <img 
@@ -24,7 +24,7 @@ const StatsBar = () => {
             alt="Stats background" 
             className="w-full h-full object-cover mix-blend-screen"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-[#16191F] via-transparent to-[#16191F]" />
+          <div className="absolute inset-0 bg-gradient-to-r from-white via-transparent to-white dark:from-[#16191F] dark:via-transparent dark:to-[#16191F]" />
         </div>
 
         <div className="relative z-10 grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-4 items-center">
@@ -49,10 +49,10 @@ const StatsBar = () => {
                 <div className="mb-4 transform group-hover:scale-110 group-hover:-rotate-3 transition-transform duration-300">
                   <stat.icon className="w-8 h-8 text-[#0066CC]" />
                 </div>
-                <div className="font-['Bebas_Neue'] text-2xl sm:text-3xl text-[#F5F8FF] leading-none mb-1 tracking-wider group-hover:text-[#60C0FF] transition-colors">
+                <div className="font-['Bebas_Neue'] text-2xl sm:text-3xl text-slate-900 dark:text-[#F5F8FF] leading-none mb-1 tracking-wider group-hover:text-[#0066CC] dark:group-hover:text-[#60C0FF] transition-colors">
                   {stat.value}
                 </div>
-                <div className="font-['Rajdhani'] text-[10px] sm:text-[11px] font-bold tracking-[0.2em] text-[#8A9BB5] uppercase">
+                <div className="font-['Rajdhani'] text-[10px] sm:text-[11px] font-bold tracking-[0.2em] text-slate-500 dark:text-[#8A9BB5] uppercase">
                   {stat.label}
                 </div>
               </motion.div>
