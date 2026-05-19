@@ -51,19 +51,19 @@
 :root {
   --radius: 0.625rem;
   --background: #FFFFFF;
-  --foreground: #0A0A0A;
+  --foreground: #0F172A;
   --card: #F8FAFC;
-  --card-foreground: #0A0A0A;
+  --card-foreground: #0F172A;
   --popover: #FFFFFF;
-  --popover-foreground: #0A0A0A;
+  --popover-foreground: #0F172A;
   --primary: #0066CC;
   --primary-foreground: #FFFFFF;
   --secondary: #F1F5F9;
-  --secondary-foreground: #0A0A0A;
+  --secondary-foreground: #0F172A;
   --muted: #F1F5F9;
-  --muted-foreground: #64748B;
+  --muted-foreground: #334155;
   --accent: #F1F5F9;
-  --accent-foreground: #0A0A0A;
+  --accent-foreground: #0F172A;
   --destructive: #ef4444;
   --destructive-foreground: #f8fafc;
   --border: #E2E8F0;
@@ -78,13 +78,13 @@
   --hcb-blue: #0066CC;
   --hcb-blue-mid: #0080FF;
   --hcb-blue-glow: #1A9FFF;
-  --hcb-blue-light: #60C0FF;
+  --hcb-blue-light: #004D99;
   --hcb-ice: #0066CC;
-  --hcb-white: #0A0A0A;
-  --hcb-gray: #64748B;
-  --hcb-gray-light: #475569;
-  --hcb-gold: #B8860B;
-  --hcb-gold-light: #C8A84B;
+  --hcb-white: #0F172A;
+  --hcb-gray: #475569;
+  --hcb-gray-light: #334155;
+  --hcb-gold: #92400E;
+  --hcb-gold-light: #B45309;
 }
 
 .dark {
@@ -125,14 +125,12 @@
   --hcb-gold-light: #F0D080;
 }
 
-
 @layer base {
   * {
     box-sizing: border-box;
     border-color: var(--border);
     outline-color: var(--primary);
   }
-
 
   html {
     scroll-behavior: smooth;
@@ -142,7 +140,6 @@
   body {
     background-color: var(--background);
     color: var(--foreground);
-
     font-family: 'Rajdhani', sans-serif;
     overflow-x: hidden;
     text-rendering: optimizeLegibility;
@@ -151,12 +148,12 @@
   }
 
   ::selection {
-    background-color: var(--hcb-blue);
+    background-color: var(--primary);
     color: white;
   }
 
   :focus-visible {
-    outline: 2px solid var(--hcb-blue);
+    outline: 2px solid var(--primary);
     outline-offset: 4px;
   }
 
@@ -232,12 +229,10 @@
 ::-webkit-scrollbar-track {
   background: var(--background);
 }
-
 ::-webkit-scrollbar-thumb {
-  background: #0066CC;
+  background: var(--primary);
   border-radius: 2px;
 }
-
 
 /* Quantum Lovable - watermark removal */
 #lovable-badge {
@@ -254,4 +249,3 @@ div[style*="Edit with Lovable"],
   position: absolute !important;
   z-index: -9999 !important;
 }
-
