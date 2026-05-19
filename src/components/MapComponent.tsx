@@ -1,13 +1,17 @@
 import { ExternalLink, MapPin } from 'lucide-react';
 import storefrontImg from '@/assets/storefront.jpg';
+import { MAPS_CONFIG } from '@/constants/maps';
 
 const MapComponent = () => {
-  // Endereço completo para o Google Maps
-  const address = "HCB Ar Condicionado Automotivo - Tv. Primeiro de Maio, 1719 - Centro, Castanhal - PA, 68742-390";
+  const { API_KEY, ADDRESS } = MAPS_CONFIG;
   
-  // URL para embed e para rotas
-  const embedUrl = `https://www.google.com/maps?q=${encodeURIComponent(address)}&output=embed&z=17`;
-  const directionsUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(address)}`;
+  // URL para embed oficial usando API Key e para rotas
+  const embedUrl = API_KEY 
+    ? `https://www.google.com/maps/embed/v1/place?key=${API_KEY}&q=${encodeURIComponent(ADDRESS)}`
+    : `https://www.google.com/maps?q=${encodeURIComponent(ADDRESS)}&output=embed&z=17`;
+    
+  const directionsUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(ADDRESS)}`;
+
 
   return (
     <div className="w-full h-full relative bg-slate-100 dark:bg-slate-900 group">
