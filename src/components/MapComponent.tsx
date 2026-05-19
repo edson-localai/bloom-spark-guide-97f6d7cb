@@ -1,31 +1,59 @@
 import { ExternalLink, MapPin } from 'lucide-react';
+import { GoogleMap, MarkerF, useLoadScript } from '@react-google-maps/api';
 import storefrontImg from '@/assets/storefront.jpg';
 import { MAPS_CONFIG } from '@/constants/maps';
 
-const MapComponent = () => {
-  const { API_KEY, ADDRESS } = MAPS_CONFIG;
-  
-  // URL para embed oficial usando API Key e para rotas
-  const embedUrl = API_KEY 
-    ? `https://www.google.com/maps/embed/v1/place?key=${API_KEY}&q=${encodeURIComponent(ADDRESS)}`
-    : `https://www.google.com/maps?q=${encodeURIComponent(ADDRESS)}&output=embed&z=17`;
-    
-  const directionsUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(ADDRESS)}`;
+const mapContainerStyle = {
+  width: '100%',
+  height: '100%',
+};
 
+const mapOptions: google.maps.MapOptions = {
+  disableDefaultUI: true,
+  clickableIcons: false,
+  gestureHandling: 'cooperative',
+  zoomControl: true,
+  streetViewControl: false,
+  mapTypeControl: false,
+  fullscreenControl: true,
+};
+
+const MapComponent = () => {
+  const { API_KEY, ADDRESS, LOCATION, TRACKING_ID } = MAPS_CONFIG;
+  const { isLoaded, loadError } = useLoadScript({
+    id: 'hcb-google-maps-script',
+    googleMapsApiKey: API_KEY,
+    channel: TRACKING_ID,
+    preventGoogleFontsLoading: true,
+  });
+
+  const embedUrl = `https://www.google.com/maps?q=${encodeURIComponent(ADDRESS)}&output=embed&z=17`;
+  const directionsUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(ADDRESS)}`;
 
   return (
     <div className="w-full h-full relative bg-slate-100 dark:bg-slate-900 group">
-      <iframe
-        title="Localização HCB Ar Condicionado Automotivo"
-        width="100%"
-        height="100%"
-        style={{ border: 0 }}
-        src={embedUrl}
-        allowFullScreen
-        loading="lazy"
-        referrerPolicy="no-referrer-when-downgrade"
-        className="rounded-2xl grayscale-[0.2] dark:invert-[0.9] dark:hue-rotate-180 opacity-95 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-500 shadow-inner"
-      ></iframe>
+      {isLoaded && !loadError ? (
+        <GoogleMap
+          mapContainerStyle={mapContainerStyle}
+          center={LOCATION}
+          zoom={17}
+          options={mapOptions}
+        >
+          <MarkerF position={LOCATION} title="HCB Ar Condicionado Automotivo" />
+        </GoogleMap>
+      ) : (
+        <iframe
+          title="Localização HCB Ar Condicionado Automotivo"
+          width="100%"
+          height="100%"
+          style={{ border: 0 }}
+          src={embedUrl}
+          allowFullScreen
+          loading="lazy"
+          referrerPolicy="no-referrer-when-downgrade"
+          className="rounded-2xl grayscale-[0.2] dark:invert-[0.9] dark:hue-rotate-180 opacity-95 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-500 shadow-inner"
+        ></iframe>
+      )}
       
       {/* Overlay informativo personalizado com imagem da fachada */}
       <div className="absolute top-4 left-4 bg-white/95 dark:bg-[#0A0A0A]/95 backdrop-blur-md p-0 rounded-2xl border border-slate-200 dark:border-[#0066CC]/30 shadow-2xl hidden sm:block max-w-[200px] overflow-hidden group/overlay">
