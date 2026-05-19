@@ -288,7 +288,7 @@ export const Route = createFileRoute('/api/public/wapi/webhook')({
                 .update({
                   last_message: content,
                   last_message_at: new Date().toISOString(),
-                  unread_count: (existing as any).unread_count != null ? undefined : 1,
+                  unread_count: (existing as any).unread_count != null ? (existing as any).unread_count + 1 : 1,
                   status: reopened ? 'queue' : existing.status,
                   updated_at: new Date().toISOString(),
                 })
