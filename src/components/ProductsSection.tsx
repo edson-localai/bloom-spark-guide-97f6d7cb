@@ -93,6 +93,7 @@ const ProductsSection = () => {
           loading="lazy"
           width={1600}
           height={900}
+          decoding="async"
           className="absolute top-0 right-0 w-full md:w-2/3 h-full object-cover opacity-15"
         />
         <div className="absolute inset-0 bg-gradient-to-r from-[#0A0A0A] via-[#0A0A0A]/90 to-[#0A0A0A]/60" />
