@@ -76,7 +76,7 @@ const SegmentsSection = () => {
       <div className="absolute inset-0 z-0 opacity-10">
         <img 
           src={segmentsBg} 
-          alt="Segments background" 
+          alt="Peças para ar condicionado de linha pesada e leve" 
           className="w-full h-full object-cover grayscale"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-[#0A0A0A] via-[#0D1520]/80 to-[#0A0A0A]" />
