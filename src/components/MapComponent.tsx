@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { ExternalLink, MapPin } from 'lucide-react';
 import { GoogleMap, MarkerF, useLoadScript } from '@react-google-maps/api';
 import storefrontImg from '@/assets/storefront.jpg';
@@ -20,6 +21,7 @@ const mapOptions: google.maps.MapOptions = {
 
 const MapComponent = () => {
   const { API_KEY, ADDRESS, LOCATION, TRACKING_ID } = MAPS_CONFIG;
+  const [hasAuthFailure, setHasAuthFailure] = useState(false);
   const { isLoaded, loadError } = useLoadScript({
     id: 'hcb-google-maps-script',
     googleMapsApiKey: API_KEY,
@@ -27,12 +29,17 @@ const MapComponent = () => {
     preventGoogleFontsLoading: true,
   });
 
+  useEffect(() => {
+    window.gm_authFailure = () => setHasAuthFailure(true);
+  }, []);
+
   const embedUrl = `https://www.google.com/maps?q=${encodeURIComponent(ADDRESS)}&output=embed&z=17`;
   const directionsUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(ADDRESS)}`;
+  const shouldShowInteractiveMap = API_KEY && isLoaded && !loadError && !hasAuthFailure;
 
   return (
     <div className="w-full h-full relative bg-slate-100 dark:bg-slate-900 group">
-      {isLoaded && !loadError ? (
+      {shouldShowInteractiveMap ? (
         <GoogleMap
           mapContainerStyle={mapContainerStyle}
           center={LOCATION}
