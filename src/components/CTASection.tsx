@@ -3,7 +3,7 @@ import { MessageCircle, Phone, MapPin } from 'lucide-react';
 
 const CTASection = () => {
   return (
-    <section id="contatosection" className="relative bg-gradient-to-br from-[#0D1B2A] via-[#0A0A0A] to-[#060D18] py-20 sm:py-32 px-[max(24px,5vw)] text-center overflow-hidden">
+    <section id="contatosection" className="relative bg-gradient-to-br from-slate-100 via-white to-slate-200 dark:from-[#0D1B2A] dark:via-[#0A0A0A] dark:to-[#060D18] py-20 sm:py-32 px-[max(24px,5vw)] text-center overflow-hidden transition-colors duration-500">
       {/* Background decoration elements */}
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full border border-[#0066CC]/5" />
@@ -25,12 +25,12 @@ const CTASection = () => {
             </span>
           </div>
 
-          <h2 className="font-['Bebas_Neue'] text-[clamp(48px,7vw,96px)] text-[#F5F8FF] leading-[0.9] uppercase mb-8 tracking-wider">
+          <h2 className="font-['Bebas_Neue'] text-[clamp(48px,7vw,96px)] text-slate-900 dark:text-[#F5F8FF] leading-[0.9] uppercase mb-8 tracking-wider">
             Pronto para resolver<br />
             o ar do seu veículo?
           </h2>
 
-          <p className="font-['Inter'] text-lg text-[#8A9BB5] max-w-2xl mx-auto mb-12">
+          <p className="font-['Inter'] text-lg text-slate-500 dark:text-[#8A9BB5] max-w-2xl mx-auto mb-12">
             Atendemos varejo e oficinas. Localização central em Castanhal com estacionamento. 
             Entre em contato e resolva hoje mesmo.
           </p>
@@ -49,8 +49,9 @@ const CTASection = () => {
             <a 
               href="tel:5591985161991"
               aria-label="Ligar para HCB Ar Condicionado"
-              className="w-full sm:w-auto flex items-center justify-center gap-3 px-12 py-5 bg-white/5 backdrop-blur-sm border border-white/10 rounded-full font-['Rajdhani'] text-[18px] font-bold text-[#F5F8FF] transition-all duration-300 hover:bg-white/10 hover:border-[#0066CC]/50 active:scale-95"
+              className="w-full sm:w-auto flex items-center justify-center gap-3 px-12 py-5 bg-slate-100 dark:bg-white/5 backdrop-blur-sm border border-slate-200 dark:border-white/10 rounded-full font-['Rajdhani'] text-[18px] font-bold text-slate-900 dark:text-[#F5F8FF] transition-all duration-300 hover:bg-slate-200 dark:hover:bg-white/10 hover:border-[#0066CC]/50 active:scale-95"
             >
+
               <Phone className="w-6 h-6 text-[#0066CC]" />
               (91) 98516-1991
             </a>
@@ -61,8 +62,9 @@ const CTASection = () => {
             href="https://maps.google.com/?q=-1.2931392,-47.9302892"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-3 text-[#8A9BB5] hover:text-[#60C0FF] transition-colors group"
+            className="inline-flex items-center gap-3 text-slate-500 dark:text-[#8A9BB5] hover:text-[#0066CC] dark:hover:text-[#60C0FF] transition-colors group"
           >
+
             <MapPin className="w-5 h-5 text-[#0066CC] group-hover:scale-110 transition-transform" />
             <span className="font-['Rajdhani'] text-base md:text-lg">
               Tv. Primeiro de Maio, 1.719 — Centro, Castanhal - PA, CEP 68742-390
