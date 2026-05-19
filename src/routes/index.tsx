@@ -1,15 +1,19 @@
 import { createFileRoute } from "@tanstack/react-router";
+import React, { Suspense, lazy } from 'react';
 import Header from '../components/Header';
 import HeroSection from '../components/HeroSection';
 import StatsBar from '../components/StatsBar';
-import ProductsSection from '../components/ProductsSection';
-import SegmentsSection from '../components/SegmentsSection';
-import WhyUsSection from '../components/WhyUsSection';
 
-import CTASection from '../components/CTASection';
-import TestimonialsSection from '../components/TestimonialsSection';
-import Footer from '../components/Footer';
-import LandingChatBubble from '../components/LandingChatBubble';
+// Lazy load components below the fold for better initial performance
+const WhyUsSection = lazy(() => import('../components/WhyUsSection'));
+const ProductsSection = lazy(() => import('../components/ProductsSection'));
+const SegmentsSection = lazy(() => import('../components/SegmentsSection'));
+const TestimonialsSection = lazy(() => import('../components/TestimonialsSection'));
+const CTASection = lazy(() => import('../components/CTASection'));
+const Footer = lazy(() => import('../components/Footer'));
+const LandingChatBubble = lazy(() => import('../components/LandingChatBubble'));
+
+const LoadingSection = () => <div className="h-40 bg-[#0A0A0A]" />;
 
 export const Route = createFileRoute("/")({
   component: Index,
@@ -21,13 +25,15 @@ function Index() {
       <Header />
       <HeroSection />
       <StatsBar />
-      <WhyUsSection />
-      <ProductsSection />
-      <SegmentsSection />
-      <TestimonialsSection />
-      <CTASection />
-      <Footer />
-      <LandingChatBubble />
+      <Suspense fallback={<LoadingSection />}>
+        <WhyUsSection />
+        <ProductsSection />
+        <SegmentsSection />
+        <TestimonialsSection />
+        <CTASection />
+        <Footer />
+        <LandingChatBubble />
+      </Suspense>
     </div>
   );
 }
