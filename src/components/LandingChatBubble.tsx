@@ -398,36 +398,40 @@ export default function LandingChatBubble() {
                             onChange={e => setLead({...lead, name: e.target.value})} 
                           />
                         ) : (
-                          <p className="text-xs text-white px-0.5">{lead.name || 'Não informado'}</p>
+                          <p className="text-xs text-slate-800 dark:text-white px-0.5">{lead.name || 'Não informado'}</p>
                         )}
                       </div>
 
                       <div className="flex flex-col gap-0.5">
-                        <label className="text-[9px] text-white/40 uppercase font-semibold">Veículo</label>
+                        <label className="text-[9px] text-slate-400 dark:text-white/40 uppercase font-semibold">Veículo</label>
                         {isEditing ? (
                           <div className="grid grid-cols-3 gap-2">
                             <input 
                               placeholder="Marca"
-                              className="w-full bg-white/5 border border-white/10 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-[#0066CC]"
+                              className="w-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg px-2.5 py-1.5 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-[#0066CC]"
+
                               value={lead.vehicle_brand || ''} 
                               onChange={e => setLead({...lead, vehicle_brand: e.target.value})} 
                             />
                             <input 
                               placeholder="Modelo"
-                              className="w-full bg-white/5 border border-white/10 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-[#0066CC]"
+                              className="w-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg px-2.5 py-1.5 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-[#0066CC]"
+
                               value={lead.vehicle_model || ''} 
                               onChange={e => setLead({...lead, vehicle_model: e.target.value})} 
                             />
                             <input 
                               placeholder="Ano"
                               type="number"
-                              className="w-full bg-white/5 border border-white/10 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-[#0066CC]"
+                              className="w-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg px-2.5 py-1.5 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-[#0066CC]"
+
                               value={lead.vehicle_year || ''} 
                               onChange={e => setLead({...lead, vehicle_year: parseInt(e.target.value) || null})} 
                             />
                           </div>
                         ) : (
-                          <p className="text-xs text-white px-0.5">
+                          <p className="text-xs text-slate-800 dark:text-white px-0.5">
+
                             {lead.vehicle_brand} {lead.vehicle_model} {lead.vehicle_year && `(${lead.vehicle_year})`}
                             {(!lead.vehicle_brand && !lead.vehicle_model) && 'Não informado'}
                           </p>
@@ -435,29 +439,29 @@ export default function LandingChatBubble() {
                       </div>
 
                       <div className="flex flex-col gap-0.5">
-                        <label className="text-[9px] text-white/40 uppercase font-semibold">Necessidade</label>
+                        <label className="text-[9px] text-slate-400 dark:text-white/40 uppercase font-semibold">Necessidade</label>
                         {isEditing ? (
                           <textarea 
                             rows={2}
-                            className="w-full bg-white/5 border border-white/10 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-[#0066CC] resize-none"
+                            className="w-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg px-2.5 py-1.5 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-[#0066CC] resize-none"
                             value={lead.need || ''} 
                             onChange={e => setLead({...lead, need: e.target.value})} 
                           />
                         ) : (
-                          <p className="text-xs text-white px-0.5 leading-relaxed">{lead.need || 'Não informado'}</p>
+                          <p className="text-xs text-slate-800 dark:text-white px-0.5 leading-relaxed">{lead.need || 'Não informado'}</p>
                         )}
                       </div>
 
                       <div className="flex flex-col gap-0.5">
-                        <label className="text-[9px] text-white/40 uppercase font-semibold">Cidade/Bairro</label>
+                        <label className="text-[9px] text-slate-400 dark:text-white/40 uppercase font-semibold">Cidade/Bairro</label>
                         {isEditing ? (
                           <input 
-                            className="w-full bg-white/5 border border-white/10 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-[#0066CC]"
+                            className="w-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg px-2.5 py-1.5 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-[#0066CC]"
                             value={lead.city || ''} 
                             onChange={e => setLead({...lead, city: e.target.value})} 
                           />
                         ) : (
-                          <p className="text-xs text-white px-0.5">{lead.city || 'Não informado'}</p>
+                          <p className="text-xs text-slate-800 dark:text-white px-0.5">{lead.city || 'Não informado'}</p>
                         )}
                       </div>
                     </div>
@@ -474,7 +478,7 @@ export default function LandingChatBubble() {
                           setIsEditing(true);
                           setValidationError(null);
                         }} 
-                        className="text-[10px] text-white/60 hover:text-white underline mt-1"
+                        className="text-[10px] text-slate-500 dark:text-white/60 hover:text-slate-900 dark:hover:text-white underline mt-1"
                       >
                         Corrigir agora
                       </button>
@@ -510,7 +514,8 @@ export default function LandingChatBubble() {
                         {isReused ? "Dados identificados!" : "Dados salvos com sucesso!"}
                       </p>
                     </div>
-                    <p className="text-white/60 text-xs px-2">
+                    <p className="text-slate-500 dark:text-white/60 text-xs px-2">
+
                       {isReused 
                         ? "Já encontramos seu cadastro com esses dados. Vamos continuar o atendimento?" 
                         : "Sua solicitação foi registrada. Clique abaixo para iniciar a conversa no WhatsApp."}
@@ -530,7 +535,7 @@ export default function LandingChatBubble() {
                       <AlertCircle className="w-8 h-8" />
                       <p className="font-semibold text-sm">Ops! Erro ao salvar dados</p>
                     </div>
-                    <p className="text-white/60 text-xs px-2">
+                    <p className="text-slate-500 dark:text-white/60 text-xs px-2">
                       Não conseguimos registrar seus dados, mas você ainda pode falar conosco.
                     </p>
                     <div className="flex gap-2">
@@ -554,7 +559,7 @@ export default function LandingChatBubble() {
           </div>
 
           {/* Input */}
-          <div className="p-3 border-t border-white/10 bg-[#0A0A0A]">
+          <div className="p-3 border-t border-slate-200 dark:border-white/10 bg-white dark:bg-[#0A0A0A]">
             <div className="flex items-center gap-2">
               <input
                 type="text"
@@ -568,7 +573,7 @@ export default function LandingChatBubble() {
                 }}
                 placeholder={handoff ? "Atendimento finalizado" : "Digite sua mensagem..."}
                 disabled={loading || !!handoff}
-                className="flex-1 bg-white/5 border border-white/10 rounded-full px-4 py-2.5 text-sm text-white placeholder:text-white/40 focus:outline-none focus:border-[#0066CC] disabled:opacity-50"
+                className="flex-1 bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-full px-4 py-2.5 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-white/40 focus:outline-none focus:border-[#0066CC] disabled:opacity-50"
               />
               <button
                 onClick={send}
