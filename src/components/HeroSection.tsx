@@ -23,7 +23,7 @@ const HeroSection = () => {
   };
 
   return (
-    <section className="relative min-h-screen pt-[72px] bg-[#0A0A0A] overflow-hidden flex items-center">
+    <section className="relative min-h-screen pt-[72px] bg-slate-50 dark:bg-[#0A0A0A] overflow-hidden flex items-center transition-colors duration-500">
       {/* Background Image */}
       <div className="absolute inset-0 pointer-events-none">
         <img 
@@ -34,12 +34,13 @@ const HeroSection = () => {
           height={1080}
           decoding="async"
           fetchPriority="high"
-          className="absolute inset-0 w-full h-full object-cover opacity-60"
+          className="absolute inset-0 w-full h-full object-cover opacity-30 dark:opacity-60"
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-[#0A0A0A] via-[#0A0A0A]/75 to-[#0A0A0A]/30" />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#0A0A0A] via-transparent to-[#0A0A0A]/40" />
-        <div className="absolute top-0 left-0 w-1/2 h-full bg-[radial-gradient(ellipse_at_10%_40%,rgba(0,102,204,0.18)_0%,transparent_60%)]" />
-        <div className="absolute top-0 right-0 w-[60%] h-full bg-[radial-gradient(ellipse_at_90%_60%,rgba(0,102,204,0.12)_0%,transparent_50%)]" />
+        <div className="absolute inset-0 bg-gradient-to-r from-white via-white/80 to-transparent dark:from-[#0A0A0A] dark:via-[#0A0A0A]/75 dark:to-[#0A0A0A]/30" />
+        <div className="absolute inset-0 bg-gradient-to-t from-white via-transparent to-white/40 dark:from-[#0A0A0A] dark:via-transparent dark:to-[#0A0A0A]/40" />
+        <div className="absolute top-0 left-0 w-1/2 h-full bg-[radial-gradient(ellipse_at_10%_40%,rgba(0,102,204,0.1)_0%,transparent_60%)] dark:bg-[radial-gradient(ellipse_at_10%_40%,rgba(0,102,204,0.18)_0%,transparent_60%)]" />
+        <div className="absolute top-0 right-0 w-[60%] h-full bg-[radial-gradient(ellipse_at_90%_60%,rgba(0,102,204,0.08)_0%,transparent_50%)] dark:bg-[radial-gradient(ellipse_at_90%_60%,rgba(0,102,204,0.12)_0%,transparent_50%)]" />
+
         
         {/* Grid lines */}
         <div 
@@ -74,7 +75,7 @@ const HeroSection = () => {
           </div>
 
           {/* H1 */}
-          <h1 className="font-['Bebas_Neue'] text-[clamp(60px,9vw,110px)] leading-[0.95] text-[#F5F8FF] mb-6 uppercase tracking-wider">
+          <h1 className="font-['Bebas_Neue'] text-[clamp(60px,9vw,110px)] leading-[0.95] text-slate-900 dark:text-[#F5F8FF] mb-6 uppercase tracking-wider">
             <motion.span 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -106,7 +107,7 @@ const HeroSection = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.8, duration: 0.8 }}
-            className="font-['Inter'] text-lg font-light text-[#B8C8DC] leading-[1.7] max-w-[520px] mb-10"
+            className="font-['Inter'] text-lg font-light text-slate-600 dark:text-[#B8C8DC] leading-[1.7] max-w-[520px] mb-10"
           >
             Peças de ar-condicionado automotivo linha leve, pesada e fora de estrada. 
             Atendemos varejo e oficinas com agilidade e qualidade.
@@ -125,7 +126,7 @@ const HeroSection = () => {
               href="https://wa.me/5591985161991"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-2 px-8 py-4 bg-transparent border border-[#0066CC]/40 rounded-[8px] font-['Rajdhani'] text-base font-semibold text-[#60C0FF] transition-all duration-300 hover:bg-[#0066CC]/10 hover:border-[#0066CC]"
+              className="flex items-center gap-2 px-8 py-4 bg-transparent border border-[#0066CC]/40 rounded-[8px] font-['Rajdhani'] text-base font-semibold text-[#0066CC] dark:text-[#60C0FF] transition-all duration-300 hover:bg-[#0066CC]/5 dark:hover:bg-[#0066CC]/10 hover:border-[#0066CC]"
             >
               <MessageCircle className="w-5 h-5" />
               Falar com Especialista
@@ -134,18 +135,19 @@ const HeroSection = () => {
 
           {/* Stats */}
           <div className="flex flex-wrap items-center gap-x-10 gap-y-6">
-            <div className="pr-10 border-r border-[#1E2330] last:border-0 last:pr-0">
-              <div className="font-['Bebas_Neue'] text-[28px] text-[#F5F8FF] leading-none mb-1">Linha Leve</div>
-              <div className="font-['Rajdhani'] text-xs font-bold tracking-[0.1em] text-[#8A9BB5] uppercase">Passeio & SUVs</div>
+            <div className="pr-10 border-r border-slate-200 dark:border-[#1E2330] last:border-0 last:pr-0">
+              <div className="font-['Bebas_Neue'] text-[28px] text-slate-900 dark:text-[#F5F8FF] leading-none mb-1">Linha Leve</div>
+              <div className="font-['Rajdhani'] text-xs font-bold tracking-[0.1em] text-slate-500 dark:text-[#8A9BB5] uppercase">Passeio & SUVs</div>
             </div>
-            <div className="pr-10 border-r border-[#1E2330] last:border-0 last:pr-0">
-              <div className="font-['Bebas_Neue'] text-[28px] text-[#F5F8FF] leading-none mb-1">Linha Pesada</div>
-              <div className="font-['Rajdhani'] text-xs font-bold tracking-[0.1em] text-[#8A9BB5] uppercase">Caminhões & Ônibus</div>
+            <div className="pr-10 border-r border-slate-200 dark:border-[#1E2330] last:border-0 last:pr-0">
+              <div className="font-['Bebas_Neue'] text-[28px] text-slate-900 dark:text-[#F5F8FF] leading-none mb-1">Linha Pesada</div>
+              <div className="font-['Rajdhani'] text-xs font-bold tracking-[0.1em] text-slate-500 dark:text-[#8A9BB5] uppercase">Caminhões & Ônibus</div>
             </div>
             <div className="">
-              <div className="font-['Bebas_Neue'] text-[28px] text-[#F5F8FF] leading-none mb-1">Qualidade HCB</div>
-              <div className="font-['Rajdhani'] text-xs font-bold tracking-[0.1em] text-[#8A9BB5] uppercase">Produtos Premium</div>
+              <div className="font-['Bebas_Neue'] text-[28px] text-slate-900 dark:text-[#F5F8FF] leading-none mb-1">Qualidade HCB</div>
+              <div className="font-['Rajdhani'] text-xs font-bold tracking-[0.1em] text-slate-500 dark:text-[#8A9BB5] uppercase">Produtos Premium</div>
             </div>
+
           </div>
         </motion.div>
 
@@ -158,7 +160,7 @@ const HeroSection = () => {
         >
           {/* Main Circle */}
           <div 
-            className="w-[280px] h-[280px] sm:w-[400px] sm:h-[400px] rounded-full bg-[radial-gradient(circle_at_40%_35%,#16191F_0%,#0D1B2A_60%,#0A0A0A_100%)] border border-[#0066CC]/20 flex items-center justify-center relative shadow-[0_0_80px_rgba(0,102,204,0.15),inset_0_0_60px_rgba(0,102,204,0.05)] animate-[floatHero_3s_ease-in-out_infinite_alternate]"
+            className="w-[280px] h-[280px] sm:w-[400px] sm:h-[400px] rounded-full bg-[radial-gradient(circle_at_40%_35%,#F8FAFC_0%,#EDF2F7_60%,#E2E8F0_100%)] dark:bg-[radial-gradient(circle_at_40%_35%,#16191F_0%,#0D1B2A_60%,#0A0A0A_100%)] border border-slate-200 dark:border-[#0066CC]/20 flex items-center justify-center relative shadow-xl dark:shadow-[0_0_80px_rgba(0,102,204,0.15),inset_0_0_60px_rgba(0,102,204,0.05)] animate-[floatHero_3s_ease-in-out_infinite_alternate]"
           >
             <Logo size="hero" className="drop-shadow-[0_0_30px_rgba(0,102,204,0.4)]" />
           </div>
@@ -170,28 +172,28 @@ const HeroSection = () => {
           <motion.div 
             animate={{ y: [0, -10, 0] }}
             transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
-            className="absolute top-0 left-[-20px] sm:left-[-40px] bg-[#16191F] border border-[#1E2330] rounded-[12px] px-5 py-3 flex items-center gap-2 shadow-xl z-20"
+            className="absolute top-0 left-[-20px] sm:left-[-40px] bg-white dark:bg-[#16191F] border border-slate-200 dark:border-[#1E2330] rounded-[12px] px-5 py-3 flex items-center gap-2 shadow-xl z-20"
           >
             <span className="text-[#0066CC]">✓</span>
-            <span className="font-['Rajdhani'] text-sm text-[#F5F8FF] font-medium">Garantia de peças até 6 meses</span>
+            <span className="font-['Rajdhani'] text-sm text-slate-800 dark:text-[#F5F8FF] font-medium">Garantia de peças até 6 meses</span>
           </motion.div>
 
           <motion.div 
             animate={{ y: [0, 10, 0] }}
             transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-            className="absolute bottom-10 right-[-30px] sm:right-[-50px] bg-[#16191F] border border-[#1E2330] rounded-[12px] px-5 py-3 flex items-center gap-2 shadow-xl z-20"
+            className="absolute bottom-10 right-[-30px] sm:right-[-50px] bg-white dark:bg-[#16191F] border border-slate-200 dark:border-[#1E2330] rounded-[12px] px-5 py-3 flex items-center gap-2 shadow-xl z-20"
           >
             <span className="text-[#0066CC]">⚡</span>
-            <span className="font-['Rajdhani'] text-sm text-[#F5F8FF] font-medium">Entrega Rápida para Oficinas</span>
+            <span className="font-['Rajdhani'] text-sm text-slate-800 dark:text-[#F5F8FF] font-medium">Entrega Rápida para Oficinas</span>
           </motion.div>
 
           <motion.div 
             animate={{ x: [0, -5, 0] }}
             transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 1.5 }}
-            className="absolute bottom-40 left-[-40px] sm:left-[-60px] bg-[#16191F] border border-[#1E2330] rounded-[12px] px-5 py-3 flex items-center gap-2 shadow-xl z-20"
+            className="absolute bottom-40 left-[-40px] sm:left-[-60px] bg-white dark:bg-[#16191F] border border-slate-200 dark:border-[#1E2330] rounded-[12px] px-5 py-3 flex items-center gap-2 shadow-xl z-20"
           >
             <span className="text-[#0066CC]">📍</span>
-            <span className="font-['Rajdhani'] text-sm text-[#F5F8FF] font-medium">Castanhal, Pará — Centro</span>
+            <span className="font-['Rajdhani'] text-sm text-slate-800 dark:text-[#F5F8FF] font-medium">Castanhal, Pará — Centro</span>
           </motion.div>
 
           {/* Particles */}
