@@ -1,5 +1,7 @@
 import { motion } from 'framer-motion';
 import { MessageCircle, Phone, MapPin } from 'lucide-react';
+import MapComponent from './MapComponent';
+
 
 const CTASection = () => {
   return (
@@ -70,6 +72,18 @@ const CTASection = () => {
               Tv. Primeiro de Maio, 1.719 — Centro, Castanhal - PA, CEP 68742-390
             </span>
           </a>
+
+          {/* Map Integration */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.2, duration: 0.8 }}
+            viewport={{ once: true }}
+            className="mt-16 w-full h-[300px] sm:h-[400px] rounded-3xl overflow-hidden shadow-2xl border border-slate-200 dark:border-white/10"
+          >
+            <MapComponent />
+          </motion.div>
+
         </motion.div>
       </div>
     </section>
