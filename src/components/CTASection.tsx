@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
-import { MessageCircle, Phone, MapPin } from 'lucide-react';
+import { MessageCircle, Phone, MapPin, Navigation } from 'lucide-react';
 import MapComponent from './MapComponent';
+
 
 
 const CTASection = () => {
@@ -37,25 +38,33 @@ const CTASection = () => {
             Entre em contato e resolva hoje mesmo.
           </p>
 
-          <div className="flex flex-col sm:flex-row justify-center items-center gap-6 mb-16">
+          <div className="flex flex-col sm:flex-row justify-center items-center gap-4 mb-12">
             <a 
               href="https://wa.me/5591985161991"
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Iniciar conversa no WhatsApp"
-              className="w-full sm:w-auto flex items-center justify-center gap-3 px-12 py-5 bg-gradient-to-br from-[#25D366] to-[#128C4E] rounded-full font-['Rajdhani'] text-[18px] font-bold text-white transition-all duration-300 hover:scale-[1.05] hover:brightness-110 hover:shadow-[0_15px_35px_rgba(37,211,102,0.3)] active:scale-95"
+              className="w-full sm:w-auto flex items-center justify-center gap-3 px-8 py-4 bg-gradient-to-br from-[#25D366] to-[#128C4E] rounded-full font-['Rajdhani'] text-[16px] font-bold text-white transition-all duration-300 hover:scale-[1.05] hover:brightness-110 hover:shadow-[0_15px_35px_rgba(37,211,102,0.3)] active:scale-95"
             >
-              <MessageCircle className="w-6 h-6" />
+              <MessageCircle className="w-5 h-5" />
               Chamar no WhatsApp
+            </a>
+            <a 
+              href="https://www.google.com/maps/dir/?api=1&destination=HCB+Ar+Condicionado+Automotivo+-+Tv.+Primeiro+de+Maio,+1719+-+Centro,+Castanhal+-+PA"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full sm:w-auto flex items-center justify-center gap-3 px-8 py-4 bg-[#0066CC] rounded-full font-['Rajdhani'] text-[16px] font-bold text-white transition-all duration-300 hover:scale-[1.05] hover:brightness-110 hover:shadow-[0_15px_35px_rgba(0,102,204,0.3)] active:scale-95"
+            >
+              <Navigation className="w-5 h-5" />
+              Ver Rotas
             </a>
             <a 
               href="tel:5591985161991"
               aria-label="Ligar para HCB Ar Condicionado"
-              className="w-full sm:w-auto flex items-center justify-center gap-3 px-12 py-5 bg-slate-100 dark:bg-white/5 backdrop-blur-sm border border-slate-200 dark:border-white/10 rounded-full font-['Rajdhani'] text-[18px] font-bold text-slate-900 dark:text-[#F5F8FF] transition-all duration-300 hover:bg-slate-200 dark:hover:bg-white/10 hover:border-[#0066CC]/50 active:scale-95"
+              className="w-full sm:w-auto flex items-center justify-center gap-3 px-8 py-4 bg-slate-100 dark:bg-white/5 backdrop-blur-sm border border-slate-200 dark:border-white/10 rounded-full font-['Rajdhani'] text-[16px] font-bold text-slate-900 dark:text-[#F5F8FF] transition-all duration-300 hover:bg-slate-200 dark:hover:bg-white/10 hover:border-[#0066CC]/50 active:scale-95"
             >
-
-              <Phone className="w-6 h-6 text-[#0066CC]" />
-              (91) 98516-1991
+              <Phone className="w-5 h-5 text-[#0066CC]" />
+              Ligar Agora
             </a>
           </div>
 
