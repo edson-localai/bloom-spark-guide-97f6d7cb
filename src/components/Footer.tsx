@@ -2,7 +2,7 @@ import { MapPin, Phone, Camera, Clock } from 'lucide-react';
 import hcbLogo from '@/assets/hcb-logo.png';
 import Logo from './Logo';
 import { SCROLL_OFFSET } from '@/constants/scroll';
-import MapComponent from './MapComponent';
+
 
 
 const Footer = () => {
@@ -119,10 +119,6 @@ const Footer = () => {
           </div>
         </div>
 
-        {/* Small Map in Footer */}
-        <div className="mb-12 w-full h-[200px] rounded-2xl overflow-hidden border border-slate-200 dark:border-white/10 opacity-80 hover:opacity-100 transition-opacity duration-300 shadow-sm">
-          <MapComponent />
-        </div>
 
         {/* Bottom Line */}
 
