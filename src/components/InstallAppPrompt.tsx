@@ -55,19 +55,20 @@ export function InstallAppPrompt() {
   if (!show) return null;
 
   return (
-    <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-50 w-[calc(100%-2rem)] max-w-md rounded-2xl shadow-2xl border border-cyan-500/30 p-4 flex items-start gap-3"
-      style={{ background: '#151821' }}>
+    <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-50 w-[calc(100%-2rem)] max-w-md rounded-2xl shadow-2xl border border-cyan-500/30 dark:border-cyan-500/30 p-4 flex items-start gap-3 bg-white dark:bg-[#151821] transition-colors duration-500">
+
       <div className="h-10 w-10 rounded-xl bg-cyan-500/10 flex items-center justify-center shrink-0 border border-cyan-500/30">
         <Download className="h-5 w-5 text-cyan-400" />
       </div>
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-semibold text-white">Instalar app HCB</p>
+        <p className="text-sm font-semibold text-slate-900 dark:text-white">Instalar app HCB</p>
         {isIOS ? (
-          <p className="text-[11px] text-zinc-400 mt-1 leading-snug">
+          <p className="text-[11px] text-slate-500 dark:text-zinc-400 mt-1 leading-snug">
             Toque em <Share className="inline h-3 w-3 mx-0.5" /> Compartilhar e depois em <strong>Adicionar à Tela de Início</strong>.
+
           </p>
         ) : (
-          <p className="text-[11px] text-zinc-400 mt-1">
+          <p className="text-[11px] text-slate-500 dark:text-zinc-400 mt-1">
             Atenda direto pelo app, sem precisar abrir o navegador.
           </p>
         )}
@@ -80,7 +81,7 @@ export function InstallAppPrompt() {
           </button>
         )}
       </div>
-      <button onClick={dismiss} className="text-zinc-500 hover:text-white p-1" aria-label="Fechar">
+      <button onClick={dismiss} className="text-slate-400 dark:text-zinc-500 hover:text-slate-900 dark:hover:text-white p-1" aria-label="Fechar">
         <X className="h-4 w-4" />
       </button>
     </div>
