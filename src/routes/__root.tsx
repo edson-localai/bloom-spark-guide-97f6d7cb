@@ -78,11 +78,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "apple-mobile-web-app-status-bar-style", content: "black-translucent" },
       { name: "apple-mobile-web-app-title", content: "HCB" },
       { name: "mobile-web-app-capable", content: "yes" },
-      { title: "HCB Ar Condicionado Automotivo" },
-      { name: "description", content: "Peças de ar-condicionado automotivo linha leve, pesada e fora de estrada. Atendemos varejo e oficinas com agilidade e qualidade." },
+      { title: "HCB Ar Condicionado Automotivo em Castanhal | Peças e Serviços" },
+      { name: "description", content: "Especialistas em ar condicionado automotivo em Castanhal. Peças para linha leve e pesada, compressores e manutenção de refrigeração veicular." },
       { name: "author", content: "Lovable" },
-      { property: "og:title", content: "HCB Ar Condicionado Automotivo" },
-      { property: "og:description", content: "Peças de ar-condicionado automotivo linha leve, pesada e fora de estrada. Atendemos varejo e oficinas com agilidade e qualidade." },
+      { property: "og:title", content: "HCB Ar Condicionado Automotivo em Castanhal" },
+      { property: "og:description", content: "Peças de ar-condicionado automotivo linha leve e pesada em Castanhal. Qualidade e agilidade para oficinas e varejo." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "twitter:site", content: "@Lovable" },
@@ -112,6 +112,45 @@ function RootShell({ children }: { children: React.ReactNode }) {
     <html lang="en">
       <head>
         <HeadContent />
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "LocalBusiness",
+            "name": "HCB Ar Condicionado Automotivo",
+            "image": "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/4df77a49-caff-494f-93e6-2863a6b91fa1/id-preview-08923826--1437f3b0-fe7f-4f6b-8c41-2858d825f265.lovable.app-1778190270102.png",
+            "@id": "",
+            "url": "https://hcb.lovable.app",
+            "telephone": "+55 91 98516-1991",
+            "address": {
+              "@type": "PostalAddress",
+              "streetAddress": "Centro",
+              "addressLocality": "Castanhal",
+              "addressRegion": "PA",
+              "postalCode": "68740-000",
+              "addressCountry": "BR"
+            },
+            "geo": {
+              "@type": "GeoCoordinates",
+              "latitude": -1.2974,
+              "longitude": -47.9272
+            },
+            "openingHoursSpecification": {
+              "@type": "OpeningHoursSpecification",
+              "dayOfWeek": [
+                "Monday",
+                "Tuesday",
+                "Wednesday",
+                "Thursday",
+                "Friday"
+              ],
+              "opens": "08:00",
+              "closes": "18:00"
+            },
+            "sameAs": [
+              "https://wa.me/5591985161991"
+            ]
+          })}
+        </script>
       </head>
       <body>
         {children}

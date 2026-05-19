@@ -88,7 +88,7 @@ const ProductsSection = () => {
       <div className="absolute inset-0 pointer-events-none">
         <img 
           src={productsBg} 
-          alt="" 
+          alt="Peças de ar condicionado automotivo HCB" 
           aria-hidden="true"
           loading="lazy"
           width={1600}

@@ -1,66 +1,42 @@
-## Objetivo
+# Plano de SEO - HCB Ar Condicionado Automotivo
 
-Transformar `/atendimento` em uma experiência totalmente responsiva (estilo Chatwoot), instalável como app (PWA leve, sem service worker para evitar problemas no preview do Lovable) e com sessão persistente para que o atendente use o app HCB no celular em vez do WhatsApp.
+Este plano visa posicionar a HCB como referência em ar condicionado automotivo em Castanhal e região, focando em termos de alta intenção de compra e visibilidade local.
 
-## 1. Responsividade do Inbox (mobile-first, padrão Chatwoot)
+## 1. Pesquisa e Estratégia de Palavras-Chave
+Foco em três pilares: Local, Produto e Serviço.
 
-**`src/routes/atendimento.tsx`** — Sidebar lateral vira:
-- **Desktop (≥1024px)**: sidebar fixa de 240px (atual).
-- **Tablet (768–1023px)**: sidebar colapsada só com ícones (64px).
-- **Mobile (<768px)**: sidebar vira **bottom nav bar** fixa com 5 ícones principais (Inbox, Kanban, Contatos, Respostas, Config) + menu "mais" para o resto. Header mobile com logo + botão de logout.
+- **Foco Local:** "ar condicionado automotivo em Castanhal", "conserto de ar condicionado automotivo Castanhal", "oficina de refrigeração automotiva Pará".
+- **Foco em Produto:** "peças para ar condicionado automotivo", "compressor de ar condicionado automotivo", "condensador veicular linha pesada".
+- **Foco em Serviço:** "carga de gás ar condicionado automotivo", "higienização de ar condicionado automotivo".
 
-**`src/routes/atendimento.index.tsx`** — Layout de 3 colunas vira navegação por etapas no mobile:
-- **Mobile**: mostra **apenas uma coluna por vez** (lista → chat → detalhes). Botão "voltar" no header do chat e do painel de contato.
-- **Tablet**: lista + chat (sem coluna de detalhes; abre como drawer).
-- **Desktop**: 3 colunas (atual).
+## 2. Otimização On-Page (Imediato)
+Ajustes técnicos no código para melhorar a leitura pelos motores de busca.
 
-**`src/components/crm/ChatWindow.tsx`, `ConversationList.tsx`, `ContactSidebar.tsx`** — ajustar paddings, font-sizes, larguras de input/botões e área de mensagens para tocar em telas pequenas (touch targets ≥44px, textarea adaptativa, anexos em bottom sheet).
+- **Metadados:** Personalizar Title Tags (< 60 caracteres) e Meta Descriptions (< 160 caracteres) para cada seção.
+- **Hierarquia de Títulos:** Garantir uma estrutura lógica de H1 (um por página) seguida de H2 e H3 para escaneabilidade.
+- **SEO de Imagens:** Adicionar atributos `alt` descritivos em todas as imagens (ex: "Compressor de ar condicionado automotivo HCB").
+- **Dados Estruturados (JSON-LD):** Implementar o schema `LocalBusiness` para informar ao Google endereço, telefone e horário de funcionamento.
 
-**Outras rotas** (`kanban`, `contatos`, `propostas`, `respostas`, `whatsapp`, `dashboard`, `config`, `usuarios`, `treinamento`) — adicionar overflow-x-auto e quebra de grid para mobile (cards empilhados).
+## 3. SEO Local (Google Business Profile)
+Fundamental para negócios físicos em Castanhal.
 
-## 2. Instalação como App (Manifest-only, sem service worker)
+- **Perfil da Empresa:** Otimizar o Perfil da Empresa no Google (antigo Google Meu Negócio).
+- **Citações Locais:** Garantir que o nome, endereço e telefone (NAP) sejam idênticos em toda a web.
+- **Avaliações:** Incentivar clientes satisfeitos a deixarem avaliações positivas com fotos.
 
-Conforme as regras do Lovable, **não vamos usar `vite-plugin-pwa` nem service worker** — eles quebram o preview do editor. Em vez disso:
+## 4. Estratégia de Conteúdo (Médio Prazo)
+Criar autoridade no assunto.
 
-- **`public/manifest.webmanifest`** — manifest com `name: "HCB Atendimento"`, `short_name: "HCB"`, `start_url: "/atendimento"`, `display: "standalone"`, `theme_color: "#00CCEE"`, `background_color: "#0A0A0F"`, ícones 192/512 (gerar com imagegen, fundo escuro com logo).
-- **`src/routes/__root.tsx`** — adicionar `<link rel="manifest">`, `<meta name="theme-color">`, `<meta name="apple-mobile-web-app-capable">`, `<link rel="apple-touch-icon">`.
-- **`src/components/InstallAppPrompt.tsx`** (novo) — banner discreto no `/atendimento` que:
-  - **Android/Chrome**: escuta `beforeinstallprompt`, mostra botão "Instalar app HCB" → chama `prompt()`.
-  - **iOS Safari**: detecta iOS e mostra instruções "Toque em Compartilhar → Adicionar à Tela de Início".
-  - Persiste dispensa em `localStorage` (`hcb_install_dismissed`).
-  - Esconde se já estiver rodando standalone (`window.matchMedia('(display-mode: standalone)')`).
+- **Blog/FAQ:** Responder dúvidas comuns: "Por que o ar do carro não gela?", "Quando trocar o filtro de cabine?".
+- **Landing Pages de Produtos:** Seções específicas para cada tipo de peça (Compressores, Condensadores, etc.) com descrições técnicas detalhadas.
 
-**Limitação avisada**: a instalação só funciona no domínio publicado (não no preview do Lovable). Sem service worker = sem offline, mas funciona como app instalável.
+## 5. Performance e Experiência do Usuário
+- **Core Web Vitals:** Manter as otimizações de performance já iniciadas (lazy loading, compressão de imagens).
+- **Mobile First:** Garantir que a experiência mobile seja impecável (já que 70%+ das buscas locais ocorrem em dispositivos móveis).
 
-## 3. Sessão Persistente
+---
 
-A sessão Supabase **já é persistente por padrão** (`persistSession: true` salva em localStorage). Vamos só garantir:
-- O token sobrevive ao fechamento do app (já funciona).
-- `useCrmAuth` reage a `onAuthStateChange` (já implementado).
-- **`src/routes/login.tsx`** — adicionar checkbox "Manter conectado" (já é o comportamento padrão; só explicitar). Após login bem-sucedido em mobile standalone, redirecionar direto para `/atendimento`.
-
-Nada novo no banco — Supabase Auth já cuida disso.
-
-## Arquivos a editar/criar
-
-**Criar:**
-- `public/manifest.webmanifest`
-- `public/icon-192.png`, `public/icon-512.png` (gerar via imagegen)
-- `src/components/InstallAppPrompt.tsx`
-- `src/components/crm/MobileBottomNav.tsx`
-
-**Editar:**
-- `src/routes/__root.tsx` — manifest links + meta tags
-- `src/routes/atendimento.tsx` — sidebar responsiva + bottom nav mobile + montar `<InstallAppPrompt />`
-- `src/routes/atendimento.index.tsx` — navegação por etapas no mobile
-- `src/components/crm/ChatWindow.tsx` — header com botão "voltar" no mobile, inputs touch-friendly
-- `src/components/crm/ConversationList.tsx` — touch targets, paddings mobile
-- `src/components/crm/ContactSidebar.tsx` — drawer no tablet/mobile
-- `src/routes/login.tsx` — pequenos ajustes mobile
-
-## Notas
-
-- **Sem PWA com service worker** — apenas manifest + meta tags para "Add to Home Screen". Confirmado pela documentação interna do Lovable.
-- A instalação só funciona em **HTTPS no domínio publicado** (`hcbautomotivo.com.br` ou `bloom-spark-guide.lovable.app`), nunca no preview do editor.
-- Em iOS, não há prompt automático — o usuário precisa adicionar manualmente via Safari.
-- Mantemos o WhatsApp funcionando no backend (W-API + webhook). O atendente apenas usa o app HCB como front; as mensagens continuam indo/vindo via WhatsApp do cliente.
+### Detalhes Técnicos para Implementação:
+- **Ferramentas:** Google Search Console, Google Analytics 4.
+- **Técnico:** Uso do TanStack Router `head` para injeção dinâmica de metadados.
+- **Schema.org:** Injeção de script LD-JSON no `__root.tsx`.
