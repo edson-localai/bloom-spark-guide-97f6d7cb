@@ -90,7 +90,7 @@ const WhyUsSection = () => {
             <div className="absolute inset-0 z-0 opacity-20">
               <img 
                 src={whyUsBg} 
-                alt="Why Us background" 
+                alt="Oficina de ar condicionado automotivo em Castanhal" 
                 className="w-full h-full object-cover grayscale brightness-125"
               />
               <div className="absolute inset-0 bg-gradient-to-br from-[#111318] via-[#0D1B2A]/90 to-[#0D1B2A]" />
