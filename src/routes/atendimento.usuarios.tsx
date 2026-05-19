@@ -190,10 +190,106 @@ function UsuariosPage() {
           </h1>
           <p className="text-zinc-500 text-sm">Gerencie permissões e funções da equipe.</p>
         </div>
-        <button className="flex items-center gap-2 bg-cyan-500 hover:bg-cyan-400 text-black px-4 py-2.5 rounded-xl font-bold text-sm transition-all">
-          <UserPlus className="h-4 w-4" />
-          Novo Usuário
-        </button>
+        
+        <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+          <DialogTrigger asChild>
+            <button className="flex items-center gap-2 bg-cyan-500 hover:bg-cyan-400 text-black px-4 py-2.5 rounded-xl font-bold text-sm transition-all">
+              <UserPlus className="h-4 w-4" />
+              Novo Usuário
+            </button>
+          </DialogTrigger>
+          <DialogContent className="bg-[#0F1117] border-[#1F232E] text-white sm:max-w-[425px] rounded-3xl">
+            <DialogHeader>
+              <DialogTitle className="text-xl font-bold flex items-center gap-2">
+                <UserPlus className="h-5 w-5 text-cyan-500" />
+                Criar Novo Usuário
+              </DialogTitle>
+            </DialogHeader>
+            <form onSubmit={handleCreateUser} className="space-y-6 pt-4">
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="name" className="text-zinc-400 text-xs font-bold uppercase tracking-wider">Nome Completo</ Atkins Label>
+                  <div className="relative">
+                    <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
+                    <Input
+                      id="name"
+                      placeholder="Ex: João Silva"
+                      value={newUserName}
+                      onChange={(e) => setNewUserName(e.target.value)}
+                      className="bg-[#151821] border-[#1F232E] pl-10 h-12 rounded-xl focus:ring-cyan-500/50"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="email" className="text-zinc-400 text-xs font-bold uppercase tracking-wider">Email</Label>
+                  <div className="relative">
+                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
+                    <Input
+                      id="email"
+                      type="email"
+                      placeholder="email@empresa.com"
+                      value={newUserEmail}
+                      onChange={(e) => setNewUserEmail(e.target.value)}
+                      className="bg-[#151821] border-[#1F232E] pl-10 h-12 rounded-xl focus:ring-cyan-500/50"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="role" className="text-zinc-400 text-xs font-bold uppercase tracking-wider">Nível de Acesso</Label>
+                  <Select value={newUserRole} onValueChange={(value: any) => setNewUserRole(value)}>
+                    <SelectTrigger className="bg-[#151821] border-[#1F232E] h-12 rounded-xl">
+                      <SelectValue placeholder="Selecione um nível" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-[#151821] border-[#1F232E] text-white">
+                      <SelectItem value="agent">Agente (Apenas Atendimento)</SelectItem>
+                      <SelectItem value="supervisor">Supervisor (Gestão de Equipe)</SelectItem>
+                      <SelectItem value="admin">Administrador (Acesso Total)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="pass" className="text-zinc-400 text-xs font-bold uppercase tracking-wider">Senha Provisória</Label>
+                  <div className="relative">
+                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
+                    <Input
+                      id="pass"
+                      type="password"
+                      placeholder="••••••••"
+                      value={newUserPassword}
+                      onChange={(e) => setNewUserPassword(e.target.value)}
+                      className="bg-[#151821] border-[#1F232E] pl-10 h-12 rounded-xl focus:ring-cyan-500/50"
+                      required
+                      minLength={6}
+                    />
+                  </div>
+                  <p className="text-[10px] text-zinc-500 italic">Mínimo 6 caracteres.</p>
+                </div>
+              </div>
+
+              <DialogFooter className="pt-2">
+                <Button 
+                  type="submit" 
+                  className="w-full bg-cyan-500 hover:bg-cyan-400 text-black font-bold h-12 rounded-xl"
+                  disabled={isCreating}
+                >
+                  {isCreating ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Criando Usuário...
+                    </>
+                  ) : (
+                    "Criar Usuário"
+                  )}
+                </Button>
+              </DialogFooter>
+            </form>
+          </DialogContent>
+        </Dialog>
       </div>
 
       <div className="px-8 py-4">
