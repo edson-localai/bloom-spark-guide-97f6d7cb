@@ -13,7 +13,7 @@ const CTASection = lazy(() => import('../components/CTASection'));
 const Footer = lazy(() => import('../components/Footer'));
 const LandingChatBubble = lazy(() => import('../components/LandingChatBubble'));
 
-const LoadingSection = () => <div className="h-40 bg-[#0A0A0A]" />;
+const LoadingSection = () => <div className="h-40 bg-background" />;
 
 export const Route = createFileRoute("/")({
   component: Index,
@@ -21,7 +21,7 @@ export const Route = createFileRoute("/")({
 
 function Index() {
   return (
-    <div className="min-h-screen bg-[#0A0A0A] text-white selection:bg-[#0066CC]/30">
+    <div className="min-h-screen bg-background text-foreground transition-colors duration-500">
       <Header />
       <HeroSection />
       <StatsBar />
