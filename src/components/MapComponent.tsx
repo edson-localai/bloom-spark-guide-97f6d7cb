@@ -23,6 +23,16 @@ const MapComponent = () => {
     googleMapsApiKey: import.meta.env.VITE_LOVABLE_CONNECTOR_GOOGLE_MAPS_BROWSER_KEY || ""
   });
 
+  const [map, setMap] = useState<google.maps.Map | null>(null);
+
+  const onLoad = useCallback(function callback(map: google.maps.Map) {
+    setMap(map);
+  }, []);
+
+  const onUnmount = useCallback(function callback() {
+    setMap(null);
+  }, []);
+
   const mapStyles = useMemo(() => {
     if (theme === 'dark') {
       return [
@@ -37,6 +47,7 @@ const MapComponent = () => {
     }
     return []; // Standard Google Maps styles for light mode
   }, [theme]);
+
 
   if (!isLoaded) return <Skeleton className="w-full h-full rounded-2xl bg-slate-200 dark:bg-white/5" />;
 
