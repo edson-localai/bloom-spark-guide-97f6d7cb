@@ -4,13 +4,8 @@ import { useState, useEffect } from 'react';
 import statsBg from '../assets/stats-bg.jpg';
 
 const StatsBar = () => {
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    // Simulating data fetch
-    const timer = setTimeout(() => setIsLoading(false), 1500);
-    return () => clearTimeout(timer);
-  }, []);
+  // No artificial delay needed for static content
+  const isLoading = false;
 
   const stats = [
     { icon: Snowflake, value: 'Linha Leve', label: 'Completa de Peças' },
