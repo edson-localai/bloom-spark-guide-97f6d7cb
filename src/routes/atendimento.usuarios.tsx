@@ -59,6 +59,14 @@ function UsuariosPage() {
   const [loading, setLoading] = useState(true);
   const [users, setUsers] = useState<UserProfile[]>([]);
   const [search, setSearch] = useState('');
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isCreating, setIsCreating] = useState(false);
+
+  // Form state
+  const [newUserName, setNewUserName] = useState('');
+  const [newUserEmail, setNewUserEmail] = useState('');
+  const [newUserPassword, setNewUserPassword] = useState('');
+  const [newUserRole, setNewUserRole] = useState<'admin' | 'supervisor' | 'agent'>('agent');
 
   useEffect(() => {
     if (isAdmin) {
@@ -81,6 +89,41 @@ function UsuariosPage() {
       setLoading(false);
     }
   }
+
+  const handleCreateUser = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsCreating(true);
+    
+    try {
+      const { data, error } = await supabase.functions.invoke('create-user', {
+        body: {
+          email: newUserEmail,
+          password: newUserPassword,
+          name: newUserName,
+          role: newUserRole
+        }
+      });
+
+      if (error) throw error;
+
+      toast.success('Usuário criado com sucesso!');
+      setIsModalOpen(false);
+      
+      // Reset form
+      setNewUserName('');
+      setNewUserEmail('');
+      setNewUserPassword('');
+      setNewUserRole('agent');
+      
+      // Refresh list
+      fetchUsers();
+    } catch (err) {
+      console.error('Erro ao criar usuário:', err);
+      toast.error(err instanceof Error ? err.message : 'Falha ao criar usuário.');
+    } finally {
+      setIsCreating(false);
+    }
+  };
 
   const updateUserRole = async (userId: string, newRole: 'admin' | 'supervisor' | 'agent') => {
     try {
