@@ -208,7 +208,7 @@ function UsuariosPage() {
             <form onSubmit={handleCreateUser} className="space-y-6 pt-4">
               <div className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="name" className="text-zinc-400 text-xs font-bold uppercase tracking-wider">Nome Completo</ Atkins Label>
+                  <Label htmlFor="name" className="text-zinc-400 text-xs font-bold uppercase tracking-wider">Nome Completo</Label>
                   <div className="relative">
                     <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
                     <Input
