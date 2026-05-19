@@ -52,7 +52,7 @@ const TestimonialsSection = () => {
   }, [isAutoPlaying, nextSlide]);
 
   return (
-    <section id="depoimentos" className="py-20 sm:py-32 relative overflow-hidden bg-[#0A0A0A] px-[max(24px,5vw)]">
+    <section id="depoimentos" className="py-20 sm:py-32 relative overflow-hidden bg-slate-50 dark:bg-[#0A0A0A] px-[max(24px,5vw)] transition-colors duration-500">
       {/* Background Glow */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-[#0066CC]/5 rounded-full blur-[120px] pointer-events-none" />
       
@@ -62,7 +62,7 @@ const TestimonialsSection = () => {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="text-3xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent"
+            className="text-3xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-slate-900 to-slate-500 dark:from-white dark:to-gray-400 bg-clip-text text-transparent"
           >
             O que nossos clientes dizem
           </motion.h2>
@@ -71,7 +71,7 @@ const TestimonialsSection = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.1 }}
-            className="text-gray-400 max-w-2xl mx-auto"
+            className="text-slate-500 dark:text-gray-400 max-w-2xl mx-auto"
           >
             Feedback real de quem confia na HCB Ar Condicionado para suas necessidades automotivas.
           </motion.p>
@@ -86,12 +86,12 @@ const TestimonialsSection = () => {
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -50 }}
                 transition={{ duration: 0.5, ease: "easeOut" }}
-                className="group p-8 sm:p-12 rounded-[32px] bg-white/5 border border-white/10 hover:border-[#0066CC]/50 transition-all duration-500 relative overflow-hidden backdrop-blur-md w-full"
+                className="group p-8 sm:p-12 rounded-[32px] bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 hover:border-[#0066CC]/50 transition-all duration-500 relative overflow-hidden backdrop-blur-md w-full shadow-lg dark:shadow-none"
                 onMouseEnter={() => setIsAutoPlaying(false)}
                 onMouseLeave={() => setIsAutoPlaying(true)}
               >
                 <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity">
-                  <Quote size={80} className="text-white" />
+                  <Quote size={80} className="text-slate-100 dark:text-white" />
                 </div>
                 
                 <div className="flex gap-1.5 mb-8">
@@ -100,7 +100,7 @@ const TestimonialsSection = () => {
                   ))}
                 </div>
 
-                <p className="text-[#F5F8FF] text-xl sm:text-2xl font-light italic leading-relaxed mb-10 relative z-10">
+                <p className="text-slate-800 dark:text-[#F5F8FF] text-xl sm:text-2xl font-light italic leading-relaxed mb-10 relative z-10">
                   "{reviews[currentIndex].text}"
                 </p>
 
@@ -120,10 +120,11 @@ const TestimonialsSection = () => {
                       </div>
                     )}
                     <div>
-                      <h4 className="font-['Rajdhani'] text-xl font-bold text-white group-hover:text-[#60C0FF] transition-colors">
+                      <h4 className="font-['Rajdhani'] text-xl font-bold text-slate-900 dark:text-white group-hover:text-[#0066CC] dark:group-hover:text-[#60C0FF] transition-colors">
                         {reviews[currentIndex].name}
                       </h4>
-                      <span className="font-['Inter'] text-sm text-[#8A9BB5] uppercase tracking-wider">{reviews[currentIndex].date}</span>
+                      <span className="font-['Inter'] text-sm text-slate-500 dark:text-[#8A9BB5] uppercase tracking-wider">{reviews[currentIndex].date}</span>
+
                     </div>
                   </div>
                 </div>
@@ -134,14 +135,14 @@ const TestimonialsSection = () => {
           {/* Navigation Arrows */}
           <button 
             onClick={prevSlide}
-            className="absolute left-[-20px] sm:left-[-10px] top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-[#16191F]/80 border border-white/10 text-white hover:bg-[#0066CC] hover:scale-110 transition-all z-20 flex items-center justify-center backdrop-blur-sm"
+            className="absolute left-[-20px] sm:left-[-10px] top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white dark:bg-[#16191F]/80 border border-slate-200 dark:border-white/10 text-slate-800 dark:text-white hover:bg-[#0066CC] hover:text-white hover:scale-110 transition-all z-20 flex items-center justify-center backdrop-blur-sm shadow-md"
             aria-label="Depoimento anterior"
           >
             <ChevronLeft size={24} />
           </button>
           <button 
             onClick={nextSlide}
-            className="absolute right-[-20px] sm:right-[-10px] top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-[#16191F]/80 border border-white/10 text-white hover:bg-[#0066CC] hover:scale-110 transition-all z-20 flex items-center justify-center backdrop-blur-sm"
+            className="absolute right-[-20px] sm:right-[-10px] top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white dark:bg-[#16191F]/80 border border-slate-200 dark:border-white/10 text-slate-800 dark:text-white hover:bg-[#0066CC] hover:text-white hover:scale-110 transition-all z-20 flex items-center justify-center backdrop-blur-sm shadow-md"
             aria-label="Próximo depoimento"
           >
             <ChevronRight size={24} />
@@ -157,7 +158,7 @@ const TestimonialsSection = () => {
                   setIsAutoPlaying(false);
                 }}
                 className={`h-1.5 rounded-full transition-all duration-500 ${
-                  i === currentIndex ? 'bg-[#0066CC] w-12' : 'bg-white/20 w-4 hover:bg-white/40'
+                  i === currentIndex ? 'bg-[#0066CC] w-12' : 'bg-slate-300 dark:bg-white/20 w-4 hover:bg-slate-400 dark:hover:bg-white/40'
                 }`}
                 aria-label={`Ir para depoimento ${i + 1}`}
               />
@@ -176,7 +177,7 @@ const TestimonialsSection = () => {
             href="https://www.google.com/maps/place/HCB+Ar+Condicionado+Automotivo/@-1.2931392,-47.9302892,17z/data=!4m8!3m7!1s0x92a5afc586b718ad:0x8d3687053f26a8e0!8m2!3d-1.2931392!4d-47.9302892!9m1!1b1!16s%2Fg%2F11x1bpc06r"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 text-[#0066CC] hover:text-white transition-colors font-medium"
+            className="inline-flex items-center gap-2 text-[#0066CC] hover:text-slate-900 dark:hover:text-white transition-colors font-medium"
           >
             Ver todas as avaliações no Google
             <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
