@@ -7,7 +7,7 @@ const MapComponent = () => {
 
   const embedUrl = API_KEY
     ? `https://www.google.com/maps/embed/v1/place?key=${API_KEY}&q=${encodeURIComponent(ADDRESS)}&zoom=17`
-    : `https://www.google.com/maps?q=${encodeURIComponent(ADDRESS)}&output=embed&z=17`;
+    : `https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3988.8021886938673!2d-47.9302892!3d-1.2931392000000002!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x92a5afc586b718ad%3A0x8d3687053f26a8e0!2sHCB%20Ar%20Condicionado%20Automotivo!5e0!3m2!1sen!2sus!4v1779201141291!5m2!1sen!2sus`;
   const directionsUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(ADDRESS)}`;
 
   return (
