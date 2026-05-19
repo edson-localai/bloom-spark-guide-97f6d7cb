@@ -51,7 +51,8 @@ const Footer = () => {
 
           {/* Column 2 - Quick Links */}
           <div className="space-y-6">
-            <h3 className="font-['Rajdhani'] text-[13px] font-bold tracking-[0.15em] text-slate-500 dark:text-hcb-gray uppercase">
+            <h3 className="font-['Rajdhani'] text-[13px] font-bold tracking-[0.15em] text-slate-600 dark:text-hcb-gray uppercase">
+
 
               Navegação
             </h3>
@@ -67,7 +68,7 @@ const Footer = () => {
                   <a 
                     href={`#${link.id}`}
                     onClick={(e) => handleScrollTo(e, link.id)}
-                    className="font-['Rajdhani'] text-[15px] text-slate-600 dark:text-hcb-gray-light hover:text-hcb-blue dark:hover:text-hcb-white transition-colors"
+                    className="font-['Rajdhani'] text-[15px] text-slate-700 dark:text-hcb-gray-light hover:text-hcb-blue dark:hover:text-hcb-white transition-colors"
                   >
                     {link.name}
                   </a>
@@ -78,20 +79,22 @@ const Footer = () => {
 
           {/* Column 3 - Contact */}
           <div className="space-y-6">
-            <h3 className="font-['Rajdhani'] text-[13px] font-bold tracking-[0.15em] text-slate-500 dark:text-hcb-gray uppercase">
+            <h3 className="font-['Rajdhani'] text-[13px] font-bold tracking-[0.15em] text-slate-600 dark:text-hcb-gray uppercase">
               Contato
             </h3>
             <ul className="space-y-4">
               <li className="flex gap-3">
                 <MapPin className="w-5 h-5 text-hcb-blue shrink-0" />
-                <span className="font-['Rajdhani'] text-[15px] text-slate-600 dark:text-hcb-gray-light">
+                <span className="font-['Rajdhani'] text-[15px] text-slate-700 dark:text-hcb-gray-light">
+
 
                   Tv. Primeiro de Maio, 1.719 — Centro, Castanhal - PA
                 </span>
               </li>
               <li className="flex gap-3">
                 <Phone className="w-5 h-5 text-hcb-blue shrink-0" />
-                <div className="flex flex-col font-['Rajdhani'] text-[15px] text-slate-600 dark:text-hcb-gray-light">
+                <div className="flex flex-col font-['Rajdhani'] text-[15px] text-slate-700 dark:text-hcb-gray-light">
+
 
                   <span>(91) 98516-1991</span>
                   <span>(91) 2122-2481</span>
@@ -99,13 +102,13 @@ const Footer = () => {
               </li>
               <li className="flex gap-3">
                 <Camera className="w-5 h-5 text-hcb-blue shrink-0" />
-                <span className="font-['Rajdhani'] text-[15px] text-slate-600 dark:text-hcb-gray-light">
+                <span className="font-['Rajdhani'] text-[15px] text-slate-700 dark:text-hcb-gray-light">
                   @hcb.automotivo
                 </span>
               </li>
               <li className="flex gap-3">
                 <Clock className="w-5 h-5 text-hcb-blue shrink-0" />
-                <div className="flex flex-col font-['Rajdhani'] text-[15px] text-slate-600 dark:text-hcb-gray-light">
+                <div className="flex flex-col font-['Rajdhani'] text-[15px] text-slate-700 dark:text-hcb-gray-light">
                   <span>Seg a Sex: 8h às 18h</span>
                   <span>Sábado: 8h às 12h</span>
                 </div>
@@ -117,11 +120,11 @@ const Footer = () => {
         {/* Bottom Line */}
         <div className="pt-8 border-t border-border text-center">
           <div className="hcb-divider w-full mb-8 opacity-30" />
-          <p className="font-['Inter'] text-[13px] text-slate-400 dark:text-hcb-gray/60">
+          <p className="font-['Inter'] text-[13px] text-slate-500 dark:text-hcb-gray/60">
             © {currentYear} HCB Ar Condicionado Automotivo. Todos os direitos reservados. <br className="sm:hidden" />
             CNPJ 59.493.129/0001-21
           </p>
-          <p className="font-['Inter'] text-[12px] text-slate-400 dark:text-hcb-gray/40 mt-4">
+          <p className="font-['Inter'] text-[12px] text-slate-500 dark:text-hcb-gray/40 mt-4">
             Desenvolvimento <a href="https://pno.com.br" target="_blank" rel="noopener noreferrer" className="hover:text-hcb-blue transition-colors">PNO Marketing</a>
           </p>
         </div>

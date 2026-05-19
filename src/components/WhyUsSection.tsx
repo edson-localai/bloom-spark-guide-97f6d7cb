@@ -36,14 +36,14 @@ const WhyUsSection = () => {
         {/* Header */}
         <div className="text-center mb-20">
           <div className="inline-flex items-center gap-2 px-4 py-[6px] rounded-full bg-[#0066CC]/10 border border-[#0066CC]/30 mb-4">
-            <span className="font-['Rajdhani'] text-xs font-semibold tracking-[0.12em] text-[#60C0FF] uppercase">
+            <span className="font-['Rajdhani'] text-xs font-semibold tracking-[0.12em] text-[#0052A3] dark:text-[#60C0FF] uppercase">
               Por que escolher a HCB
             </span>
           </div>
           <h2 className="font-['Bebas_Neue'] text-[clamp(40px,5.5vw,72px)] text-slate-900 dark:text-[#F5F8FF] leading-tight uppercase mb-4">
             Qualidade que você sente, confiança que fica
           </h2>
-          <p className="font-['Inter'] text-lg text-slate-500 dark:text-[#8A9BB5] max-w-2xl mx-auto">
+          <p className="font-['Inter'] text-lg text-slate-600 dark:text-[#8A9BB5] max-w-2xl mx-auto">
 
             Em Castanhal e região, somos a referência em refrigeração automotiva.
           </p>
@@ -71,7 +71,7 @@ const WhyUsSection = () => {
                   <h3 className="font-['Rajdhani'] text-[19px] font-bold text-slate-800 dark:text-[#F5F8FF] mb-2 uppercase group-hover:text-[#0066CC] dark:group-hover:text-[#60C0FF] transition-colors tracking-tight">
                     {item.title}
                   </h3>
-                  <p className="font-['Inter'] text-[15px] text-slate-600 dark:text-[#B8C8DC] leading-relaxed group-hover:text-slate-900 dark:group-hover:text-white transition-colors">
+                  <p className="font-['Inter'] text-[15px] text-slate-700 dark:text-[#B8C8DC] leading-relaxed group-hover:text-slate-900 dark:group-hover:text-white transition-colors">
 
                     {item.description}
                   </p>
@@ -108,7 +108,7 @@ const WhyUsSection = () => {
                 </span>
               </div>
 
-              <p className="font-['Inter'] text-[20px] font-light text-slate-600 dark:text-[#B8C8DC] leading-[1.8] italic mb-10">
+              <p className="font-['Inter'] text-[20px] font-light text-slate-700 dark:text-[#B8C8DC] leading-[1.8] italic mb-10">
                 "Trabalhamos com marcas líderes mundiais em peças para sistemas de ar-condicionado automotivo."
               </p>
 
@@ -122,8 +122,9 @@ const WhyUsSection = () => {
                 <div className="flex gap-4">
                   <MapPin className="w-5 h-5 text-[#0066CC] shrink-0 mt-1" />
                   <div>
-                    <div className="font-['Rajdhani'] text-[15px] text-slate-500 dark:text-[#8A9BB5] uppercase font-bold mb-1">Endereço</div>
-                    <div className="font-['Rajdhani'] text-[15px] text-slate-700 dark:text-[#B8C8DC]">
+                    <div className="font-['Rajdhani'] text-[15px] text-slate-600 dark:text-[#8A9BB5] uppercase font-bold mb-1">Endereço</div>
+                    <div className="font-['Rajdhani'] text-[15px] text-slate-800 dark:text-[#B8C8DC]">
+
                       Tv. Primeiro de Maio, 1.719<br />
                       Centro — Castanhal, PA
                     </div>
@@ -134,8 +135,9 @@ const WhyUsSection = () => {
                 <div className="flex gap-4">
                   <Phone className="w-5 h-5 text-[#0066CC] shrink-0 mt-1" />
                   <div>
-                    <div className="font-['Rajdhani'] text-[15px] text-slate-500 dark:text-[#8A9BB5] uppercase font-bold mb-1">Telefones</div>
-                    <div className="font-['Rajdhani'] text-[15px] text-slate-700 dark:text-[#B8C8DC]">
+                    <div className="font-['Rajdhani'] text-[15px] text-slate-600 dark:text-[#8A9BB5] uppercase font-bold mb-1">Telefones</div>
+                    <div className="font-['Rajdhani'] text-[15px] text-slate-800 dark:text-[#B8C8DC]">
+
                       (91) 98516-1991<br />
                       (91) 2122-2481
                     </div>
@@ -146,8 +148,8 @@ const WhyUsSection = () => {
                 <div className="flex gap-4">
                   <Clock className="w-5 h-5 text-[#0066CC] shrink-0 mt-1" />
                   <div>
-                    <div className="font-['Rajdhani'] text-[15px] text-slate-500 dark:text-[#8A9BB5] uppercase font-bold mb-1">Horário</div>
-                    <div className="font-['Rajdhani'] text-[15px] text-slate-700 dark:text-[#B8C8DC]">
+                    <div className="font-['Rajdhani'] text-[15px] text-slate-600 dark:text-[#8A9BB5] uppercase font-bold mb-1">Horário</div>
+                    <div className="font-['Rajdhani'] text-[15px] text-slate-800 dark:text-[#B8C8DC]">
                       Seg a Sex: 8h às 18h<br />
                       Sábado: 8h às 12h
                     </div>

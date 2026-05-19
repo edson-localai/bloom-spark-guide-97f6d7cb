@@ -69,7 +69,7 @@ const HeroSection = () => {
           {/* Badge */}
           <div className="inline-flex items-center gap-2 px-4 py-[6px] rounded-full bg-[#0066CC]/10 border border-[#0066CC]/30 mb-6">
             <Snowflake className="w-[14px] h-[14px] text-[#0066CC]" />
-            <span className="font-['Rajdhani'] text-xs font-semibold tracking-[0.12em] text-[#60C0FF] uppercase">
+            <span className="font-['Rajdhani'] text-xs font-semibold tracking-[0.12em] text-[#0052A3] dark:text-[#60C0FF] uppercase">
               Especialistas em Refrigeração Automotiva
             </span>
           </div>
@@ -107,7 +107,7 @@ const HeroSection = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.8, duration: 0.8 }}
-            className="font-['Inter'] text-lg font-light text-slate-600 dark:text-[#B8C8DC] leading-[1.7] max-w-[520px] mb-10"
+            className="font-['Inter'] text-lg font-light text-slate-700 dark:text-[#B8C8DC] leading-[1.7] max-w-[520px] mb-10"
           >
             Peças de ar-condicionado automotivo linha leve, pesada e fora de estrada. 
             Atendemos varejo e oficinas com agilidade e qualidade.
@@ -137,15 +137,15 @@ const HeroSection = () => {
           <div className="flex flex-wrap items-center gap-x-10 gap-y-6">
             <div className="pr-10 border-r border-slate-200 dark:border-[#1E2330] last:border-0 last:pr-0">
               <div className="font-['Bebas_Neue'] text-[28px] text-slate-900 dark:text-[#F5F8FF] leading-none mb-1">Linha Leve</div>
-              <div className="font-['Rajdhani'] text-xs font-bold tracking-[0.1em] text-slate-500 dark:text-[#8A9BB5] uppercase">Passeio & SUVs</div>
+              <div className="font-['Rajdhani'] text-xs font-bold tracking-[0.1em] text-slate-600 dark:text-[#8A9BB5] uppercase">Passeio & SUVs</div>
             </div>
             <div className="pr-10 border-r border-slate-200 dark:border-[#1E2330] last:border-0 last:pr-0">
               <div className="font-['Bebas_Neue'] text-[28px] text-slate-900 dark:text-[#F5F8FF] leading-none mb-1">Linha Pesada</div>
-              <div className="font-['Rajdhani'] text-xs font-bold tracking-[0.1em] text-slate-500 dark:text-[#8A9BB5] uppercase">Caminhões & Ônibus</div>
+              <div className="font-['Rajdhani'] text-xs font-bold tracking-[0.1em] text-slate-600 dark:text-[#8A9BB5] uppercase">Caminhões & Ônibus</div>
             </div>
             <div className="">
               <div className="font-['Bebas_Neue'] text-[28px] text-slate-900 dark:text-[#F5F8FF] leading-none mb-1">Qualidade HCB</div>
-              <div className="font-['Rajdhani'] text-xs font-bold tracking-[0.1em] text-slate-500 dark:text-[#8A9BB5] uppercase">Produtos Premium</div>
+              <div className="font-['Rajdhani'] text-xs font-bold tracking-[0.1em] text-slate-600 dark:text-[#8A9BB5] uppercase">Produtos Premium</div>
             </div>
 
           </div>

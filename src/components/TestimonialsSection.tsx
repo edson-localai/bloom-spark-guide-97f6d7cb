@@ -71,7 +71,7 @@ const TestimonialsSection = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.1 }}
-            className="text-slate-500 dark:text-gray-400 max-w-2xl mx-auto"
+            className="text-slate-600 dark:text-gray-400 max-w-2xl mx-auto"
           >
             Feedback real de quem confia na HCB Ar Condicionado para suas necessidades automotivas.
           </motion.p>
@@ -123,7 +123,7 @@ const TestimonialsSection = () => {
                       <h4 className="font-['Rajdhani'] text-xl font-bold text-slate-900 dark:text-white group-hover:text-[#0066CC] dark:group-hover:text-[#60C0FF] transition-colors">
                         {reviews[currentIndex].name}
                       </h4>
-                      <span className="font-['Inter'] text-sm text-slate-500 dark:text-[#8A9BB5] uppercase tracking-wider">{reviews[currentIndex].date}</span>
+                      <span className="font-['Inter'] text-sm text-slate-600 dark:text-[#8A9BB5] uppercase tracking-wider">{reviews[currentIndex].date}</span>
 
                     </div>
                   </div>

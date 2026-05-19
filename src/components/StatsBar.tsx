@@ -52,7 +52,7 @@ const StatsBar = () => {
                 <div className="font-['Bebas_Neue'] text-2xl sm:text-3xl text-slate-900 dark:text-[#F5F8FF] leading-none mb-1 tracking-wider group-hover:text-[#0066CC] dark:group-hover:text-[#60C0FF] transition-colors">
                   {stat.value}
                 </div>
-                <div className="font-['Rajdhani'] text-[10px] sm:text-[11px] font-bold tracking-[0.2em] text-slate-500 dark:text-[#8A9BB5] uppercase">
+                <div className="font-['Rajdhani'] text-[10px] sm:text-[11px] font-bold tracking-[0.2em] text-slate-600 dark:text-[#8A9BB5] uppercase">
                   {stat.label}
                 </div>
               </motion.div>
