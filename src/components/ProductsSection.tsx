@@ -26,7 +26,7 @@ const ProductCard = ({ icon: Icon, title, description, tag }: ProductCardProps) 
       </div>
       
       <div className="inline-block px-3 py-1 rounded-full bg-[#0066CC]/10 border border-[#0066CC]/20 mb-4">
-        <span className="font-['Rajdhani'] text-[11px] font-bold tracking-[0.12em] text-[#60C0FF] uppercase">
+        <span className="font-['Rajdhani'] text-[11px] font-bold tracking-[0.12em] text-[#0052A3] dark:text-[#60C0FF] uppercase">
           {tag}
         </span>
       </div>
@@ -35,7 +35,7 @@ const ProductCard = ({ icon: Icon, title, description, tag }: ProductCardProps) 
         {title}
       </h3>
       
-      <p className="font-['Inter'] text-[15px] font-light text-slate-600 dark:text-[#B8C8DC] leading-[1.6]">
+      <p className="font-['Inter'] text-[15px] font-light text-slate-700 dark:text-[#B8C8DC] leading-[1.6]">
         {description}
       </p>
     </div>
@@ -102,14 +102,14 @@ const ProductsSection = () => {
       {/* Header */}
       <div className="relative z-10 max-w-4xl mx-auto text-center mb-16">
         <div className="inline-flex items-center gap-2 px-4 py-[6px] rounded-full bg-[#0066CC]/10 border border-[#0066CC]/30 mb-4">
-          <span className="font-['Rajdhani'] text-xs font-semibold tracking-[0.12em] text-[#60C0FF] uppercase">
+          <span className="font-['Rajdhani'] text-xs font-semibold tracking-[0.12em] text-[#0052A3] dark:text-[#60C0FF] uppercase">
             Catálogo
           </span>
         </div>
         <h2 className="font-['Bebas_Neue'] text-[clamp(48px,6vw,80px)] text-slate-900 dark:text-[#F5F8FF] leading-tight uppercase mb-4">
           Nossas Peças
         </h2>
-        <p className="font-['Inter'] text-lg text-slate-500 dark:text-[#8A9BB5] max-w-2xl mx-auto">
+        <p className="font-['Inter'] text-lg text-slate-600 dark:text-[#8A9BB5] max-w-2xl mx-auto">
 
           Tudo que seu sistema de ar-condicionado precisa, em um só lugar.
         </p>

@@ -104,7 +104,7 @@ const Header = () => {
               href={link.href}
               onClick={(e) => handleScrollTo(e, link.href)}
               className={`px-4 py-2 font-['Rajdhani'] text-[15px] font-semibold transition-all relative group ${
-                isActive ? 'text-[#0066CC] dark:text-[#F5F8FF]' : 'text-slate-600 dark:text-[#8A9BB5] hover:text-[#0066CC] dark:hover:text-[#F5F8FF]'
+                isActive ? 'text-[#0066CC] dark:text-[#F5F8FF]' : 'text-slate-700 dark:text-[#8A9BB5] hover:text-[#0066CC] dark:hover:text-[#F5F8FF]'
               }`}
 
             >

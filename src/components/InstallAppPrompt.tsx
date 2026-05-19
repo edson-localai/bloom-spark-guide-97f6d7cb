@@ -63,12 +63,12 @@ export function InstallAppPrompt() {
       <div className="flex-1 min-w-0">
         <p className="text-sm font-semibold text-slate-900 dark:text-white">Instalar app HCB</p>
         {isIOS ? (
-          <p className="text-[11px] text-slate-500 dark:text-zinc-400 mt-1 leading-snug">
+          <p className="text-[11px] text-slate-600 dark:text-zinc-400 mt-1 leading-snug">
             Toque em <Share className="inline h-3 w-3 mx-0.5" /> Compartilhar e depois em <strong>Adicionar à Tela de Início</strong>.
 
           </p>
         ) : (
-          <p className="text-[11px] text-slate-500 dark:text-zinc-400 mt-1">
+          <p className="text-[11px] text-slate-600 dark:text-zinc-400 mt-1">
             Atenda direto pelo app, sem precisar abrir o navegador.
           </p>
         )}

@@ -60,7 +60,7 @@ const SegmentCard = ({
             className={`flex items-center gap-3 py-2 ${idx < items.length - 1 ? 'border-b border-slate-100 dark:border-[#1E2330]/50' : ''}`}
           >
             <ChevronRight className="w-4 h-4 text-[#0066CC] group-hover:translate-x-1 transition-transform" />
-            <span className="font-['Rajdhani'] text-lg text-slate-600 dark:text-[#B8C8DC] font-medium group-hover:text-slate-900 dark:group-hover:text-white transition-colors">
+            <span className="font-['Rajdhani'] text-lg text-slate-700 dark:text-[#B8C8DC] font-medium group-hover:text-slate-900 dark:group-hover:text-white transition-colors">
               {item}
             </span>
           </li>
@@ -90,14 +90,14 @@ const SegmentsSection = () => {
         {/* Header */}
         <div className="text-center mb-16">
           <div className="inline-flex items-center gap-2 px-4 py-[6px] rounded-full bg-[#0066CC]/10 border border-[#0066CC]/30 mb-4">
-            <span className="font-['Rajdhani'] text-xs font-semibold tracking-[0.12em] text-[#60C0FF] uppercase">
+            <span className="font-['Rajdhani'] text-xs font-semibold tracking-[0.12em] text-[#0052A3] dark:text-[#60C0FF] uppercase">
               Segmentos
             </span>
           </div>
           <h2 className="font-['Bebas_Neue'] text-[clamp(40px,5.5vw,72px)] text-slate-900 dark:text-[#F5F8FF] leading-tight uppercase mb-4">
             Atendemos todos os Segmentos
           </h2>
-          <p className="font-['Inter'] text-lg text-slate-500 dark:text-[#8A9BB5] max-w-2xl mx-auto">
+          <p className="font-['Inter'] text-lg text-slate-600 dark:text-[#8A9BB5] max-w-2xl mx-auto">
 
             Da picape ao caminhão fora de estrada. Se tem ar-condicionado, temos a peça.
           </p>
