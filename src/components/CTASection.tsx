@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
-import { MessageCircle, Phone, MapPin } from 'lucide-react';
+import { MessageCircle, Phone, MapPin, Navigation } from 'lucide-react';
 import MapComponent from './MapComponent';
+
 
 
 const CTASection = () => {
