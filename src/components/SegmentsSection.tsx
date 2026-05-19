@@ -39,6 +39,7 @@ const SegmentCard = ({
         loading="lazy"
         width={1024}
         height={1024}
+        decoding="async"
         className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
       />
       <div className="absolute inset-0 bg-gradient-to-t from-[#16191F] via-[#16191F]/40 to-transparent" />

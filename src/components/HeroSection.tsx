@@ -32,6 +32,8 @@ const HeroSection = () => {
           aria-hidden="true"
           width={1920}
           height={1080}
+          decoding="async"
+          fetchPriority="high"
           className="absolute inset-0 w-full h-full object-cover opacity-40"
         />
         <div className="absolute inset-0 bg-gradient-to-r from-[#0A0A0A] via-[#0A0A0A]/85 to-[#0A0A0A]/40" />
