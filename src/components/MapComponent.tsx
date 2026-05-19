@@ -4,6 +4,12 @@ import { GoogleMap, MarkerF, useLoadScript } from '@react-google-maps/api';
 import storefrontImg from '@/assets/storefront.jpg';
 import { MAPS_CONFIG } from '@/constants/maps';
 
+declare global {
+  interface Window {
+    gm_authFailure?: () => void;
+  }
+}
+
 const mapContainerStyle = {
   width: '100%',
   height: '100%',
