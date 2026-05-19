@@ -1,6 +1,8 @@
 import { GoogleMap, useJsApiLoader, MarkerF } from '@react-google-maps/api';
-import { useCallback, useState } from 'react';
+import { useCallback, useState, useMemo } from 'react';
 import { Skeleton } from './ui/skeleton';
+import { useTheme } from 'next-themes';
+
 
 const center = {
   lat: -1.2931392,
@@ -14,20 +16,27 @@ const mapContainerStyle = {
 };
 
 const MapComponent = () => {
+  const { theme } = useTheme();
+
   const { isLoaded } = useJsApiLoader({
     id: 'google-map-script',
     googleMapsApiKey: import.meta.env.VITE_LOVABLE_CONNECTOR_GOOGLE_MAPS_BROWSER_KEY || ""
   });
 
-  const [map, setMap] = useState<google.maps.Map | null>(null);
-
-  const onLoad = useCallback(function callback(map: google.maps.Map) {
-    setMap(map);
-  }, []);
-
-  const onUnmount = useCallback(function callback() {
-    setMap(null);
-  }, []);
+  const mapStyles = useMemo(() => {
+    if (theme === 'dark') {
+      return [
+        { "elementType": "geometry", "stylers": [{ "color": "#1f2937" }] },
+        { "elementType": "labels.text.fill", "stylers": [{ "color": "#9ca3af" }] },
+        { "elementType": "labels.text.stroke", "stylers": [{ "color": "#111827" }] },
+        { "featureType": "administrative", "elementType": "geometry", "stylers": [{ "color": "#4b5563" }] },
+        { "featureType": "poi", "elementType": "geometry", "stylers": [{ "color": "#111827" }] },
+        { "featureType": "road", "elementType": "geometry.fill", "stylers": [{ "color": "#374151" }] },
+        { "featureType": "water", "elementType": "geometry", "stylers": [{ "color": "#0f172a" }] }
+      ];
+    }
+    return []; // Standard Google Maps styles for light mode
+  }, [theme]);
 
   if (!isLoaded) return <Skeleton className="w-full h-full rounded-2xl bg-slate-200 dark:bg-white/5" />;
 
@@ -44,44 +53,7 @@ const MapComponent = () => {
         streetViewControl: false,
         mapTypeControl: false,
         fullscreenControl: true,
-        styles: [
-          {
-            "elementType": "geometry",
-            "stylers": [{ "color": "#212121" }]
-          },
-          {
-            "elementType": "labels.icon",
-            "stylers": [{ "visibility": "off" }]
-          },
-          {
-            "elementType": "labels.text.fill",
-            "stylers": [{ "color": "#757575" }]
-          },
-          {
-            "elementType": "labels.text.stroke",
-            "stylers": [{ "color": "#212121" }]
-          },
-          {
-            "featureType": "administrative",
-            "elementType": "geometry",
-            "stylers": [{ "color": "#757575" }]
-          },
-          {
-            "featureType": "poi",
-            "elementType": "geometry",
-            "stylers": [{ "color": "#181818" }]
-          },
-          {
-            "featureType": "road",
-            "elementType": "geometry.fill",
-            "stylers": [{ "color": "#2c2c2c" }]
-          },
-          {
-            "featureType": "water",
-            "elementType": "geometry",
-            "stylers": [{ "color": "#000000" }]
-          }
-        ]
+        styles: mapStyles
       }}
     >
       <MarkerF
@@ -91,5 +63,6 @@ const MapComponent = () => {
     </GoogleMap>
   );
 };
+
 
 export default MapComponent;
