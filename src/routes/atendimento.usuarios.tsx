@@ -452,19 +452,31 @@ function UsuariosPage() {
             <motion.div
               layout
               key={user.id}
-              className="bg-[#0F1117] border border-[#1F232E] rounded-3xl p-6 hover:border-cyan-500/20 transition-all group"
+              className="bg-[#0F1117] border border-[#1F232E] rounded-3xl p-6 hover:border-cyan-500/20 transition-all group relative"
             >
               <div className="flex justify-between items-start mb-6">
-                <div className="h-12 w-12 rounded-2xl bg-zinc-800 flex items-center justify-center text-xl font-bold text-cyan-500 border border-[#1F232E]">
-                  {user.name.charAt(0)}
+                <div className="flex gap-4">
+                  <div className="h-12 w-12 rounded-2xl bg-zinc-800 flex items-center justify-center text-xl font-bold text-cyan-500 border border-[#1F232E]">
+                    {user.name.charAt(0)}
+                  </div>
+                  <div>
+                    <div className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest w-fit ${
+                      user.role === 'admin' ? 'bg-cyan-500/10 text-cyan-500' :
+                      user.role === 'supervisor' ? 'bg-purple-500/10 text-purple-500' :
+                      'bg-zinc-500/10 text-zinc-500'
+                    }`}>
+                      {user.role}
+                    </div>
+                  </div>
                 </div>
-                <div className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest ${
-                  user.role === 'admin' ? 'bg-cyan-500/10 text-cyan-500' :
-                  user.role === 'supervisor' ? 'bg-purple-500/10 text-purple-500' :
-                  'bg-zinc-500/10 text-zinc-500'
-                }`}>
-                  {user.role}
-                </div>
+                
+                <button
+                  onClick={() => handleEditClick(user)}
+                  className="p-2 rounded-xl bg-zinc-800/50 text-zinc-400 hover:text-cyan-500 hover:bg-cyan-500/10 transition-all"
+                  title="Editar Usuário"
+                >
+                  <Pencil className="h-4 w-4" />
+                </button>
               </div>
 
               <div className="space-y-4 mb-6">
