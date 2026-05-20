@@ -153,41 +153,62 @@ function InboxPage() {
 
     return (
       <div className="h-full flex flex-col">
-        <div className="p-4 space-y-3" style={{ background: '#0F1117', borderBottom: '1px solid #1F232E' }}>
-          <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
-            {navItems.map((item) => (
+        {filter === 'profile' ? (
+          <div className="flex-1 overflow-auto custom-scrollbar bg-[#0A0A0F]">
+            <div className="p-4 border-b border-[#1F232E] flex items-center gap-3 shrink-0" style={{ background: '#0F1117' }}>
               <button
-                key={item.id}
-                onClick={() => setFilter(item.id as ConversationFilter)}
-                className={`shrink-0 flex items-center gap-2 px-3 py-1.5 rounded-full text-xs transition-all ${
-                  filter === item.id 
-                    ? 'bg-cyan-500 text-black font-bold' 
-                    : 'bg-[#1F232E] text-zinc-400 hover:text-zinc-200'
-                }`}
+                onClick={() => setFilter('all')}
+                className="p-2 text-zinc-300 hover:text-white"
+                aria-label="Voltar"
               >
-                <item.icon className="h-3.5 w-3.5" />
-                <span>{item.label}</span>
+                <ArrowLeft className="h-5 w-5" />
               </button>
-            ))}
+              <h1 className="text-lg font-bold text-white flex items-center gap-2">
+                <UserCircle className="h-5 w-5 text-cyan-500" />
+                Perfil
+              </h1>
+            </div>
+            <ProfilePanel />
           </div>
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
-            <input
-              type="text"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Buscar conversa..."
-              className="w-full bg-[#151821] border border-[#1F232E] rounded-lg py-2 pl-10 pr-4 text-sm text-zinc-300 focus:outline-none focus:border-cyan-500/50 transition-colors"
-            />
-          </div>
-        </div>
-        <div className="flex-1 min-h-0">
-          <ConversationList
-            conversations={conversations as any}
-            selectedId={selectedId}
-            onSelect={(id) => { setSelectedId(id); setPane('chat'); }}
-          />
-        </div>
+        ) : (
+          <>
+            <div className="p-4 space-y-3" style={{ background: '#0F1117', borderBottom: '1px solid #1F232E' }}>
+              <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+                {navItems.map((item) => (
+                  <button
+                    key={item.id}
+                    onClick={() => setFilter(item.id as ConversationFilter)}
+                    className={`shrink-0 flex items-center gap-2 px-3 py-1.5 rounded-full text-xs transition-all ${
+                      filter === item.id 
+                        ? 'bg-cyan-500 text-black font-bold' 
+                        : 'bg-[#1F232E] text-zinc-400 hover:text-zinc-200'
+                    }`}
+                  >
+                    <item.icon className="h-3.5 w-3.5" />
+                    <span>{item.label}</span>
+                  </button>
+                ))}
+              </div>
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
+                <input
+                  type="text"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  placeholder="Buscar conversa..."
+                  className="w-full bg-[#151821] border border-[#1F232E] rounded-lg py-2 pl-10 pr-4 text-sm text-zinc-300 focus:outline-none focus:border-cyan-500/50 transition-colors"
+                />
+              </div>
+            </div>
+            <div className="flex-1 min-h-0">
+              <ConversationList
+                conversations={conversations as any}
+                selectedId={selectedId}
+                onSelect={(id) => { setSelectedId(id); setPane('chat'); }}
+              />
+            </div>
+          </>
+        )}
       </div>
     );
   }
