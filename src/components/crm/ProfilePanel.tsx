@@ -55,7 +55,7 @@ export function ProfilePanel() {
       if (!user) return;
       const { data, error } = await supabase
         .from('agents')
-        .select('name, avatar_url, role')
+        .select('name, avatar_url, role, description')
         .eq('user_id', user.id)
         .single();
 
