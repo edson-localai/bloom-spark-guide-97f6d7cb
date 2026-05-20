@@ -35,6 +35,7 @@ export interface WhatsAppInstance {
   id: string;
   name: string;
   display_name: string;
+  provider: 'wapi';
   phone_number: string | null;
   status: InstanceStatus;
   qr_code: string | null;
