@@ -71,6 +71,7 @@ serve(async (req) => {
         name: name,
         email: email,
         role: role || 'agent',
+        department: department || 'atendimento',
         status: 'offline'
       })
 
