@@ -35,7 +35,7 @@ serve(async (req) => {
       throw new Error('Unauthorized: Admin role required')
     }
 
-    const { userId, email, password, name, role } = await req.json()
+    const { userId, email, password, name, role, department } = await req.json()
 
     if (!userId) {
       throw new Error('User ID is required')
