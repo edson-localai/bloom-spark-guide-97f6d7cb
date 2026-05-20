@@ -16,7 +16,9 @@ import {
   Mail,
   Smartphone,
   Lock,
-  User
+  User,
+  Pencil,
+  Trash2
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
@@ -60,13 +62,16 @@ function UsuariosPage() {
   const [users, setUsers] = useState<UserProfile[]>([]);
   const [search, setSearch] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
+  const [isUpdating, setIsUpdating] = useState(false);
+  const [editingUser, setEditingUser] = useState<UserProfile | null>(null);
 
   // Form state
-  const [newUserName, setNewUserName] = useState('');
-  const [newUserEmail, setNewUserEmail] = useState('');
-  const [newUserPassword, setNewUserPassword] = useState('');
-  const [newUserRole, setNewUserRole] = useState<'admin' | 'supervisor' | 'agent'>('agent');
+  const [userName, setUserName] = useState('');
+  const [userEmail, setUserEmail] = useState('');
+  const [userPassword, setUserPassword] = useState('');
+  const [userRole, setUserRole] = useState<'admin' | 'supervisor' | 'agent'>('agent');
 
   useEffect(() => {
     if (isAdmin) {
@@ -97,10 +102,10 @@ function UsuariosPage() {
     try {
       const { data, error } = await supabase.functions.invoke('create-user', {
         body: {
-          email: newUserEmail,
-          password: newUserPassword,
-          name: newUserName,
-          role: newUserRole
+          email: userEmail,
+          password: userPassword,
+          name: userName,
+          role: userRole
         }
       });
 
@@ -110,10 +115,10 @@ function UsuariosPage() {
       setIsModalOpen(false);
       
       // Reset form
-      setNewUserName('');
-      setNewUserEmail('');
-      setNewUserPassword('');
-      setNewUserRole('agent');
+      setUserName('');
+      setUserEmail('');
+      setUserPassword('');
+      setUserRole('agent');
       
       // Refresh list
       fetchUsers();
@@ -122,6 +127,63 @@ function UsuariosPage() {
       toast.error(err instanceof Error ? err.message : 'Falha ao criar usuário.');
     } finally {
       setIsCreating(false);
+    }
+  };
+
+  const handleEditClick = (user: UserProfile) => {
+    setEditingUser(user);
+    setUserName(user.name);
+    setUserEmail(user.email);
+    setUserRole(user.role);
+    setUserPassword(''); // Don't show password, allow change if provided
+    setIsEditModalOpen(true);
+  };
+
+  const handleUpdateUser = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingUser?.user_id) return;
+    
+    setIsUpdating(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('update-user', {
+        body: {
+          userId: editingUser.user_id,
+          name: userName,
+          email: userEmail !== editingUser.email ? userEmail : undefined,
+          password: userPassword || undefined,
+          role: userRole
+        }
+      });
+
+      if (error) throw error;
+
+      toast.success('Usuário atualizado com sucesso!');
+      setIsEditModalOpen(false);
+      setEditingUser(null);
+      fetchUsers();
+    } catch (err) {
+      console.error('Erro ao atualizar usuário:', err);
+      toast.error(err instanceof Error ? err.message : 'Falha ao atualizar usuário.');
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
+  const handleDeleteUser = async (userId: string) => {
+    if (!confirm('Tem certeza que deseja excluir este usuário? Esta ação não pode ser desfeita.')) return;
+    
+    try {
+      const { data, error } = await supabase.functions.invoke('delete-user', {
+        body: { userId }
+      });
+
+      if (error) throw error;
+
+      toast.success('Usuário excluído com sucesso!');
+      fetchUsers();
+    } catch (err) {
+      console.error('Erro ao excluir usuário:', err);
+      toast.error(err instanceof Error ? err.message : 'Falha ao excluir usuário.');
     }
   };
 
@@ -218,8 +280,8 @@ function UsuariosPage() {
                     <Input
                       id="name"
                       placeholder="Ex: João Silva"
-                      value={newUserName}
-                      onChange={(e) => setNewUserName(e.target.value)}
+                      value={userName}
+                      onChange={(e) => setUserName(e.target.value)}
                       className="bg-[#151821] border-[#1F232E] pl-10 h-12 rounded-xl focus:ring-cyan-500/50"
                       required
                     />
@@ -234,8 +296,8 @@ function UsuariosPage() {
                       id="email"
                       type="email"
                       placeholder="email@empresa.com"
-                      value={newUserEmail}
-                      onChange={(e) => setNewUserEmail(e.target.value)}
+                      value={userEmail}
+                      onChange={(e) => setUserEmail(e.target.value)}
                       className="bg-[#151821] border-[#1F232E] pl-10 h-12 rounded-xl focus:ring-cyan-500/50"
                       required
                     />
@@ -244,7 +306,7 @@ function UsuariosPage() {
 
                 <div className="space-y-2">
                   <Label htmlFor="role" className="text-zinc-400 text-xs font-bold uppercase tracking-wider">Nível de Acesso</Label>
-                  <Select value={newUserRole} onValueChange={(value: any) => setNewUserRole(value)}>
+                  <Select value={userRole} onValueChange={(value: any) => setUserRole(value)}>
                     <SelectTrigger className="bg-[#151821] border-[#1F232E] h-12 rounded-xl">
                       <SelectValue placeholder="Selecione um nível" />
                     </SelectTrigger>
@@ -264,8 +326,8 @@ function UsuariosPage() {
                       id="pass"
                       type="password"
                       placeholder="••••••••"
-                      value={newUserPassword}
-                      onChange={(e) => setNewUserPassword(e.target.value)}
+                      value={userPassword}
+                      onChange={(e) => setUserPassword(e.target.value)}
                       className="bg-[#151821] border-[#1F232E] pl-10 h-12 rounded-xl focus:ring-cyan-500/50"
                       required
                       minLength={6}
@@ -294,6 +356,99 @@ function UsuariosPage() {
             </form>
           </DialogContent>
         </Dialog>
+
+        {/* Edit Modal */}
+        <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
+          <DialogContent className="bg-[#0F1117] border-[#1F232E] text-white sm:max-w-[425px] rounded-3xl z-[1000]">
+            <DialogHeader>
+              <DialogTitle className="text-xl font-bold flex items-center gap-2">
+                <Pencil className="h-5 w-5 text-cyan-500" />
+                Editar Usuário
+              </DialogTitle>
+            </DialogHeader>
+            <form onSubmit={handleUpdateUser} className="space-y-6 pt-4">
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="edit-name" className="text-zinc-400 text-xs font-bold uppercase tracking-wider">Nome Completo</Label>
+                  <div className="relative">
+                    <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
+                    <Input
+                      id="edit-name"
+                      placeholder="Ex: João Silva"
+                      value={userName}
+                      onChange={(e) => setUserName(e.target.value)}
+                      className="bg-[#151821] border-[#1F232E] pl-10 h-12 rounded-xl focus:ring-cyan-500/50"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="edit-email" className="text-zinc-400 text-xs font-bold uppercase tracking-wider">Email</Label>
+                  <div className="relative">
+                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
+                    <Input
+                      id="edit-email"
+                      type="email"
+                      placeholder="email@empresa.com"
+                      value={userEmail}
+                      onChange={(e) => setUserEmail(e.target.value)}
+                      className="bg-[#151821] border-[#1F232E] pl-10 h-12 rounded-xl focus:ring-cyan-500/50"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="edit-role" className="text-zinc-400 text-xs font-bold uppercase tracking-wider">Nível de Acesso</Label>
+                  <Select value={userRole} onValueChange={(value: any) => setUserRole(value)}>
+                    <SelectTrigger className="bg-[#151821] border-[#1F232E] h-12 rounded-xl">
+                      <SelectValue placeholder="Selecione um nível" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-[#151821] border-[#1F232E] text-white">
+                      <SelectItem value="agent">Agente (Apenas Atendimento)</SelectItem>
+                      <SelectItem value="supervisor">Supervisor (Gestão de Equipe)</SelectItem>
+                      <SelectItem value="admin">Administrador (Acesso Total)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="edit-pass" className="text-zinc-400 text-xs font-bold uppercase tracking-wider">Nova Senha (opcional)</Label>
+                  <div className="relative">
+                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
+                    <Input
+                      id="edit-pass"
+                      type="password"
+                      placeholder="Deixe em branco para manter"
+                      value={userPassword}
+                      onChange={(e) => setUserPassword(e.target.value)}
+                      className="bg-[#151821] border-[#1F232E] pl-10 h-12 rounded-xl focus:ring-cyan-500/50"
+                      minLength={6}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <DialogFooter className="pt-2">
+                <Button 
+                  type="submit" 
+                  className="w-full bg-cyan-500 hover:bg-cyan-400 text-black font-bold h-12 rounded-xl"
+                  disabled={isUpdating}
+                >
+                  {isUpdating ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Salvando Alterações...
+                    </>
+                  ) : (
+                    "Salvar Alterações"
+                  )}
+                </Button>
+              </DialogFooter>
+            </form>
+          </DialogContent>
+        </Dialog>
       </div>
 
       <div className="px-8 py-4">
@@ -315,18 +470,39 @@ function UsuariosPage() {
             <motion.div
               layout
               key={user.id}
-              className="bg-[#0F1117] border border-[#1F232E] rounded-3xl p-6 hover:border-cyan-500/20 transition-all group"
+              className="bg-[#0F1117] border border-[#1F232E] rounded-3xl p-6 hover:border-cyan-500/20 transition-all group relative"
             >
               <div className="flex justify-between items-start mb-6">
-                <div className="h-12 w-12 rounded-2xl bg-zinc-800 flex items-center justify-center text-xl font-bold text-cyan-500 border border-[#1F232E]">
-                  {user.name.charAt(0)}
+                <div className="flex gap-4">
+                  <div className="h-12 w-12 rounded-2xl bg-zinc-800 flex items-center justify-center text-xl font-bold text-cyan-500 border border-[#1F232E]">
+                    {user.name.charAt(0)}
+                  </div>
+                  <div>
+                    <div className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest w-fit ${
+                      user.role === 'admin' ? 'bg-cyan-500/10 text-cyan-500' :
+                      user.role === 'supervisor' ? 'bg-purple-500/10 text-purple-500' :
+                      'bg-zinc-500/10 text-zinc-500'
+                    }`}>
+                      {user.role}
+                    </div>
+                  </div>
                 </div>
-                <div className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest ${
-                  user.role === 'admin' ? 'bg-cyan-500/10 text-cyan-500' :
-                  user.role === 'supervisor' ? 'bg-purple-500/10 text-purple-500' :
-                  'bg-zinc-500/10 text-zinc-500'
-                }`}>
-                  {user.role}
+                
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => handleEditClick(user)}
+                    className="p-2 rounded-xl bg-zinc-800/50 text-zinc-400 hover:text-cyan-500 hover:bg-cyan-500/10 transition-all"
+                    title="Editar Usuário"
+                  >
+                    <Pencil className="h-4 w-4" />
+                  </button>
+                  <button
+                    onClick={() => user.user_id && handleDeleteUser(user.user_id)}
+                    className="p-2 rounded-xl bg-zinc-800/50 text-zinc-400 hover:text-red-500 hover:bg-red-500/10 transition-all"
+                    title="Excluir Usuário"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </button>
                 </div>
               </div>
 
