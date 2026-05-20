@@ -108,7 +108,8 @@ function UsuariosPage() {
           email: userEmail,
           password: userPassword,
           name: userName,
-          role: userRole
+          role: userRole,
+          department: userDepartment
         }
       });
 
