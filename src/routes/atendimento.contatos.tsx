@@ -1,11 +1,14 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { useMemo, useState } from 'react';
 import { useContacts } from '@/hooks/useContacts';
-import { Search, User, Car, Loader2, Plus, Edit2 } from 'lucide-react';
+import { Search, User, Car, Loader2, Plus, Edit2, RefreshCw } from 'lucide-react';
 import { ContactEditor } from '@/components/crm/ContactEditor';
 import { Contact } from '@/types/crm';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { useWhatsApp } from '@/hooks/useWhatsApp';
+import { syncWhatsAppContacts } from '@/lib/whatsapp.functions';
+
 
 export const Route = createFileRoute('/atendimento/contatos')({
   component: ContatosPage,
