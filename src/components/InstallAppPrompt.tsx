@@ -21,11 +21,10 @@ export function InstallAppPrompt() {
     if (standalone) return;
 
     const dismissed = localStorage.getItem(DISMISS_KEY);
-    // Only block if dismissed recently, AND if not a new session/user specifically requested always show
-    if (dismissed && Date.now() - Number(dismissed) < 7 * 24 * 60 * 60 * 1000) {
-      // If we want it to ALWAYS show for "new" users (meaning first time or after clearing), 
-      // we might want to be less aggressive with the dismissal check.
-    }
+    // On /atendimento we ignore the dismissal logic to always show for new/active sessions as requested
+    const isAtendimentoPage = window.location.pathname.startsWith('/atendimento');
+    
+    if (!isAtendimentoPage && dismissed && Date.now() - Number(dismissed) < 7 * 24 * 60 * 60 * 1000) return;
 
     const ua = window.navigator.userAgent.toLowerCase();
     const ios = /iphone|ipad|ipod/.test(ua) && !/crios|fxios/.test(ua);
