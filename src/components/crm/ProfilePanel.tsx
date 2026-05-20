@@ -75,9 +75,9 @@ export function ProfilePanel() {
           description: ''
         });
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error('Error fetching profile:', err);
-      toast.error('Erro ao carregar dados do perfil');
+      toast.error(`Erro ao carregar dados do perfil: ${err.message || 'Erro desconhecido'}`);
     } finally {
       setLoading(false);
     }
