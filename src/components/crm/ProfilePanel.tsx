@@ -33,7 +33,7 @@ export function ProfilePanel() {
   const [agentData, setAgentData] = useState<{
     name: string;
     avatar_url: string | null;
-    description?: string;
+    description: string;
   }>({
     name: '',
     avatar_url: null,
