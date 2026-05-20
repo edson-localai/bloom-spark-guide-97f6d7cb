@@ -104,3 +104,15 @@ export async function wapiSetWebhooks(creds: WapiCreds, url: string): Promise<vo
   );
 }
 
+export async function wapiGetContacts(creds: WapiCreds): Promise<any[]> {
+  try {
+    // Tenta /v1/contact/all que é o padrão W-API para listar contatos da instância
+    const res = await wapiFetch('/v1/contact/all', { method: 'GET' }, creds);
+    return Array.isArray(res) ? res : (res?.contacts || res?.data || []);
+  } catch (e: any) {
+    console.error('[wapiGetContacts] error:', e?.message);
+    throw e;
+  }
+}
+
+
