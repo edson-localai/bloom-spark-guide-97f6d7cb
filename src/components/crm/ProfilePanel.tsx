@@ -33,10 +33,12 @@ export function ProfilePanel() {
     name: string;
     avatar_url: string | null;
     description: string;
+    role: string;
   }>({
     name: '',
     avatar_url: null,
-    description: ''
+    description: '',
+    role: 'agent'
   });
   
   const [newPassword, setNewPassword] = useState('');
