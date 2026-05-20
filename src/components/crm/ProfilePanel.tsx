@@ -85,6 +85,7 @@ export function ProfilePanel() {
         .update({
           name: agentData.name,
           avatar_url: agentData.avatar_url,
+          description: agentData.description,
         })
         .eq('user_id', user.id);
 
