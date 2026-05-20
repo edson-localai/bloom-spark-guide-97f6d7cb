@@ -20,6 +20,7 @@ import {
   ShieldCheck,
   Menu,
   X,
+  User,
 } from 'lucide-react';
 
 export const Route = createFileRoute('/atendimento')({
@@ -197,6 +198,7 @@ function getNavItems(role?: string) {
     { to: '/atendimento/treinamento', icon: GraduationCap, label: 'Treinamento' },
     { to: '/atendimento/usuarios', icon: ShieldCheck, label: 'Usuários', roles: ['admin'] },
     { to: '/atendimento/config', icon: Settings, label: 'Config', roles: ['admin'] },
+    { to: '/atendimento/perfil', icon: User, label: 'Meu Perfil' },
   ];
   return all.filter(item => !item.roles || (role && item.roles.includes(role)));
 }
@@ -264,10 +266,18 @@ function SidebarLinks({ role }: { role?: string }) {
 function SidebarFooter({ email, role }: { email: string; role?: string }) {
   return (
     <div className="px-3 py-3 border-t" style={{ borderColor: '#1F232E' }}>
-      <div className="px-3 py-2 mb-2">
-        <p className="text-xs text-zinc-300 truncate">{email}</p>
-        {role && <p className="text-[10px] uppercase tracking-wider text-cyan-400 mt-0.5">{role}</p>}
-      </div>
+      <Link 
+        to="/atendimento/perfil"
+        className="w-full flex flex-col px-3 py-2 mb-2 rounded-md hover:bg-zinc-800/50 transition-colors group"
+      >
+        <p className="text-xs text-zinc-300 truncate group-hover:text-cyan-400 transition-colors">{email}</p>
+        {role && (
+          <div className="flex items-center justify-between mt-0.5">
+            <p className="text-[10px] uppercase tracking-wider text-cyan-400">{role}</p>
+            <Settings className="h-3 w-3 text-zinc-500 group-hover:text-cyan-400" />
+          </div>
+        )}
+      </Link>
       <button
         onClick={() => supabase.auth.signOut()}
         className="w-full flex items-center gap-3 px-3 py-2 rounded-md text-sm text-zinc-400 hover:text-white transition-colors"

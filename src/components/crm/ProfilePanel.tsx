@@ -5,7 +5,6 @@ import {
   User, 
   Lock, 
   Camera, 
-  FileText, 
   Loader2, 
   Save, 
   CheckCircle2,
@@ -53,21 +52,32 @@ export function ProfilePanel() {
     try {
       setLoading(true);
       if (!user) return;
+      
       const { data, error } = await supabase
         .from('agents')
         .select('name, avatar_url, role, description')
         .eq('user_id', user.id)
-        .single();
+        .maybeSingle();
 
       if (error) throw error;
 
-      setAgentData({
-        name: data.name || '',
-        avatar_url: data.avatar_url,
-        description: data.description || ''
-      });
+      if (data) {
+        setAgentData({
+          name: data.name || user.user_metadata?.name || user.email?.split('@')[0] || '',
+          avatar_url: data.avatar_url,
+          description: data.description || ''
+        });
+      } else {
+        // If agent doesn't exist, use auth data as default
+        setAgentData({
+          name: user.user_metadata?.name || user.email?.split('@')[0] || '',
+          avatar_url: user.user_metadata?.avatar_url || null,
+          description: ''
+        });
+      }
     } catch (err) {
       console.error('Error fetching profile:', err);
+      toast.error('Erro ao carregar dados do perfil');
     } finally {
       setLoading(false);
     }
@@ -77,23 +87,32 @@ export function ProfilePanel() {
     e.preventDefault();
     if (!user) return;
 
+    if (!agentData.name.trim()) {
+      toast.error('O nome não pode estar vazio');
+      return;
+    }
+
     setSaving(true);
     try {
-      // 1. Update agents table
+      // 1. Update/Upsert agents table
       const { error: agentError } = await supabase
         .from('agents')
-        .update({
+        .upsert({
+          user_id: user.id,
           name: agentData.name,
           avatar_url: agentData.avatar_url,
           description: agentData.description,
-        })
-        .eq('user_id', user.id);
+          email: user.email || '',
+        }, { onConflict: 'user_id' });
 
       if (agentError) throw agentError;
 
       // 2. Update Auth Metadata
       const { error: authError } = await supabase.auth.updateUser({
-        data: { name: agentData.name }
+        data: { 
+          name: agentData.name,
+          avatar_url: agentData.avatar_url
+        }
       });
 
       if (authError) throw authError;
@@ -114,6 +133,11 @@ export function ProfilePanel() {
       return;
     }
 
+    if (newPassword.length < 6) {
+      toast.error('A senha deve ter pelo menos 6 caracteres.');
+      return;
+    }
+
     setSaving(true);
     try {
       const { error } = await supabase.auth.updateUser({
@@ -127,7 +151,7 @@ export function ProfilePanel() {
       setConfirmPassword('');
     } catch (err) {
       console.error('Error updating password:', err);
-      toast.error('Falha ao alterar senha.');
+      toast.error('Falha ao alterar senha. Verifique se a nova senha é diferente da atual.');
     } finally {
       setSaving(false);
     }
@@ -140,10 +164,10 @@ export function ProfilePanel() {
     try {
       setSaving(true);
       const fileExt = file.name.split('.').pop();
-      const filePath = `${user.id}-${Math.random()}.${fileExt}`;
+      const filePath = `${user.id}/${Math.random()}.${fileExt}`;
 
       // Upload to storage
-      const { error: uploadError, data } = await supabase.storage
+      const { error: uploadError } = await supabase.storage
         .from('avatars')
         .upload(filePath, file);
 
@@ -159,8 +183,12 @@ export function ProfilePanel() {
       // Update agent table immediately
       await supabase
         .from('agents')
-        .update({ avatar_url: publicUrl })
-        .eq('user_id', user.id);
+        .upsert({ 
+          user_id: user.id,
+          name: agentData.name,
+          avatar_url: publicUrl,
+          email: user.email || ''
+        }, { onConflict: 'user_id' });
 
       toast.success('Foto atualizada!');
     } catch (err) {
@@ -173,7 +201,7 @@ export function ProfilePanel() {
 
   if (loading || authLoading) {
     return (
-      <div className="flex items-center justify-center p-12">
+      <div className="flex items-center justify-center p-12 min-h-[400px]">
         <Loader2 className="h-8 w-8 animate-spin text-cyan-500" />
       </div>
     );
@@ -190,7 +218,7 @@ export function ProfilePanel() {
                 <Avatar className="w-24 h-24 border-2 border-cyan-500/20">
                   <AvatarImage src={agentData.avatar_url || ''} />
                   <AvatarFallback className="bg-zinc-800 text-cyan-500 text-2xl font-bold">
-                    {agentData.name.charAt(0)}
+                    {agentData.name?.charAt(0) || user?.email?.charAt(0)}
                   </AvatarFallback>
                 </Avatar>
                 <label 
@@ -208,8 +236,8 @@ export function ProfilePanel() {
                   />
                 </label>
               </div>
-              <CardTitle className="text-white">{agentData.name}</CardTitle>
-              <CardDescription className="text-zinc-500">{user?.email}</CardDescription>
+              <CardTitle className="text-white truncate">{agentData.name}</CardTitle>
+              <CardDescription className="text-zinc-500 truncate">{user?.email}</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4 pt-4 border-t border-[#1F232E]">
               <div className="flex items-center gap-2 text-sm text-zinc-400">
@@ -244,6 +272,7 @@ export function ProfilePanel() {
                     value={agentData.name}
                     onChange={e => setAgentData(prev => ({ ...prev, name: e.target.value }))}
                     className="bg-[#151821] border-[#1F232E] text-white focus:ring-cyan-500/50"
+                    placeholder="Seu nome"
                   />
                 </div>
                 <div className="space-y-2">
@@ -290,6 +319,7 @@ export function ProfilePanel() {
                     onChange={e => setNewPassword(e.target.value)}
                     className="bg-[#151821] border-[#1F232E] text-white focus:ring-cyan-500/50"
                     minLength={6}
+                    placeholder="Mínimo 6 caracteres"
                   />
                 </div>
                 <div className="space-y-2">
@@ -301,6 +331,7 @@ export function ProfilePanel() {
                     onChange={e => setConfirmPassword(e.target.value)}
                     className="bg-[#151821] border-[#1F232E] text-white focus:ring-cyan-500/50"
                     minLength={6}
+                    placeholder="Confirme sua senha"
                   />
                 </div>
               </CardContent>
