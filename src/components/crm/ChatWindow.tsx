@@ -79,7 +79,7 @@ export function ChatWindow({ conversation }: ChatWindowProps) {
   const [scheduledTime, setScheduledTime] = useState('');
   const [availableLabels, setAvailableLabels] = useState<any[]>([]);
   
-  const { messages, loading, sendMessage, deleteMessage } = useMessages(conversation?.id ?? null);
+  const { messages, loading, sendMessage, deleteMessage, addEvent } = useMessages(conversation?.id ?? null);
   const { agents, onlineAgents } = useAgents();
   const { addToQueue } = useWaitingQueue();
   const { replies: quickReplies } = useQuickReplies();
