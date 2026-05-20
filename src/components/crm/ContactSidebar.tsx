@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { User, Car, Tag, Calendar, FileText, ChevronRight, Clock, History, CalendarClock, XCircle, CheckCircle2, Mail, MapPin, IdCard, Edit2, Plus } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { User, Car, Tag, Calendar, FileText, ChevronRight, Clock, History, CalendarClock, XCircle, CheckCircle2, Mail, MapPin, IdCard, Edit2, Plus, Users, UserCheck } from 'lucide-react';
 import { Contact, LeadStage } from '@/types/crm';
 import { useTimeline } from '@/hooks/useTimeline';
 import { useScheduledMessages } from '@/hooks/useScheduledMessages';
