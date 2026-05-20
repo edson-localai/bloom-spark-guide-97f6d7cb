@@ -102,10 +102,10 @@ function UsuariosPage() {
     try {
       const { data, error } = await supabase.functions.invoke('create-user', {
         body: {
-          email: newUserEmail,
-          password: newUserPassword,
-          name: newUserName,
-          role: newUserRole
+          email: userEmail,
+          password: userPassword,
+          name: userName,
+          role: userRole
         }
       });
 
@@ -115,10 +115,10 @@ function UsuariosPage() {
       setIsModalOpen(false);
       
       // Reset form
-      setNewUserName('');
-      setNewUserEmail('');
-      setNewUserPassword('');
-      setNewUserRole('agent');
+      setUserName('');
+      setUserEmail('');
+      setUserPassword('');
+      setUserRole('agent');
       
       // Refresh list
       fetchUsers();
@@ -127,6 +127,45 @@ function UsuariosPage() {
       toast.error(err instanceof Error ? err.message : 'Falha ao criar usuário.');
     } finally {
       setIsCreating(false);
+    }
+  };
+
+  const handleEditClick = (user: UserProfile) => {
+    setEditingUser(user);
+    setUserName(user.name);
+    setUserEmail(user.email);
+    setUserRole(user.role);
+    setUserPassword(''); // Don't show password, allow change if provided
+    setIsEditModalOpen(true);
+  };
+
+  const handleUpdateUser = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingUser?.user_id) return;
+    
+    setIsUpdating(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('update-user', {
+        body: {
+          userId: editingUser.user_id,
+          name: userName,
+          email: userEmail !== editingUser.email ? userEmail : undefined,
+          password: userPassword || undefined,
+          role: userRole
+        }
+      });
+
+      if (error) throw error;
+
+      toast.success('Usuário atualizado com sucesso!');
+      setIsEditModalOpen(false);
+      setEditingUser(null);
+      fetchUsers();
+    } catch (err) {
+      console.error('Erro ao atualizar usuário:', err);
+      toast.error(err instanceof Error ? err.message : 'Falha ao atualizar usuário.');
+    } finally {
+      setIsUpdating(false);
     }
   };
 
