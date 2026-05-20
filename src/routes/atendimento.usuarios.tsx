@@ -544,9 +544,15 @@ function UsuariosPage() {
               <div className="space-y-4 mb-6">
                 <div>
                   <h3 className="font-bold text-white truncate">{user.name}</h3>
-                  <div className="flex items-center gap-2 text-zinc-500 text-xs mt-1">
-                    <Mail className="h-3 w-3" />
-                    {user.email}
+                  <div className="flex flex-col gap-1.5 mt-1">
+                    <div className="flex items-center gap-2 text-zinc-500 text-xs">
+                      <Mail className="h-3 w-3" />
+                      {user.email}
+                    </div>
+                    <div className="flex items-center gap-2 text-zinc-500 text-xs">
+                      <Building2 className="h-3 w-3 text-cyan-500/50" />
+                      <span className="capitalize">{user.department}</span>
+                    </div>
                   </div>
                 </div>
                 
