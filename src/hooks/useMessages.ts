@@ -1,5 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+
 import { Message } from '@/types/crm';
 import { handleAutoReply } from '@/lib/ai.functions';
 import { sendWhatsAppMessage } from '@/lib/whatsapp.functions';
