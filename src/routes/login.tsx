@@ -12,13 +12,10 @@ export const Route = createFileRoute('/login')({
 function LoginPage() {
   const navigate = useNavigate();
   const { isAuthenticated, loading: authLoading } = useCrmAuth();
-  const [mode, setMode] = useState<'signin' | 'signup'>('signin');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [name, setName] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [info, setInfo] = useState<string | null>(null);
 
   useEffect(() => {
     if (!authLoading && isAuthenticated) navigate({ to: '/atendimento' });
@@ -28,25 +25,10 @@ function LoginPage() {
     e.preventDefault();
     setBusy(true);
     setError(null);
-    setInfo(null);
 
     try {
-      if (mode === 'signup') {
-        const { error: err } = await supabase.auth.signUp({
-          email,
-          password,
-          options: {
-            emailRedirectTo: `${window.location.origin}/atendimento`,
-            data: { name },
-          },
-        });
-        if (err) throw err;
-        setInfo('Cadastro feito! Você já pode fazer login.');
-        setMode('signin');
-      } else {
-        const { error: err } = await supabase.auth.signInWithPassword({ email, password });
-        if (err) throw err;
-      }
+      const { error: err } = await supabase.auth.signInWithPassword({ email, password });
+      if (err) throw err;
     } catch (err) {
       const msg = err instanceof Error ? err.message : 'Erro inesperado';
       setError(translateAuthError(msg));
@@ -77,39 +59,7 @@ function LoginPage() {
           </div>
         </div>
 
-        <div className="flex gap-1 p-1 rounded-lg mb-6" style={{ background: '#0F1117' }}>
-          {(['signin', 'signup'] as const).map((m) => (
-            <button
-              key={m}
-              type="button"
-              onClick={() => {
-                setMode(m);
-                setError(null);
-                setInfo(null);
-              }}
-              className="flex-1 text-sm py-2 rounded-md transition-colors"
-              style={{
-                background: mode === m ? '#00CCEE' : 'transparent',
-                color: mode === m ? '#0A0A0F' : '#A1A1AA',
-                fontWeight: mode === m ? 600 : 500,
-              }}
-            >
-              {m === 'signin' ? 'Entrar' : 'Cadastrar'}
-            </button>
-          ))}
-        </div>
-
         <form onSubmit={handleSubmit} className="space-y-4">
-          {mode === 'signup' && (
-            <Field
-              label="Nome"
-              type="text"
-              value={name}
-              onChange={setName}
-              required
-              autoComplete="name"
-            />
-          )}
           <Field
             label="E-mail"
             type="email"
@@ -125,17 +75,12 @@ function LoginPage() {
             onChange={setPassword}
             required
             minLength={6}
-            autoComplete={mode === 'signup' ? 'new-password' : 'current-password'}
+            autoComplete="current-password"
           />
 
           {error && (
             <p className="text-sm rounded-md px-3 py-2" style={{ background: 'rgba(239,68,68,0.1)', color: '#FCA5A5' }}>
               {error}
-            </p>
-          )}
-          {info && (
-            <p className="text-sm rounded-md px-3 py-2" style={{ background: 'rgba(0,204,238,0.1)', color: '#67E8F9' }}>
-              {info}
             </p>
           )}
 
@@ -146,13 +91,14 @@ function LoginPage() {
             style={{ background: '#00CCEE', color: '#0A0A0F' }}
           >
             {busy && <Loader2 className="h-4 w-4 animate-spin" />}
-            {mode === 'signin' ? 'Entrar' : 'Criar conta'}
+            Entrar
           </button>
         </form>
 
         <p className="mt-6 text-xs text-zinc-500 text-center">
-          O primeiro usuário cadastrado vira admin automaticamente.
+          Acesso restrito. Novos usuários devem ser criados por um administrador.
         </p>
+
         <p className="mt-2 text-xs text-zinc-600 text-center">
           <Link to="/" className="hover:text-zinc-400">← Voltar ao site</Link>
         </p>
