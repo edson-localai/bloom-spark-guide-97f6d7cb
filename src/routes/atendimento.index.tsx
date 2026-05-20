@@ -197,40 +197,59 @@ function InboxPage() {
     <div className="h-full flex overflow-hidden">
       {renderSidebar()}
       
-      <div className="w-72 lg:w-80 shrink-0 h-full flex flex-col border-r border-[#1F232E]" style={{ background: '#0F1117' }}>
-        <div className="p-4 border-b border-[#1F232E]">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
-            <input
-              type="text"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Buscar conversa..."
-              className="w-full bg-[#151821] border border-[#1F232E] rounded-lg py-2 pl-10 pr-4 text-sm text-zinc-300 focus:outline-none focus:border-cyan-500/50 transition-colors"
-            />
+      <div className="flex-1 h-full min-w-0 flex overflow-hidden">
+        {filter === 'profile' ? (
+          <div className="flex-1 overflow-auto custom-scrollbar">
+            <div className="p-8 border-b border-[#1F232E] flex justify-between items-center" style={{ background: '#0F1117' }}>
+              <div>
+                <h1 className="text-2xl font-bold text-white flex items-center gap-3">
+                  <UserCircle className="h-6 w-6 text-cyan-500" />
+                  Meu Perfil
+                </h1>
+                <p className="text-zinc-500 text-sm">Gerencie suas informações pessoais e segurança.</p>
+              </div>
+            </div>
+            <ProfilePanel />
           </div>
-        </div>
-        <div className="flex-1 overflow-hidden">
-          <ConversationList
-            conversations={conversations as any}
-            selectedId={selectedId}
-            onSelect={setSelectedId}
-          />
-        </div>
-      </div>
+        ) : (
+          <>
+            <div className="w-72 lg:w-80 shrink-0 h-full flex flex-col border-r border-[#1F232E]" style={{ background: '#0F1117' }}>
+              <div className="p-4 border-b border-[#1F232E]">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
+                  <input
+                    type="text"
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    placeholder="Buscar conversa..."
+                    className="w-full bg-[#151821] border border-[#1F232E] rounded-lg py-2 pl-10 pr-4 text-sm text-zinc-300 focus:outline-none focus:border-cyan-500/50 transition-colors"
+                  />
+                </div>
+              </div>
+              <div className="flex-1 overflow-hidden">
+                <ConversationList
+                  conversations={conversations as any}
+                  selectedId={selectedId}
+                  onSelect={setSelectedId}
+                />
+              </div>
+            </div>
 
-      <div className="flex-1 h-full min-w-0">
-        <ChatWindow conversation={selectedConversation as any} />
-      </div>
+            <div className="flex-1 h-full min-w-0">
+              <ChatWindow conversation={selectedConversation as any} />
+            </div>
 
-      {selectedConversation && (
-        <div className="hidden xl:block">
-          <ContactSidebar
-            contact={(selectedConversation as any).contact}
-            conversationId={selectedConversation.id}
-          />
-        </div>
-      )}
+            {selectedConversation && (
+              <div className="hidden xl:block">
+                <ContactSidebar
+                  contact={(selectedConversation as any).contact}
+                  conversationId={selectedConversation.id}
+                />
+              </div>
+            )}
+          </>
+        )}
+      </div>
     </div>
   );
 }
