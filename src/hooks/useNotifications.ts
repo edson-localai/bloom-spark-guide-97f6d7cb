@@ -145,6 +145,7 @@ export function useNotifications(enabled: boolean = true) {
       .subscribe();
 
     return () => {
+      stopRecursiveAlert();
       supabase.removeChannel(channel);
       supabase.removeChannel(scheduledChannel);
     };
