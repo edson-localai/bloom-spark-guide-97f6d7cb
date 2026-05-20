@@ -66,9 +66,20 @@ function ContatosPage() {
           <h1 className="text-2xl font-bold text-white">Gestão de Contatos</h1>
           <p className="text-zinc-500 text-sm">Gerencie leads, dados pessoais, endereço e veículo.</p>
         </div>
-        <button onClick={newContact} className="flex items-center gap-2 bg-cyan-500 hover:bg-cyan-400 text-black px-4 py-2 rounded-lg font-semibold text-sm">
-          <Plus className="h-4 w-4" /> Novo Contato
-        </button>
+        <div className="flex gap-3">
+          <button 
+            onClick={handleSync} 
+            disabled={syncing}
+            className="flex items-center gap-2 bg-[#151821] border border-[#1F232E] text-zinc-400 hover:text-white px-4 py-2 rounded-lg font-semibold text-sm transition-colors"
+          >
+            <RefreshCw className={`h-4 w-4 ${syncing ? 'animate-spin' : ''}`} />
+            Sincronizar WhatsApp
+          </button>
+          <button onClick={newContact} className="flex items-center gap-2 bg-cyan-500 hover:bg-cyan-400 text-black px-4 py-2 rounded-lg font-semibold text-sm">
+            <Plus className="h-4 w-4" /> Novo Contato
+          </button>
+        </div>
+
       </div>
 
       <div className="px-8 py-4">
