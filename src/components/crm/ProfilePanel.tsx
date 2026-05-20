@@ -123,9 +123,9 @@ export function ProfilePanel() {
       if (authError) throw authError;
 
       toast.success('Perfil atualizado com sucesso!');
-    } catch (err) {
+    } catch (err: any) {
       console.error('Error updating profile:', err);
-      toast.error('Falha ao atualizar perfil.');
+      toast.error(`Falha ao atualizar perfil: ${err.message || 'Erro desconhecido'}`);
     } finally {
       setSaving(false);
     }
