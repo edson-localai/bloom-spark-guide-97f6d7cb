@@ -115,5 +115,16 @@ export function useMessages(conversationId: string | null) {
     }
   }
 
-  return { messages, loading, sendMessage, deleteMessage };
+  const addEvent = useCallback(async (content: string) => {
+    if (!conversationId) return;
+    await supabase.from('messages').insert({
+      conversation_id: conversationId,
+      content,
+      content_type: 'event',
+      sender_type: 'system'
+    });
+  }, [conversationId]);
+
+  return { messages, loading, sendMessage, deleteMessage, addEvent };
+
 }
