@@ -4,7 +4,8 @@ import { ConversationList } from '@/components/crm/ConversationList';
 import { ChatWindow } from '@/components/crm/ChatWindow';
 import { ContactSidebar } from '@/components/crm/ContactSidebar';
 import { useConversations, ConversationFilter } from '@/hooks/useConversations';
-import { Loader2, ArrowLeft, Info, Inbox, User, Users, CheckCircle2, Search } from 'lucide-react';
+import { Loader2, ArrowLeft, Info, Inbox, User, Users, CheckCircle2, Search, UserCircle } from 'lucide-react';
+import { ProfilePanel } from '@/components/crm/ProfilePanel';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { motion, AnimatePresence } from 'framer-motion';
 
