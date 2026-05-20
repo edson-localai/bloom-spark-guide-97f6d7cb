@@ -21,7 +21,11 @@ export function InstallAppPrompt() {
     if (standalone) return;
 
     const dismissed = localStorage.getItem(DISMISS_KEY);
-    if (dismissed && Date.now() - Number(dismissed) < 7 * 24 * 60 * 60 * 1000) return;
+    // Only block if dismissed recently, AND if not a new session/user specifically requested always show
+    if (dismissed && Date.now() - Number(dismissed) < 7 * 24 * 60 * 60 * 1000) {
+      // If we want it to ALWAYS show for "new" users (meaning first time or after clearing), 
+      // we might want to be less aggressive with the dismissal check.
+    }
 
     const ua = window.navigator.userAgent.toLowerCase();
     const ios = /iphone|ipad|ipod/.test(ua) && !/crios|fxios/.test(ua);
@@ -34,7 +38,10 @@ export function InstallAppPrompt() {
     };
     window.addEventListener('beforeinstallprompt', handler);
 
-    if (ios) setShow(true);
+    // Always show prompt initially if not standalone
+    setShow(true);
+
+    if (ios) setIsIOS(true);
 
     return () => window.removeEventListener('beforeinstallprompt', handler);
   }, []);
