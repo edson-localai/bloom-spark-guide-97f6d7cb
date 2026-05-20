@@ -103,9 +103,14 @@ export function ProfilePanel() {
           avatar_url: agentData.avatar_url,
           description: agentData.description,
           email: user.email || '',
+          role: 'agent', // Explicitly setting default values to avoid constraint issues
+          status: 'online'
         }, { onConflict: 'user_id' });
 
-      if (agentError) throw agentError;
+      if (agentError) {
+        console.error('Agent update error details:', agentError);
+        throw agentError;
+      }
 
       // 2. Update Auth Metadata
       const { error: authError } = await supabase.auth.updateUser({
