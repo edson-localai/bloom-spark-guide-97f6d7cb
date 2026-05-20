@@ -74,6 +74,7 @@ serve(async (req) => {
     if (name) agentUpdate.name = name
     if (email) agentUpdate.email = email
     if (role) agentUpdate.role = role
+    if (department) agentUpdate.department = department
 
     if (Object.keys(agentUpdate).length > 0) {
       const { error: agentUpdateError } = await supabaseAdmin
