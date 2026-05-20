@@ -344,47 +344,34 @@ function CreateInstanceModal({ onClose, onCreated }: { onClose: () => void; onCr
           />
         </div>
 
-        {provider === 'evolution' ? (
+        <>
           <div>
-            <label className="text-xs uppercase font-bold text-zinc-500 mb-1 block">API Key (opcional)</label>
+            <label className="text-xs uppercase font-bold text-zinc-500 mb-1 block">W-API Instance ID</label>
             <input
-              value={apiKey}
-              onChange={(e) => setApiKey(e.target.value)}
-              placeholder="Chave da instância (se já existir)"
+              value={wapiInstanceId}
+              onChange={(e) => setWapiInstanceId(e.target.value)}
+              placeholder="ID da instância no painel W-API"
+              required
               className="w-full bg-[#151821] border border-[#1F232E] rounded-lg px-3 py-2 text-white text-sm focus:border-cyan-500 outline-none"
             />
-            <p className="text-[10px] text-zinc-600 mt-1">Deixe em branco para gerar uma nova chave automaticamente.</p>
+            <p className="text-[10px] text-zinc-600 mt-1">Disponível em painel.w-api.app após criar a instância.</p>
           </div>
-        ) : (
-          <>
-            <div>
-              <label className="text-xs uppercase font-bold text-zinc-500 mb-1 block">W-API Instance ID</label>
-              <input
-                value={wapiInstanceId}
-                onChange={(e) => setWapiInstanceId(e.target.value)}
-                placeholder="ID da instância no painel W-API"
-                required
-                className="w-full bg-[#151821] border border-[#1F232E] rounded-lg px-3 py-2 text-white text-sm focus:border-cyan-500 outline-none"
-              />
-              <p className="text-[10px] text-zinc-600 mt-1">Disponível em painel.w-api.app após criar a instância.</p>
-            </div>
-            <div>
-              <label className="text-xs uppercase font-bold text-zinc-500 mb-1 block">W-API Token (Bearer)</label>
-              <input
-                type="password"
-                value={wapiToken}
-                onChange={(e) => setWapiToken(e.target.value)}
-                placeholder="Token de autenticação da instância"
-                required
-                className="w-full bg-[#151821] border border-[#1F232E] rounded-lg px-3 py-2 text-white text-sm focus:border-cyan-500 outline-none"
-              />
-              <p className="text-[10px] text-zinc-600 mt-1">
-                Configure o webhook no painel da W-API para:&nbsp;
-                <code className="text-cyan-400">/api/public/wapi/webhook</code>
-              </p>
-            </div>
-          </>
-        )}
+          <div>
+            <label className="text-xs uppercase font-bold text-zinc-500 mb-1 block">W-API Token (Bearer)</label>
+            <input
+              type="password"
+              value={wapiToken}
+              onChange={(e) => setWapiToken(e.target.value)}
+              placeholder="Token de autenticação da instância"
+              required
+              className="w-full bg-[#151821] border border-[#1F232E] rounded-lg px-3 py-2 text-white text-sm focus:border-cyan-500 outline-none"
+            />
+            <p className="text-[10px] text-zinc-600 mt-1">
+              Configure o webhook no painel da W-API para:&nbsp;
+              <code className="text-cyan-400">/api/public/wapi/webhook</code>
+            </p>
+          </div>
+        </>
         {error && (
           <div className="rounded-lg border border-red-500/20 bg-red-500/10 px-3 py-2 text-sm text-red-200">
             {error}
