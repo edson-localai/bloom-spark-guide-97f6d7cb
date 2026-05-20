@@ -275,6 +275,42 @@ export type Database = {
           },
         ]
       }
+      conversation_labels: {
+        Row: {
+          conversation_id: string | null
+          created_at: string | null
+          id: string
+          label_id: string | null
+        }
+        Insert: {
+          conversation_id?: string | null
+          created_at?: string | null
+          id?: string
+          label_id?: string | null
+        }
+        Update: {
+          conversation_id?: string | null
+          created_at?: string | null
+          id?: string
+          label_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "conversation_labels_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "conversations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "conversation_labels_label_id_fkey"
+            columns: ["label_id"]
+            isOneToOne: false
+            referencedRelation: "labels"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       conversations: {
         Row: {
           agent_id: string | null
@@ -296,6 +332,7 @@ export type Database = {
           resolved_at: string | null
           status: string
           subject: string | null
+          team_id: string | null
           transferred_at: string | null
           transferred_from: string | null
           unread_count: number | null
@@ -322,6 +359,7 @@ export type Database = {
           resolved_at?: string | null
           status?: string
           subject?: string | null
+          team_id?: string | null
           transferred_at?: string | null
           transferred_from?: string | null
           unread_count?: number | null
@@ -348,6 +386,7 @@ export type Database = {
           resolved_at?: string | null
           status?: string
           subject?: string | null
+          team_id?: string | null
           transferred_at?: string | null
           transferred_from?: string | null
           unread_count?: number | null
@@ -377,6 +416,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "conversations_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "conversations_transferred_from_fkey"
             columns: ["transferred_from"]
             isOneToOne: false
@@ -391,6 +437,30 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      labels: {
+        Row: {
+          color: string | null
+          created_at: string | null
+          description: string | null
+          id: string
+          name: string
+        }
+        Insert: {
+          color?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name: string
+        }
+        Update: {
+          color?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name?: string
+        }
+        Relationships: []
       }
       messages: {
         Row: {
@@ -616,6 +686,69 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      team_members: {
+        Row: {
+          agent_id: string | null
+          created_at: string | null
+          id: string
+          role: string | null
+          team_id: string | null
+        }
+        Insert: {
+          agent_id?: string | null
+          created_at?: string | null
+          id?: string
+          role?: string | null
+          team_id?: string | null
+        }
+        Update: {
+          agent_id?: string | null
+          created_at?: string | null
+          id?: string
+          role?: string | null
+          team_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "team_members_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "agents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "team_members_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      teams: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          id: string
+          name: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name?: string
+          updated_at?: string | null
+        }
+        Relationships: []
       }
       user_roles: {
         Row: {
