@@ -37,15 +37,22 @@ export const handleAutoReply = createServerFn({ method: "POST" })
         (new Date().getTime() - new Date(conv.bot_disabled_at).getTime()) > 24 * 60 * 60 * 1000;
       
       let botActive = conv.bot_active;
+      let currentStatus = conv.status;
+
       if (!botActive && isExpired) {
         await supabaseAdmin
           .from('conversations')
-          .update({ bot_active: true, bot_disabled_at: null })
+          .update({ 
+            bot_active: true, 
+            bot_disabled_at: null,
+            status: 'bot' 
+          })
           .eq('id', conversationId);
         botActive = true;
+        currentStatus = 'bot';
       }
 
-      if (conv.status !== 'bot' || !botActive || !conv.auto_reply_enabled) return { handled: false };
+      if (currentStatus !== 'bot' || !botActive || !conv.auto_reply_enabled) return { handled: false };
 
       // 3. Busca histórico e prompt
       const { data: promptSetting } = await supabaseAdmin
