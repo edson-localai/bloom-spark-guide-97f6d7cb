@@ -36,8 +36,17 @@ function InboxPage() {
   );
 
   useEffect(() => {
-    if (selectedId) setPane('chat');
-  }, [selectedId]);
+    if (selectedId && filter !== 'profile') setPane('chat');
+  }, [selectedId, filter]);
+
+  useEffect(() => {
+    if (filter === 'profile') {
+      setSelectedId(null);
+      setPane('profile');
+    } else {
+      setPane(selectedId ? 'chat' : 'list');
+    }
+  }, [filter]);
 
   const navItems = [
     { id: 'all', label: 'Todas', icon: Inbox },
