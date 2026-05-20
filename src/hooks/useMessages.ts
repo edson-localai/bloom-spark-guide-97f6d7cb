@@ -1,5 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+
 import { Message } from '@/types/crm';
 import { handleAutoReply } from '@/lib/ai.functions';
 import { sendWhatsAppMessage } from '@/lib/whatsapp.functions';
@@ -29,7 +30,11 @@ export function useMessages(conversationId: string | null) {
         },
         (payload) => {
           const newMsg = payload.new as Message;
-          setMessages((prev) => [...prev, newMsg]);
+          setMessages((prev) => {
+            if (prev.find(m => m.id === newMsg.id)) return prev;
+            return [...prev, newMsg];
+          });
+
 
           // Trigger Auto-reply se for mensagem do contato
           if (newMsg.sender_type === 'contact') {
@@ -110,5 +115,16 @@ export function useMessages(conversationId: string | null) {
     }
   }
 
-  return { messages, loading, sendMessage, deleteMessage };
+  const addEvent = useCallback(async (content: string) => {
+    if (!conversationId) return;
+    await supabase.from('messages').insert({
+      conversation_id: conversationId,
+      content,
+      content_type: 'event',
+      sender_type: 'system'
+    });
+  }, [conversationId]);
+
+  return { messages, loading, sendMessage, deleteMessage, addEvent };
+
 }
