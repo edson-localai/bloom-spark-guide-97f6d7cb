@@ -123,6 +123,7 @@ function UsuariosPage() {
       setUserEmail('');
       setUserPassword('');
       setUserRole('agent');
+      setUserDepartment('atendimento');
       
       // Refresh list
       fetchUsers();
