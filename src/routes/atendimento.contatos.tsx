@@ -16,8 +16,29 @@ export const Route = createFileRoute('/atendimento/contatos')({
 
 function ContatosPage() {
   const { contacts, loading, fetchContacts } = useContacts();
+  const { instances } = useWhatsApp();
   const [search, setSearch] = useState('');
   const [editing, setEditing] = useState<Contact | null>(null);
+  const [syncing, setSyncing] = useState(false);
+
+  const handleSync = async () => {
+    const connected = instances.find(i => i.status === 'connected');
+    if (!connected) {
+      return toast.error('Nenhuma instância de WhatsApp conectada encontrada.');
+    }
+    
+    setSyncing(true);
+    try {
+      const res: any = await syncWhatsAppContacts({ data: { name: connected.name } });
+      toast.success(`Sincronização concluída! ${res.created} novos contatos, ${res.updated} atualizados.`);
+      fetchContacts();
+    } catch (err: any) {
+      toast.error(err?.message || 'Erro ao sincronizar');
+    } finally {
+      setSyncing(false);
+    }
+  };
+
 
   const filtered = useMemo(() => {
     const s = search.toLowerCase();
