@@ -12,67 +12,9 @@ interface ConversationListProps {
 }
 
 export function ConversationList({ conversations, selectedId, onSelect }: ConversationListProps) {
-  const [search, setSearch] = useState('');
-  const [debouncedSearch, setDebouncedSearch] = useState('');
-  const [filter, setFilter] = useState<'all' | 'queue' | 'resolved'>('all');
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setDebouncedSearch(search);
-    }, 300);
-    return () => clearTimeout(timer);
-  }, [search]);
-
-  const filteredConversations = conversations.filter(conv => {
-    const matchesSearch = !debouncedSearch || 
-      (conv.contact?.name?.toLowerCase().includes(debouncedSearch.toLowerCase())) ||
-      (conv.whatsapp_chat_id.includes(debouncedSearch)) ||
-      (conv.last_message?.toLowerCase().includes(debouncedSearch.toLowerCase()));
-    
-    const matchesFilter = filter === 'all' 
-      ? (conv.status !== 'resolved')
-      : filter === 'queue' 
-        ? (conv.status === 'queue' || conv.status === 'bot')
-        : (conv.status === 'resolved');
-
-    return matchesSearch && matchesFilter;
-  });
-
   return (
-    <div className="flex flex-col h-full" style={{ background: '#0F1117', borderRight: '1px solid #1F232E' }}>
-      <div className="p-4 space-y-3">
-        <h2 className="text-lg font-semibold text-white">Mensagens</h2>
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
-          <input
-            type="text"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Buscar conversa..."
-            className="w-full bg-[#151821] border border-[#1F232E] rounded-lg py-2 pl-10 pr-4 text-sm text-zinc-300 focus:outline-none focus:border-cyan-500/50 transition-colors"
-          />
-        </div>
-        <div className="flex gap-2">
-          <button 
-            onClick={() => setFilter('all')}
-            className={`flex-1 py-1 px-2 text-[11px] font-medium rounded transition-all ${filter === 'all' ? 'bg-cyan-500/10 text-cyan-400 border border-cyan-500/20' : 'text-zinc-500 hover:text-zinc-300'}`}
-          >
-            Abertas
-          </button>
-          <button 
-            onClick={() => setFilter('queue')}
-            className={`flex-1 py-1 px-2 text-[11px] font-medium rounded transition-all ${filter === 'queue' ? 'bg-cyan-500/10 text-cyan-400 border border-cyan-500/20' : 'text-zinc-500 hover:text-zinc-300'}`}
-          >
-            Fila
-          </button>
-          <button 
-            onClick={() => setFilter('resolved')}
-            className={`flex-1 py-1 px-2 text-[11px] font-medium rounded transition-all ${filter === 'resolved' ? 'bg-cyan-500/10 text-cyan-400 border border-cyan-500/20' : 'text-zinc-500 hover:text-zinc-300'}`}
-          >
-            Resolvidas
-          </button>
-        </div>
-      </div>
+    <div className="flex flex-col h-full" style={{ background: '#0F1117' }}>
+
 
       <div className="flex-1 overflow-y-auto custom-scrollbar">
         <AnimatePresence mode="popLayout">
