@@ -21,9 +21,9 @@ async function requireAdminOrSupervisor(supabase: any, userId: string) {
   }
 }
 
-function publicWebhookUrl(provider: 'evolution' | 'wapi'): string {
+function publicWebhookUrl(): string {
   const projectId = process.env.LOVABLE_PROJECT_ID || '1437f3b0-fe7f-4f6b-8c41-2858d825f265';
-  const path = provider === 'wapi' ? '/api/public/wapi/webhook' : '/api/public/whatsapp/webhook';
+  const path = '/api/public/wapi/webhook';
   return `https://project--${projectId}.lovable.app${path}`;
 }
 
@@ -53,13 +53,12 @@ export const createWhatsAppInstance = createServerFn({ method: 'POST' })
   .middleware([requireSupabaseAuth])
   .inputValidator((data) =>
     z.object({
-      provider: z.enum(['evolution', 'wapi']).default('evolution'),
+      provider: z.enum(['wapi']).default('wapi'),
       name: z.string().min(2).max(60).regex(/^[a-zA-Z0-9_-]+$/, 'Use letras, números, _ ou -'),
       displayName: z.string().min(1).max(100),
-      apiKey: z.string().optional(),
       // W-API only:
-      wapiInstanceId: z.string().min(1).optional(),
-      wapiToken: z.string().min(1).optional(),
+      wapiInstanceId: z.string().min(1),
+      wapiToken: z.string().min(1),
     }).parse(data),
   )
   .handler(async ({ data, context }) => {
@@ -67,51 +66,42 @@ export const createWhatsAppInstance = createServerFn({ method: 'POST' })
     const { supabaseAdmin } = await import('@/integrations/supabase/client.server');
 
     try {
-      if (data.provider === 'wapi') {
-        if (!data.wapiInstanceId || !data.wapiToken) {
-          throw AppError.validation('Para W-API informe instance_id e token.');
-        }
-        // Não buscar QR durante a criação para evitar timeout do worker.
-        // O frontend chama getWhatsAppQr() logo em seguida.
-        const qr: string | null = null;
-        const status: 'connected' | 'disconnected' | 'connecting' = 'connecting';
-        const { data: row, error } = await supabaseAdmin
-          .from('whatsapp_instances')
-          .insert({
-            provider: 'wapi',
-            name: data.name,
-            display_name: data.displayName,
-            status,
-            qr_code: qr,
-            instance_key: data.wapiToken,
-            webhook_url: publicWebhookUrl('wapi'),
-            instance_data: { wapi: { instance_id: data.wapiInstanceId } } as any,
-          })
-          .select()
-          .single();
-        if (error) throw new Error(error.message);
-        // Register webhook event URLs at W-API (best-effort).
-        try {
-          const { wapiSetWebhooks } = await import('./wapi.server');
-          await wapiSetWebhooks(
-            { instanceId: data.wapiInstanceId, token: data.wapiToken },
-            publicWebhookUrl('wapi'),
-          );
-        } catch (e: any) {
-          console.warn('[createWhatsAppInstance] wapiSetWebhooks failed:', e?.message);
-        }
-        return { instance: row, qr };
+      if (data.provider !== 'wapi') {
+        throw AppError.validation('Apenas o provedor W-API é suportado no momento.');
       }
 
-      // evolution (default)
-      const { WhatsAppService } = await import('@/services/WhatsAppService');
-      const service = WhatsAppService.getInstance();
-      return await service.createInstance({
-        name: data.name,
-        displayName: data.displayName,
-        apiKey: data.apiKey,
-        webhookUrl: publicWebhookUrl('evolution'),
-      });
+      // Não buscar QR durante a criação para evitar timeout do worker.
+      // O frontend chama getWhatsAppQr() logo em seguida.
+      const qr: string | null = null;
+      const status: 'connected' | 'disconnected' | 'connecting' = 'connecting';
+      const { data: row, error } = await supabaseAdmin
+        .from('whatsapp_instances')
+        .insert({
+          provider: 'wapi',
+          name: data.name,
+          display_name: data.displayName,
+          status,
+          qr_code: qr,
+          instance_key: data.wapiToken,
+          webhook_url: publicWebhookUrl(),
+          instance_data: { wapi: { instance_id: data.wapiInstanceId } } as any,
+        })
+        .select()
+        .single();
+      
+      if (error) throw new Error(error.message);
+
+      // Register webhook event URLs at W-API (best-effort).
+      try {
+        const { wapiSetWebhooks } = await import('./wapi.server');
+        await wapiSetWebhooks(
+          { instanceId: data.wapiInstanceId, token: data.wapiToken },
+          publicWebhookUrl(),
+        );
+      } catch (e: any) {
+        console.warn('[createWhatsAppInstance] wapiSetWebhooks failed:', e?.message);
+      }
+      return { instance: row, qr };
     } catch (err) {
       handleServerError(err);
     }
