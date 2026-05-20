@@ -1,9 +1,8 @@
-import { Search, Filter, User, SearchX } from 'lucide-react';
+import { SearchX, User } from 'lucide-react';
 import { Conversation, Contact } from '@/types/crm';
 import { formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useState, useEffect } from 'react';
 
 interface ConversationListProps {
   conversations: (Conversation & { contact: Contact | null })[];
@@ -14,11 +13,9 @@ interface ConversationListProps {
 export function ConversationList({ conversations, selectedId, onSelect }: ConversationListProps) {
   return (
     <div className="flex flex-col h-full" style={{ background: '#0F1117' }}>
-
-
       <div className="flex-1 overflow-y-auto custom-scrollbar">
         <AnimatePresence mode="popLayout">
-          {filteredConversations.length === 0 ? (
+          {conversations.length === 0 ? (
             <motion.div 
               key="empty"
               initial={{ opacity: 0 }}
@@ -29,7 +26,7 @@ export function ConversationList({ conversations, selectedId, onSelect }: Conver
               <p className="text-sm text-zinc-500">Nenhuma conversa encontrada</p>
             </motion.div>
           ) : (
-            filteredConversations.map((conv) => (
+            conversations.map((conv) => (
               <motion.button
                 layout
                 initial={{ opacity: 0, x: -10 }}
@@ -56,12 +53,28 @@ export function ConversationList({ conversations, selectedId, onSelect }: Conver
                       {conv.contact?.name || conv.whatsapp_chat_id}
                     </p>
                     <span className="text-[10px] text-zinc-500 shrink-0">
-                      {formatDistanceToNow(new Date(conv.last_message_at), { addSuffix: false, locale: ptBR })}
+                      {conv.last_message_at ? formatDistanceToNow(new Date(conv.last_message_at), { addSuffix: false, locale: ptBR }) : ''}
                     </span>
                   </div>
                   <p className="text-xs text-zinc-500 truncate line-clamp-1">
                     {conv.last_message || 'Iniciando conversa...'}
                   </p>
+                  
+                  {/* Labels rendering */}
+                  {conv.labels && conv.labels.length > 0 && (
+                    <div className="mt-1 flex flex-wrap gap-1">
+                      {conv.labels.map(label => (
+                        <span 
+                          key={label.id}
+                          className="px-1.5 py-0.5 rounded text-[9px] font-bold text-white uppercase"
+                          style={{ backgroundColor: label.color + '44', border: `1px solid ${label.color}` }}
+                        >
+                          {label.name}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+
                   <div className="mt-2 flex gap-1.5">
                     {conv.status === 'bot' && (
                       <span className="text-[9px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded bg-purple-500/10 text-purple-400 border border-purple-500/20">
