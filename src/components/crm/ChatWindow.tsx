@@ -150,12 +150,22 @@ export function ChatWindow({ conversation }: ChatWindowProps) {
 
   useEffect(() => {
     if (scrollRef.current) {
+      const isNearBottom = scrollRef.current.scrollHeight - scrollRef.current.scrollTop - scrollRef.current.clientHeight < 150;
+      if (isNearBottom) {
+        scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+      }
+    }
+  }, [messages]);
+
+  useEffect(() => {
+    if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
     setSuggestions(null);
     setShowSchedule(false);
     setShowTransfer(false);
-  }, [messages, conversation?.id]);
+  }, [conversation?.id]);
+
 
   const handleTransfer = async (agentId: string) => {
     if (!conversation) return;
