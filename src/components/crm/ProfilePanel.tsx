@@ -251,6 +251,8 @@ export function ProfilePanel() {
                   <Textarea 
                     id="profile-bio" 
                     placeholder="Conte um pouco sobre você..."
+                    value={agentData.description}
+                    onChange={e => setAgentData(prev => ({ ...prev, description: e.target.value }))}
                     className="bg-[#151821] border-[#1F232E] text-white min-h-[100px] focus:ring-cyan-500/50"
                   />
                 </div>
