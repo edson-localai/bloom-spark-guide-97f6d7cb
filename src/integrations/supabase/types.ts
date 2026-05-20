@@ -922,6 +922,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      accept_conversation_assignment: {
+        Args: { p_conversation_id: string }
+        Returns: undefined
+      }
       delete_whatsapp_instance: {
         Args: { _instance_id?: string; _instance_name?: string }
         Returns: Json

@@ -54,10 +54,16 @@ export function useNotifications(enabled: boolean = true) {
             description: notif.message,
             duration: 10000,
             action: {
-              label: 'Ver Conversa',
-              onClick: () => {
+              label: 'Aceitar Atendimento',
+              onClick: async () => {
                 stopRecursiveAlert();
-                // We'll navigate in a real app, here we just stop the noise
+                if (notif.conversation_id) {
+                  const { error } = await supabase.rpc('accept_conversation_assignment', { 
+                    p_conversation_id: notif.conversation_id 
+                  });
+                  if (error) toast.error('Erro ao aceitar atendimento');
+                  else toast.success('Você assumiu este atendimento!');
+                }
               }
             }
           });
