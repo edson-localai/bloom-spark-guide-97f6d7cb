@@ -41,8 +41,10 @@ export function useConversations(options: UseConversationsOptions = {}) {
 
   async function fetchConversations() {
     try {
-      const { data: { user } } = await supabase.auth.getSession();
+      const { data: sessionData } = await supabase.auth.getSession();
+      const user = sessionData?.session?.user;
       if (!user) return;
+
 
       // Get current agent ID
       const { data: agentData } = await supabase
