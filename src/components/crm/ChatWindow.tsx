@@ -172,12 +172,15 @@ export function ChatWindow({ conversation }: ChatWindowProps) {
 
       if (error) throw error;
 
+      await addEvent(`Conversa transferida para ${agents.find(a => a.id === agentId)?.name || 'outro agente'}`);
+
       toast.success('Chat transferido com sucesso!');
       setShowTransfer(false);
     } catch (err) {
       toast.error('Erro ao transferir chat.');
     }
   };
+
 
   const handleTransferToQueue = async () => {
     if (!conversation) return;
