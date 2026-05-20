@@ -9,6 +9,24 @@ export function useNotifications(enabled: boolean = true) {
   useEffect(() => {
     if (!enabled) return;
 
+    let alertInterval: number | null = null;
+    const playAlertSound = () => {
+      audioRef.current?.play().catch(() => {});
+    };
+
+    const startRecursiveAlert = () => {
+      if (alertInterval) return;
+      playAlertSound();
+      alertInterval = window.setInterval(playAlertSound, 10000); // 10 seconds interval
+    };
+
+    const stopRecursiveAlert = () => {
+      if (alertInterval) {
+        clearInterval(alertInterval);
+        alertInterval = null;
+      }
+    };
+
     if (typeof window !== 'undefined' && 'Notification' in window) {
       if (Notification.permission === 'default') {
         Notification.requestPermission();
