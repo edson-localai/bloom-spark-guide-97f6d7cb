@@ -193,7 +193,10 @@ function UsuariosPage() {
         
         <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
           <DialogTrigger asChild>
-            <button className="flex items-center gap-2 bg-cyan-500 hover:bg-cyan-400 text-black px-4 py-2.5 rounded-xl font-bold text-sm transition-all">
+            <button 
+              type="button"
+              className="flex items-center gap-2 bg-cyan-500 hover:bg-cyan-400 text-black px-4 py-2.5 rounded-xl font-bold text-sm transition-all relative z-50 cursor-pointer"
+            >
               <UserPlus className="h-4 w-4" />
               Novo Usuário
             </button>
