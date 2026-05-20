@@ -186,7 +186,7 @@ export function ProfilePanel() {
         .upsert({ 
           user_id: user.id,
           avatar_url: publicUrl,
-          email: user.email
+          email: user.email || ''
         }, { onConflict: 'user_id' });
 
       toast.success('Foto atualizada!');
