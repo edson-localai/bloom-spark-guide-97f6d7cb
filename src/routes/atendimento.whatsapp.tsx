@@ -28,7 +28,7 @@ function WhatsAppPage() {
   const { instances, loading, fetchInstances } = useWhatsApp();
 
   const [showCreate, setShowCreate] = useState(false);
-  const [showConfig, setShowConfig] = useState(false);
+  // Configuração global removida, pois W-API usa credenciais por instância
   const [qrModal, setQrModal] = useState<{ name: string; qr: string | null } | null>(null);
   const [busy, setBusy] = useState<string | null>(null);
 
@@ -258,9 +258,7 @@ function WhatsAppPage() {
           }}
         />
       )}
-      {showConfig && isAdmin && (
-        <ConfigApiModal onClose={() => setShowConfig(false)} />
-      )}
+      {/* ConfigApiModal removido */}
       {qrModal && <QrModal data={qrModal} onClose={() => { setQrModal(null); fetchInstances(); }} />}
     </div>
   );
