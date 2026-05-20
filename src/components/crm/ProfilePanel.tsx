@@ -185,6 +185,7 @@ export function ProfilePanel() {
         .from('agents')
         .upsert({ 
           user_id: user.id,
+          name: agentData.name,
           avatar_url: publicUrl,
           email: user.email || ''
         }, { onConflict: 'user_id' });
