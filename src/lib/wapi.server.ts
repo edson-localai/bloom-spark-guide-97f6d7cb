@@ -106,7 +106,10 @@ export async function wapiSetWebhooks(creds: WapiCreds, url: string): Promise<vo
 
 export async function wapiGetContacts(creds: WapiCreds): Promise<any[]> {
   try {
-    // Tenta /v1/contact/all que é o padrão W-API para listar contatos da instância
+    // Tenta primeiro forçar uma sincronização da agenda (W-API)
+    await wapiFetch('/v1/contact/sync-contacts', { method: 'POST' }, creds).catch(() => {});
+    
+    // Agora busca todos os contatos
     const res = await wapiFetch('/v1/contact/all', { method: 'GET' }, creds);
     return Array.isArray(res) ? res : (res?.contacts || res?.data || []);
   } catch (e: any) {
@@ -114,5 +117,6 @@ export async function wapiGetContacts(creds: WapiCreds): Promise<any[]> {
     throw e;
   }
 }
+
 
 
