@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Conversation, Label } from '@/types/crm';
 
-export type ConversationFilter = 'mine' | 'unassigned' | 'all' | 'resolved';
+export type ConversationFilter = 'mine' | 'unassigned' | 'all' | 'resolved' | 'profile';
 
 interface UseConversationsOptions {
   filter?: ConversationFilter;
