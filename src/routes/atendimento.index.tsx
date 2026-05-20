@@ -13,7 +13,7 @@ export const Route = createFileRoute('/atendimento/')({
   component: InboxPage,
 });
 
-type Pane = 'list' | 'chat' | 'details';
+type Pane = 'list' | 'chat' | 'details' | 'profile';
 
 function InboxPage() {
   const [filter, setFilter] = useState<ConversationFilter>('all');
