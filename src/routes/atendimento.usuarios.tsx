@@ -74,6 +74,7 @@ function UsuariosPage() {
   const [userEmail, setUserEmail] = useState('');
   const [userPassword, setUserPassword] = useState('');
   const [userRole, setUserRole] = useState<'admin' | 'supervisor' | 'agent'>('agent');
+  const [userDepartment, setUserDepartment] = useState('atendimento');
 
   useEffect(() => {
     if (isAdmin) {
