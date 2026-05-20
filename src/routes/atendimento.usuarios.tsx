@@ -169,6 +169,24 @@ function UsuariosPage() {
     }
   };
 
+  const handleDeleteUser = async (userId: string) => {
+    if (!confirm('Tem certeza que deseja excluir este usuário? Esta ação não pode ser desfeita.')) return;
+    
+    try {
+      const { data, error } = await supabase.functions.invoke('delete-user', {
+        body: { userId }
+      });
+
+      if (error) throw error;
+
+      toast.success('Usuário excluído com sucesso!');
+      fetchUsers();
+    } catch (err) {
+      console.error('Erro ao excluir usuário:', err);
+      toast.error(err instanceof Error ? err.message : 'Falha ao excluir usuário.');
+    }
+  };
+
   const updateUserRole = async (userId: string, newRole: 'admin' | 'supervisor' | 'agent') => {
     try {
       // 1. Update user_roles table
