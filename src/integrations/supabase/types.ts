@@ -18,6 +18,7 @@ export type Database = {
         Row: {
           avatar_url: string | null
           created_at: string | null
+          department: string | null
           email: string
           id: string
           max_chats: number | null
@@ -30,6 +31,7 @@ export type Database = {
         Insert: {
           avatar_url?: string | null
           created_at?: string | null
+          department?: string | null
           email: string
           id?: string
           max_chats?: number | null
@@ -42,6 +44,7 @@ export type Database = {
         Update: {
           avatar_url?: string | null
           created_at?: string | null
+          department?: string | null
           email?: string
           id?: string
           max_chats?: number | null
@@ -878,6 +881,7 @@ export type Database = {
         Returns: {
           avatar_url: string | null
           created_at: string | null
+          department: string | null
           email: string
           id: string
           max_chats: number | null
