@@ -140,6 +140,7 @@ function UsuariosPage() {
     setUserName(user.name);
     setUserEmail(user.email);
     setUserRole(user.role);
+    setUserDepartment(user.department || 'atendimento');
     setUserPassword(''); // Don't show password, allow change if provided
     setIsEditModalOpen(true);
   };
