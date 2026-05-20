@@ -40,6 +40,11 @@ export function useConversations(options: UseConversationsOptions = {}) {
   }, [filter, search]);
 
   async function fetchConversations() {
+    if (filter === 'profile') {
+      setConversations([]);
+      setLoading(false);
+      return;
+    }
     try {
       const { data: sessionData } = await supabase.auth.getSession();
       const user = sessionData?.session?.user;
