@@ -137,17 +137,15 @@ export function ChatWindow({ conversation }: ChatWindowProps) {
     if (error) return toast.error('Erro ao atualizar status');
 
     // Track event
-    await supabase.from('messages').insert({
-      conversation_id: conversation.id,
-      sender_type: 'system',
-      content: status === 'resolved' ? 'Conversa marcada como resolvida' : 
-               status === 'active' ? 'Conversa reaberta' : 
-               status === 'queue' ? 'Conversa enviada para a fila' : 'Conversa arquivada',
-      content_type: 'event'
-    });
+    await addEvent(
+      status === 'resolved' ? 'Conversa marcada como resolvida' : 
+      status === 'active' ? 'Conversa reaberta' : 
+      status === 'queue' ? 'Conversa enviada para a fila' : 'Conversa arquivada'
+    );
 
     toast.success('Status atualizado!');
   };
+
 
 
   useEffect(() => {
