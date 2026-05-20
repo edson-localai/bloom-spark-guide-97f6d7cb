@@ -64,7 +64,7 @@ export function ProfilePanel() {
       setAgentData({
         name: data.name || '',
         avatar_url: data.avatar_url,
-        description: '' // Assuming description might be added to table later or stored in metadata
+        description: data.description || ''
       });
     } catch (err) {
       console.error('Error fetching profile:', err);
