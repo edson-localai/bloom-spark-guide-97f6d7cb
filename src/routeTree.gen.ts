@@ -19,6 +19,7 @@ import { Route as AtendimentoUsuariosRouteImport } from './routes/atendimento.us
 import { Route as AtendimentoTreinamentoRouteImport } from './routes/atendimento.treinamento'
 import { Route as AtendimentoRespostasRouteImport } from './routes/atendimento.respostas'
 import { Route as AtendimentoPropostasRouteImport } from './routes/atendimento.propostas'
+import { Route as AtendimentoPerfilRouteImport } from './routes/atendimento.perfil'
 import { Route as AtendimentoKanbanRouteImport } from './routes/atendimento.kanban'
 import { Route as AtendimentoDashboardRouteImport } from './routes/atendimento.dashboard'
 import { Route as AtendimentoContatosRouteImport } from './routes/atendimento.contatos'
@@ -77,6 +78,11 @@ const AtendimentoPropostasRoute = AtendimentoPropostasRouteImport.update({
   path: '/propostas',
   getParentRoute: () => AtendimentoRoute,
 } as any)
+const AtendimentoPerfilRoute = AtendimentoPerfilRouteImport.update({
+  id: '/perfil',
+  path: '/perfil',
+  getParentRoute: () => AtendimentoRoute,
+} as any)
 const AtendimentoKanbanRoute = AtendimentoKanbanRouteImport.update({
   id: '/kanban',
   path: '/kanban',
@@ -124,6 +130,7 @@ export interface FileRoutesByFullPath {
   '/atendimento/contatos': typeof AtendimentoContatosRoute
   '/atendimento/dashboard': typeof AtendimentoDashboardRoute
   '/atendimento/kanban': typeof AtendimentoKanbanRoute
+  '/atendimento/perfil': typeof AtendimentoPerfilRoute
   '/atendimento/propostas': typeof AtendimentoPropostasRoute
   '/atendimento/respostas': typeof AtendimentoRespostasRoute
   '/atendimento/treinamento': typeof AtendimentoTreinamentoRoute
@@ -142,6 +149,7 @@ export interface FileRoutesByTo {
   '/atendimento/contatos': typeof AtendimentoContatosRoute
   '/atendimento/dashboard': typeof AtendimentoDashboardRoute
   '/atendimento/kanban': typeof AtendimentoKanbanRoute
+  '/atendimento/perfil': typeof AtendimentoPerfilRoute
   '/atendimento/propostas': typeof AtendimentoPropostasRoute
   '/atendimento/respostas': typeof AtendimentoRespostasRoute
   '/atendimento/treinamento': typeof AtendimentoTreinamentoRoute
@@ -162,6 +170,7 @@ export interface FileRoutesById {
   '/atendimento/contatos': typeof AtendimentoContatosRoute
   '/atendimento/dashboard': typeof AtendimentoDashboardRoute
   '/atendimento/kanban': typeof AtendimentoKanbanRoute
+  '/atendimento/perfil': typeof AtendimentoPerfilRoute
   '/atendimento/propostas': typeof AtendimentoPropostasRoute
   '/atendimento/respostas': typeof AtendimentoRespostasRoute
   '/atendimento/treinamento': typeof AtendimentoTreinamentoRoute
@@ -183,6 +192,7 @@ export interface FileRouteTypes {
     | '/atendimento/contatos'
     | '/atendimento/dashboard'
     | '/atendimento/kanban'
+    | '/atendimento/perfil'
     | '/atendimento/propostas'
     | '/atendimento/respostas'
     | '/atendimento/treinamento'
@@ -201,6 +211,7 @@ export interface FileRouteTypes {
     | '/atendimento/contatos'
     | '/atendimento/dashboard'
     | '/atendimento/kanban'
+    | '/atendimento/perfil'
     | '/atendimento/propostas'
     | '/atendimento/respostas'
     | '/atendimento/treinamento'
@@ -220,6 +231,7 @@ export interface FileRouteTypes {
     | '/atendimento/contatos'
     | '/atendimento/dashboard'
     | '/atendimento/kanban'
+    | '/atendimento/perfil'
     | '/atendimento/propostas'
     | '/atendimento/respostas'
     | '/atendimento/treinamento'
@@ -313,6 +325,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AtendimentoPropostasRouteImport
       parentRoute: typeof AtendimentoRoute
     }
+    '/atendimento/perfil': {
+      id: '/atendimento/perfil'
+      path: '/perfil'
+      fullPath: '/atendimento/perfil'
+      preLoaderRoute: typeof AtendimentoPerfilRouteImport
+      parentRoute: typeof AtendimentoRoute
+    }
     '/atendimento/kanban': {
       id: '/atendimento/kanban'
       path: '/kanban'
@@ -370,6 +389,7 @@ interface AtendimentoRouteChildren {
   AtendimentoContatosRoute: typeof AtendimentoContatosRoute
   AtendimentoDashboardRoute: typeof AtendimentoDashboardRoute
   AtendimentoKanbanRoute: typeof AtendimentoKanbanRoute
+  AtendimentoPerfilRoute: typeof AtendimentoPerfilRoute
   AtendimentoPropostasRoute: typeof AtendimentoPropostasRoute
   AtendimentoRespostasRoute: typeof AtendimentoRespostasRoute
   AtendimentoTreinamentoRoute: typeof AtendimentoTreinamentoRoute
@@ -383,6 +403,7 @@ const AtendimentoRouteChildren: AtendimentoRouteChildren = {
   AtendimentoContatosRoute: AtendimentoContatosRoute,
   AtendimentoDashboardRoute: AtendimentoDashboardRoute,
   AtendimentoKanbanRoute: AtendimentoKanbanRoute,
+  AtendimentoPerfilRoute: AtendimentoPerfilRoute,
   AtendimentoPropostasRoute: AtendimentoPropostasRoute,
   AtendimentoRespostasRoute: AtendimentoRespostasRoute,
   AtendimentoTreinamentoRoute: AtendimentoTreinamentoRoute,
