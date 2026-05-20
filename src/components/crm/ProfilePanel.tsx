@@ -33,7 +33,7 @@ export function ProfilePanel() {
   const [agentData, setAgentData] = useState<{
     name: string;
     avatar_url: string | null;
-    description?: string;
+    description: string;
   }>({
     name: '',
     avatar_url: null,
@@ -55,7 +55,7 @@ export function ProfilePanel() {
       if (!user) return;
       const { data, error } = await supabase
         .from('agents')
-        .select('name, avatar_url, role')
+        .select('name, avatar_url, role, description')
         .eq('user_id', user.id)
         .single();
 
@@ -64,7 +64,7 @@ export function ProfilePanel() {
       setAgentData({
         name: data.name || '',
         avatar_url: data.avatar_url,
-        description: '' // Assuming description might be added to table later or stored in metadata
+        description: data.description || ''
       });
     } catch (err) {
       console.error('Error fetching profile:', err);
@@ -85,6 +85,7 @@ export function ProfilePanel() {
         .update({
           name: agentData.name,
           avatar_url: agentData.avatar_url,
+          description: agentData.description,
         })
         .eq('user_id', user.id);
 
@@ -250,6 +251,8 @@ export function ProfilePanel() {
                   <Textarea 
                     id="profile-bio" 
                     placeholder="Conte um pouco sobre você..."
+                    value={agentData.description}
+                    onChange={e => setAgentData(prev => ({ ...prev, description: e.target.value }))}
                     className="bg-[#151821] border-[#1F232E] text-white min-h-[100px] focus:ring-cyan-500/50"
                   />
                 </div>

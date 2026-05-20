@@ -1,0 +1,1 @@
+ALTER TABLE public.agents ADD COLUMN description TEXT;
