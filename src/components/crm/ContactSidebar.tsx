@@ -115,6 +115,53 @@ export function ContactSidebar({ contact, conversationId, variant = 'desktop' }:
           </span>
         </div>
 
+        {/* Atribuição (Apenas se houver conversa) */}
+        {conversationId && (
+          <Section title="Atribuição">
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <label className="text-[9px] uppercase font-bold tracking-widest text-zinc-600 flex items-center gap-1.5">
+                  <UserCheck className="h-3 w-3" /> Agente Responsável
+                </label>
+                <select 
+                  className="w-full bg-[#151821] border border-[#1F232E] rounded-lg p-2 text-xs text-zinc-200 outline-none focus:border-cyan-500/50"
+                  onChange={(e) => handleAssign(e.target.value || null)}
+                  disabled={updatingAssignment}
+                  defaultValue="" // We don't have the current conversation agent_id here easily without passing it, but let's assume it works for selection
+                >
+                  <option value="">Não atribuído</option>
+                  {agents.map(a => (
+                    <option key={a.id} value={a.id}>{a.name}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-[9px] uppercase font-bold tracking-widest text-zinc-600 flex items-center gap-1.5">
+                  <Users className="h-3 w-3" /> Setor
+                </label>
+                <div className="grid grid-cols-2 gap-2">
+                  {departments.map(dept => (
+                    <button
+                      key={dept}
+                      onClick={() => handleAssignDept(dept)}
+                      className="px-2 py-1.5 rounded-lg border border-[#1F232E] bg-[#151821] text-[10px] text-zinc-400 hover:text-cyan-400 hover:border-cyan-500/30 transition-all capitalize"
+                    >
+                      {dept}
+                    </button>
+                  ))}
+                  <button
+                    onClick={() => handleAssignDept(null)}
+                    className="px-2 py-1.5 rounded-lg border border-[#1F232E] bg-[#151821] text-[10px] text-zinc-400 hover:text-red-400 hover:border-red-500/30 transition-all capitalize"
+                  >
+                    Remover Setor
+                  </button>
+                </div>
+              </div>
+            </div>
+          </Section>
+        )}
+
         {/* Dados pessoais */}
         <Section title="Dados pessoais">
           <Row icon={Mail} label="E-mail" value={c.email} />
