@@ -191,16 +191,18 @@ function UsuariosPage() {
           <p className="text-zinc-500 text-sm">Gerencie permissões e funções da equipe.</p>
         </div>
         
+        <div className="relative">
+          <Button 
+            onClick={() => setIsModalOpen(true)}
+            className="flex items-center gap-2 bg-cyan-500 hover:bg-cyan-400 text-black px-4 py-2.5 rounded-xl font-bold text-sm transition-all"
+          >
+            <UserPlus className="h-4 w-4" />
+            Novo Usuário
+          </Button>
+        </div>
+        
         <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-          <DialogTrigger asChild>
-            <Button 
-              className="flex items-center gap-2 bg-cyan-500 hover:bg-cyan-400 text-black px-4 py-2.5 rounded-xl font-bold text-sm transition-all"
-            >
-              <UserPlus className="h-4 w-4" />
-              Novo Usuário
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="bg-[#0F1117] border-[#1F232E] text-white sm:max-w-[425px] rounded-3xl z-[100]">
+          <DialogContent className="bg-[#0F1117] border-[#1F232E] text-white sm:max-w-[425px] rounded-3xl z-[1000]">
             <DialogHeader>
               <DialogTitle className="text-xl font-bold flex items-center gap-2">
                 <UserPlus className="h-5 w-5 text-cyan-500" />

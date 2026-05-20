@@ -162,7 +162,7 @@ function AtendimentoLayout() {
         )}
       </AnimatePresence>
 
-      <main className="flex-1 min-w-0 overflow-hidden relative pb-16 md:pb-0">
+      <main className="flex-1 min-w-0 overflow-hidden relative pb-16 md:pb-0 z-0">
         <AnimatePresence mode="wait">
           <motion.div
             key={location.pathname}
@@ -170,7 +170,7 @@ function AtendimentoLayout() {
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -10 }}
             transition={{ duration: 0.2 }}
-            className="h-full"
+            className="h-full relative"
           >
             <Outlet />
           </motion.div>
