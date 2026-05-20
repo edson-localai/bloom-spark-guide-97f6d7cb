@@ -74,8 +74,10 @@ export function ChatWindow({ conversation }: ChatWindowProps) {
   const [suggestions, setSuggestions] = useState<AiSuggestions | null>(null);
   const [showSchedule, setShowSchedule] = useState(false);
   const [showTransfer, setShowTransfer] = useState(false);
+  const [showLabels, setShowLabels] = useState(false);
   const [scheduledDate, setScheduledDate] = useState('');
   const [scheduledTime, setScheduledTime] = useState('');
+  const [availableLabels, setAvailableLabels] = useState<any[]>([]);
   
   const { messages, loading, sendMessage, deleteMessage } = useMessages(conversation?.id ?? null);
   const { agents, onlineAgents } = useAgents();
@@ -84,32 +86,54 @@ export function ChatWindow({ conversation }: ChatWindowProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Quick-reply autocomplete: type "/" then shortcut to filter
-  const slashMatch = useMemo(() => {
-    const m = input.match(/^\/(\S*)$/);
-    return m ? m[1].toLowerCase() : null;
-  }, [input]);
-  const quickMatches = useMemo(() => {
-    if (slashMatch === null) return [];
-    return quickReplies.filter(
-      (r) =>
-        (r.shortcut || '').toLowerCase().startsWith(slashMatch) ||
-        r.title.toLowerCase().includes(slashMatch),
-    ).slice(0, 5);
-  }, [slashMatch, quickReplies]);
+  useEffect(() => {
+    fetchLabels();
+  }, []);
 
-  const updateStatus = async (status: 'resolved' | 'archived' | 'active') => {
+  const fetchLabels = async () => {
+    const { data } = await supabase.from('labels').select('*');
+    if (data) setAvailableLabels(data);
+  };
+
+  const toggleLabel = async (labelId: string) => {
+    if (!conversation) return;
+    const isTagged = conversation.labels?.some(l => l.id === labelId);
+    
+    if (isTagged) {
+      await supabase.from('conversation_labels')
+        .delete()
+        .eq('conversation_id', conversation.id)
+        .eq('label_id', labelId);
+    } else {
+      await supabase.from('conversation_labels')
+        .insert({ conversation_id: conversation.id, label_id: labelId });
+    }
+    // No need to manually update state, useConversations has realtime for this
+  };
+
+  const updateStatus = async (status: 'resolved' | 'archived' | 'active' | 'queue') => {
     if (!conversation) return;
     const updates: any = { status, updated_at: new Date().toISOString() };
     if (status === 'resolved') updates.resolved_at = new Date().toISOString();
     if (status === 'active') updates.resolved_at = null;
+    if (status === 'queue') updates.agent_id = null;
+    
     const { error } = await supabase.from('conversations').update(updates).eq('id', conversation.id);
     if (error) return toast.error('Erro ao atualizar status');
-    toast.success(
-      status === 'resolved' ? 'Atendimento resolvido!' :
-      status === 'archived' ? 'Conversa arquivada' : 'Conversa reaberta'
-    );
+
+    // Track event
+    await supabase.from('messages').insert({
+      conversation_id: conversation.id,
+      sender_type: 'system',
+      content: status === 'resolved' ? 'Conversa marcada como resolvida' : 
+               status === 'active' ? 'Conversa reaberta' : 
+               status === 'queue' ? 'Conversa enviada para a fila' : 'Conversa arquivada',
+      content_type: 'event'
+    });
+
+    toast.success('Status atualizado!');
   };
+
 
   useEffect(() => {
     if (scrollRef.current) {
