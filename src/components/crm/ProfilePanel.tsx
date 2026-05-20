@@ -107,7 +107,7 @@ export function ProfilePanel() {
           avatar_url: agentData.avatar_url,
           description: agentData.description,
           email: user.email || '',
-          role: 'agent', // Explicitly setting default values to avoid constraint issues
+          role: agentData.role, // Use existing role to avoid downgrading
           status: 'online'
         }, { onConflict: 'user_id' });
 
