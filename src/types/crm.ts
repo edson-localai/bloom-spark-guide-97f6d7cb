@@ -2,6 +2,20 @@
 export type AppRole = 'admin' | 'supervisor' | 'agent';
 export type AgentStatus = 'online' | 'busy' | 'away' | 'offline';
 
+export interface Label {
+  id: string;
+  name: string;
+  color: string;
+  description: string | null;
+}
+
+export interface Team {
+  id: string;
+  name: string;
+  description: string | null;
+  created_at: string;
+}
+
 export interface Agent {
   id: string;
   user_id: string | null;
@@ -66,6 +80,7 @@ export interface Conversation {
   id: string;
   contact_id: string | null;
   agent_id: string | null;
+  team_id: string | null;
   instance_id: string | null;
   whatsapp_chat_id: string;
   status: ConversationStatus;
@@ -83,11 +98,12 @@ export interface Conversation {
   last_automated_msg_at: string | null;
   created_at: string;
   updated_at: string;
+  labels?: Label[];
 }
 
 export type SenderType = 'contact' | 'agent' | 'bot' | 'system';
 export type MessageContentType =
-  | 'text' | 'image' | 'audio' | 'video' | 'document' | 'sticker' | 'location' | 'system';
+  | 'text' | 'image' | 'audio' | 'video' | 'document' | 'sticker' | 'location' | 'system' | 'event';
 export type MessageStatus = 'pending' | 'sent' | 'delivered' | 'read' | 'failed';
 
 export interface Message {
@@ -103,6 +119,7 @@ export interface Message {
   is_internal: boolean;
   status: MessageStatus;
   created_at: string;
+  meta?: any;
 }
 
 export interface QuickReply {
