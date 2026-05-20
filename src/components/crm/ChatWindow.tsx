@@ -479,17 +479,18 @@ export function ChatWindow({ conversation }: ChatWindowProps) {
         ) : (
           messages.map((msg, i) => {
             const isMe = msg.sender_type === 'agent';
-            const isSystem = msg.sender_type === 'system';
+            const isSystem = msg.sender_type === 'system' || msg.content_type === 'event';
             
             if (isSystem) {
               return (
-                <div key={msg.id} className="flex justify-center">
-                  <span className="text-[10px] uppercase font-bold tracking-widest text-zinc-500 bg-[#151821] px-3 py-1 rounded-full border border-[#1F232E]">
+                <div key={msg.id} className="flex justify-center my-2">
+                  <span className="text-[10px] uppercase font-bold tracking-widest text-zinc-500 bg-[#151821] px-4 py-1.5 rounded-full border border-[#1F232E] shadow-sm">
                     {msg.content}
                   </span>
                 </div>
               );
             }
+
 
             return (
               <div key={msg.id} className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}>
