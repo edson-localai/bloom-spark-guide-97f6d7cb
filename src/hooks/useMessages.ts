@@ -83,13 +83,14 @@ export function useMessages(conversationId: string | null) {
       });
       if (error) throw error;
 
-      // Se um humano responder, bloqueia a IA por 24h
+      // Se um humano responder, bloqueia a IA por 24h e move para atendimento humano
       if (!isInternal) {
         await supabase
           .from('conversations')
           .update({ 
             bot_active: false, 
-            bot_disabled_at: new Date().toISOString() 
+            bot_disabled_at: new Date().toISOString(),
+            status: 'open'
           })
           .eq('id', conversationId);
       }
