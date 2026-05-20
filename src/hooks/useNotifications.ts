@@ -30,15 +30,27 @@ export function useNotifications(enabled: boolean = true) {
         { event: 'INSERT', schema: 'public', table: 'messages' },
         (payload: any) => {
           const msg = payload.new;
-          if (msg.sender_type !== 'contact') return;
+          if (msg.sender_type !== 'contact' && msg.sender_type !== 'system') return;
 
-          toast.info('Nova mensagem recebida', {
-            description: msg.content?.substring(0, 80) || 'Nova mídia',
-          });
+          const isHandover = msg.sender_type === 'system' && msg.content_type === 'event';
+          
+          if (isHandover) {
+            toast.warning('Transbordo solicitado!', {
+              description: msg.content,
+              duration: 6000,
+            });
+          } else if (msg.sender_type === 'contact') {
+            toast.info('Nova mensagem recebida', {
+              description: msg.content?.substring(0, 80) || 'Nova mídia',
+            });
+          }
 
           if (document.hidden && 'Notification' in window && Notification.permission === 'granted') {
-            new Notification('HCB CRM — Nova mensagem', {
-              body: msg.content?.substring(0, 120) || 'Nova mensagem do cliente',
+            const title = isHandover ? '🚨 HCB CRM — Transbordo' : 'HCB CRM — Nova mensagem';
+            const body = msg.content?.substring(0, 120) || 'Nova mensagem do cliente';
+            
+            new Notification(title, {
+              body,
               icon: '/favicon.ico',
             });
           }

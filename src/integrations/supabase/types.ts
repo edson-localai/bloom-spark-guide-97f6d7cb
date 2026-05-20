@@ -318,6 +318,7 @@ export type Database = {
           ai_summary: string | null
           auto_reply_enabled: boolean | null
           bot_active: boolean | null
+          bot_disabled_at: string | null
           channel: string | null
           contact_id: string | null
           created_at: string | null
@@ -345,6 +346,7 @@ export type Database = {
           ai_summary?: string | null
           auto_reply_enabled?: boolean | null
           bot_active?: boolean | null
+          bot_disabled_at?: string | null
           channel?: string | null
           contact_id?: string | null
           created_at?: string | null
@@ -372,6 +374,7 @@ export type Database = {
           ai_summary?: string | null
           auto_reply_enabled?: boolean | null
           bot_active?: boolean | null
+          bot_disabled_at?: string | null
           channel?: string | null
           contact_id?: string | null
           created_at?: string | null
