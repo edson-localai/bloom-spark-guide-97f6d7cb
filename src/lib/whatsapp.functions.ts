@@ -301,3 +301,63 @@ export const sendWhatsAppMessage = createServerFn({ method: 'POST' })
       return { ok: false, error: err.message };
     }
   });
+
+// --- Sync Contacts from WhatsApp ---
+export const syncWhatsAppContacts = createServerFn({ method: 'POST' })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data) => z.object({ name: z.string().min(1) }).parse(data))
+  .handler(async ({ data, context }) => {
+    await requireAdminOrSupervisor(context.supabase, context.userId);
+    const { supabaseAdmin } = await import('@/integrations/supabase/client.server');
+    const inst = await getInstance(data.name);
+
+    if (inst.provider !== 'wapi') {
+      throw AppError.validation('Apenas o provedor W-API é suportado no momento.');
+    }
+
+    if (inst.status !== 'connected') {
+      throw AppError.validation('A instância precisa estar conectada para sincronizar contatos.');
+    }
+
+    try {
+      const { wapiGetContacts } = await import('./wapi.server');
+      const contacts = await wapiGetContacts(wapiCredsFrom(inst));
+      
+      let created = 0;
+      let updated = 0;
+
+      // Sincroniza em batches para evitar sobrecarga
+      for (const raw of contacts) {
+        const phone = String(raw.phone || raw.id || '').replace(/[^0-9]/g, '');
+        const name = raw.name || raw.pushName || raw.notify || null;
+        
+        if (!phone || phone.length < 8) continue;
+
+        const { data: existing } = await supabaseAdmin
+          .from('contacts')
+          .select('id, name')
+          .eq('phone', phone)
+          .maybeSingle();
+
+        if (existing) {
+          if (name && (!existing.name || /^[0-9]+$/.test(existing.name))) {
+            await supabaseAdmin.from('contacts').update({ name }).eq('id', existing.id);
+            updated++;
+          }
+        } else {
+          await supabaseAdmin.from('contacts').insert({
+            phone,
+            name,
+            source: 'whatsapp_sync',
+            stage: 'novo'
+          });
+          created++;
+        }
+      }
+
+      return { ok: true, created, updated, total: contacts.length };
+    } catch (err) {
+      handleServerError(err);
+    }
+  });
+
