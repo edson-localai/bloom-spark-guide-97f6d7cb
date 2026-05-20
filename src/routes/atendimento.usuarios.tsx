@@ -18,7 +18,8 @@ import {
   Lock,
   User,
   Pencil,
-  Trash2
+  Trash2,
+  Building2
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
@@ -50,6 +51,7 @@ interface UserProfile {
   email: string;
   name: string;
   role: 'admin' | 'supervisor' | 'agent';
+  department: string;
   user_id: string | null;
   status: string;
 }
@@ -72,6 +74,7 @@ function UsuariosPage() {
   const [userEmail, setUserEmail] = useState('');
   const [userPassword, setUserPassword] = useState('');
   const [userRole, setUserRole] = useState<'admin' | 'supervisor' | 'agent'>('agent');
+  const [userDepartment, setUserDepartment] = useState('atendimento');
 
   useEffect(() => {
     if (isAdmin) {
@@ -105,7 +108,8 @@ function UsuariosPage() {
           email: userEmail,
           password: userPassword,
           name: userName,
-          role: userRole
+          role: userRole,
+          department: userDepartment
         }
       });
 
@@ -119,6 +123,7 @@ function UsuariosPage() {
       setUserEmail('');
       setUserPassword('');
       setUserRole('agent');
+      setUserDepartment('atendimento');
       
       // Refresh list
       fetchUsers();
@@ -135,6 +140,7 @@ function UsuariosPage() {
     setUserName(user.name);
     setUserEmail(user.email);
     setUserRole(user.role);
+    setUserDepartment(user.department || 'atendimento');
     setUserPassword(''); // Don't show password, allow change if provided
     setIsEditModalOpen(true);
   };
@@ -151,7 +157,8 @@ function UsuariosPage() {
           name: userName,
           email: userEmail !== editingUser.email ? userEmail : undefined,
           password: userPassword || undefined,
-          role: userRole
+          role: userRole,
+          department: userDepartment
         }
       });
 
@@ -289,6 +296,20 @@ function UsuariosPage() {
                 </div>
 
                 <div className="space-y-2">
+                  <Label htmlFor="department" className="text-zinc-400 text-xs font-bold uppercase tracking-wider">Setor</Label>
+                  <Select value={userDepartment} onValueChange={(value: any) => setUserDepartment(value)}>
+                    <SelectTrigger className="bg-[#151821] border-[#1F232E] h-12 rounded-xl">
+                      <SelectValue placeholder="Selecione um setor" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-[#151821] border-[#1F232E] text-white">
+                      <SelectItem value="vendas">Vendas</SelectItem>
+                      <SelectItem value="financeiro">Financeiro</SelectItem>
+                      <SelectItem value="atendimento">Atendimento</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
                   <Label htmlFor="email" className="text-zinc-400 text-xs font-bold uppercase tracking-wider">Email</Label>
                   <div className="relative">
                     <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
@@ -368,6 +389,20 @@ function UsuariosPage() {
             </DialogHeader>
             <form onSubmit={handleUpdateUser} className="space-y-6 pt-4">
               <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="edit-department" className="text-zinc-400 text-xs font-bold uppercase tracking-wider">Setor</Label>
+                  <Select value={userDepartment} onValueChange={(value: any) => setUserDepartment(value)}>
+                    <SelectTrigger className="bg-[#151821] border-[#1F232E] h-12 rounded-xl">
+                      <SelectValue placeholder="Selecione um setor" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-[#151821] border-[#1F232E] text-white">
+                      <SelectItem value="vendas">Vendas</SelectItem>
+                      <SelectItem value="financeiro">Financeiro</SelectItem>
+                      <SelectItem value="atendimento">Atendimento</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
                 <div className="space-y-2">
                   <Label htmlFor="edit-name" className="text-zinc-400 text-xs font-bold uppercase tracking-wider">Nome Completo</Label>
                   <div className="relative">
@@ -509,9 +544,15 @@ function UsuariosPage() {
               <div className="space-y-4 mb-6">
                 <div>
                   <h3 className="font-bold text-white truncate">{user.name}</h3>
-                  <div className="flex items-center gap-2 text-zinc-500 text-xs mt-1">
-                    <Mail className="h-3 w-3" />
-                    {user.email}
+                  <div className="flex flex-col gap-1.5 mt-1">
+                    <div className="flex items-center gap-2 text-zinc-500 text-xs">
+                      <Mail className="h-3 w-3" />
+                      {user.email}
+                    </div>
+                    <div className="flex items-center gap-2 text-zinc-500 text-xs">
+                      <Building2 className="h-3 w-3 text-cyan-500/50" />
+                      <span className="capitalize">{user.department}</span>
+                    </div>
                   </div>
                 </div>
                 

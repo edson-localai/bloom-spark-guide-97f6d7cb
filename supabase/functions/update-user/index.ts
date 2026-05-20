@@ -35,7 +35,7 @@ serve(async (req) => {
       throw new Error('Unauthorized: Admin role required')
     }
 
-    const { userId, email, password, name, role } = await req.json()
+    const { userId, email, password, name, role, department } = await req.json()
 
     if (!userId) {
       throw new Error('User ID is required')
@@ -74,6 +74,7 @@ serve(async (req) => {
     if (name) agentUpdate.name = name
     if (email) agentUpdate.email = email
     if (role) agentUpdate.role = role
+    if (department) agentUpdate.department = department
 
     if (Object.keys(agentUpdate).length > 0) {
       const { error: agentUpdateError } = await supabaseAdmin
