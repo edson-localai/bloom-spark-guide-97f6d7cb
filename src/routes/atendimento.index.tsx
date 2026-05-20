@@ -44,7 +44,13 @@ function InboxPage() {
     { id: 'mine', label: 'Minhas', icon: User },
     { id: 'unassigned', label: 'Não Atribuídas', icon: Users },
     { id: 'resolved', label: 'Resolvidas', icon: CheckCircle2 },
+    { id: 'profile', label: 'Meu Perfil', icon: UserCircle },
   ];
+
+  const filteredConversations = useMemo(() => {
+    if (filter === 'profile') return [];
+    return conversations;
+  }, [conversations, filter]);
 
   if (loading && conversations.length === 0) {
     return (
