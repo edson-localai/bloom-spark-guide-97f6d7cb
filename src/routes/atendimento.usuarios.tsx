@@ -51,6 +51,7 @@ interface UserProfile {
   email: string;
   name: string;
   role: 'admin' | 'supervisor' | 'agent';
+  department: string;
   user_id: string | null;
   status: string;
 }
