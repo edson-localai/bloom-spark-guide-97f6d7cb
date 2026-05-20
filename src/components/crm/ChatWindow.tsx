@@ -86,7 +86,22 @@ export function ChatWindow({ conversation }: ChatWindowProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // Quick-reply autocomplete: type "/" then shortcut to filter
+  const slashMatch = useMemo(() => {
+    const m = input.match(/^\/(\S*)$/);
+    return m ? m[1].toLowerCase() : null;
+  }, [input]);
+  const quickMatches = useMemo(() => {
+    if (slashMatch === null) return [];
+    return quickReplies.filter(
+      (r) =>
+        (r.shortcut || '').toLowerCase().startsWith(slashMatch) ||
+        r.title.toLowerCase().includes(slashMatch),
+    ).slice(0, 5);
+  }, [slashMatch, quickReplies]);
+
   useEffect(() => {
+
     fetchLabels();
   }, []);
 
