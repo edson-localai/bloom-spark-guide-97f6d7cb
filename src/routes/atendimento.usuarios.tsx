@@ -262,8 +262,8 @@ function UsuariosPage() {
                     <Input
                       id="name"
                       placeholder="Ex: João Silva"
-                      value={newUserName}
-                      onChange={(e) => setNewUserName(e.target.value)}
+                      value={userName}
+                      onChange={(e) => setUserName(e.target.value)}
                       className="bg-[#151821] border-[#1F232E] pl-10 h-12 rounded-xl focus:ring-cyan-500/50"
                       required
                     />
@@ -278,8 +278,8 @@ function UsuariosPage() {
                       id="email"
                       type="email"
                       placeholder="email@empresa.com"
-                      value={newUserEmail}
-                      onChange={(e) => setNewUserEmail(e.target.value)}
+                      value={userEmail}
+                      onChange={(e) => setUserEmail(e.target.value)}
                       className="bg-[#151821] border-[#1F232E] pl-10 h-12 rounded-xl focus:ring-cyan-500/50"
                       required
                     />
@@ -288,7 +288,7 @@ function UsuariosPage() {
 
                 <div className="space-y-2">
                   <Label htmlFor="role" className="text-zinc-400 text-xs font-bold uppercase tracking-wider">Nível de Acesso</Label>
-                  <Select value={newUserRole} onValueChange={(value: any) => setNewUserRole(value)}>
+                  <Select value={userRole} onValueChange={(value: any) => setUserRole(value)}>
                     <SelectTrigger className="bg-[#151821] border-[#1F232E] h-12 rounded-xl">
                       <SelectValue placeholder="Selecione um nível" />
                     </SelectTrigger>
@@ -308,8 +308,8 @@ function UsuariosPage() {
                       id="pass"
                       type="password"
                       placeholder="••••••••"
-                      value={newUserPassword}
-                      onChange={(e) => setNewUserPassword(e.target.value)}
+                      value={userPassword}
+                      onChange={(e) => setUserPassword(e.target.value)}
                       className="bg-[#151821] border-[#1F232E] pl-10 h-12 rounded-xl focus:ring-cyan-500/50"
                       required
                       minLength={6}
@@ -332,6 +332,99 @@ function UsuariosPage() {
                     </>
                   ) : (
                     "Criar Usuário"
+                  )}
+                </Button>
+              </DialogFooter>
+            </form>
+          </DialogContent>
+        </Dialog>
+
+        {/* Edit Modal */}
+        <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
+          <DialogContent className="bg-[#0F1117] border-[#1F232E] text-white sm:max-w-[425px] rounded-3xl z-[1000]">
+            <DialogHeader>
+              <DialogTitle className="text-xl font-bold flex items-center gap-2">
+                <Pencil className="h-5 w-5 text-cyan-500" />
+                Editar Usuário
+              </DialogTitle>
+            </DialogHeader>
+            <form onSubmit={handleUpdateUser} className="space-y-6 pt-4">
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="edit-name" className="text-zinc-400 text-xs font-bold uppercase tracking-wider">Nome Completo</Label>
+                  <div className="relative">
+                    <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
+                    <Input
+                      id="edit-name"
+                      placeholder="Ex: João Silva"
+                      value={userName}
+                      onChange={(e) => setUserName(e.target.value)}
+                      className="bg-[#151821] border-[#1F232E] pl-10 h-12 rounded-xl focus:ring-cyan-500/50"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="edit-email" className="text-zinc-400 text-xs font-bold uppercase tracking-wider">Email</Label>
+                  <div className="relative">
+                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
+                    <Input
+                      id="edit-email"
+                      type="email"
+                      placeholder="email@empresa.com"
+                      value={userEmail}
+                      onChange={(e) => setUserEmail(e.target.value)}
+                      className="bg-[#151821] border-[#1F232E] pl-10 h-12 rounded-xl focus:ring-cyan-500/50"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="edit-role" className="text-zinc-400 text-xs font-bold uppercase tracking-wider">Nível de Acesso</Label>
+                  <Select value={userRole} onValueChange={(value: any) => setUserRole(value)}>
+                    <SelectTrigger className="bg-[#151821] border-[#1F232E] h-12 rounded-xl">
+                      <SelectValue placeholder="Selecione um nível" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-[#151821] border-[#1F232E] text-white">
+                      <SelectItem value="agent">Agente (Apenas Atendimento)</SelectItem>
+                      <SelectItem value="supervisor">Supervisor (Gestão de Equipe)</SelectItem>
+                      <SelectItem value="admin">Administrador (Acesso Total)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="edit-pass" className="text-zinc-400 text-xs font-bold uppercase tracking-wider">Nova Senha (opcional)</Label>
+                  <div className="relative">
+                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
+                    <Input
+                      id="edit-pass"
+                      type="password"
+                      placeholder="Deixe em branco para manter"
+                      value={userPassword}
+                      onChange={(e) => setUserPassword(e.target.value)}
+                      className="bg-[#151821] border-[#1F232E] pl-10 h-12 rounded-xl focus:ring-cyan-500/50"
+                      minLength={6}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <DialogFooter className="pt-2">
+                <Button 
+                  type="submit" 
+                  className="w-full bg-cyan-500 hover:bg-cyan-400 text-black font-bold h-12 rounded-xl"
+                  disabled={isUpdating}
+                >
+                  {isUpdating ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Salvando Alterações...
+                    </>
+                  ) : (
+                    "Salvar Alterações"
                   )}
                 </Button>
               </DialogFooter>
