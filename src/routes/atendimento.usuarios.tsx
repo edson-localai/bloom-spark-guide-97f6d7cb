@@ -488,13 +488,22 @@ function UsuariosPage() {
                   </div>
                 </div>
                 
-                <button
-                  onClick={() => handleEditClick(user)}
-                  className="p-2 rounded-xl bg-zinc-800/50 text-zinc-400 hover:text-cyan-500 hover:bg-cyan-500/10 transition-all"
-                  title="Editar Usuário"
-                >
-                  <Pencil className="h-4 w-4" />
-                </button>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => handleEditClick(user)}
+                    className="p-2 rounded-xl bg-zinc-800/50 text-zinc-400 hover:text-cyan-500 hover:bg-cyan-500/10 transition-all"
+                    title="Editar Usuário"
+                  >
+                    <Pencil className="h-4 w-4" />
+                  </button>
+                  <button
+                    onClick={() => user.user_id && handleDeleteUser(user.user_id)}
+                    className="p-2 rounded-xl bg-zinc-800/50 text-zinc-400 hover:text-red-500 hover:bg-red-500/10 transition-all"
+                    title="Excluir Usuário"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </button>
+                </div>
               </div>
 
               <div className="space-y-4 mb-6">
