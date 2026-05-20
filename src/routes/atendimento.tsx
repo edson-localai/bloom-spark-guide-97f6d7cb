@@ -20,6 +20,7 @@ import {
   ShieldCheck,
   Menu,
   X,
+  User,
 } from 'lucide-react';
 
 export const Route = createFileRoute('/atendimento')({
