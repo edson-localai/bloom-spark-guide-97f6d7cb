@@ -296,6 +296,20 @@ function UsuariosPage() {
                 </div>
 
                 <div className="space-y-2">
+                  <Label htmlFor="department" className="text-zinc-400 text-xs font-bold uppercase tracking-wider">Setor</Label>
+                  <Select value={userDepartment} onValueChange={(value: any) => setUserDepartment(value)}>
+                    <SelectTrigger className="bg-[#151821] border-[#1F232E] h-12 rounded-xl">
+                      <SelectValue placeholder="Selecione um setor" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-[#151821] border-[#1F232E] text-white">
+                      <SelectItem value="vendas">Vendas</SelectItem>
+                      <SelectItem value="financeiro">Financeiro</SelectItem>
+                      <SelectItem value="atendimento">Atendimento</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
                   <Label htmlFor="email" className="text-zinc-400 text-xs font-bold uppercase tracking-wider">Email</Label>
                   <div className="relative">
                     <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
