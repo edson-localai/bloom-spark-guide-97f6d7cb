@@ -348,25 +348,52 @@ export function ChatWindow({ conversation }: ChatWindowProps) {
           </div>
         </div>
         <div className="flex items-center gap-1 sm:gap-2 shrink-0">
-          <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[#151821] border border-[#1F232E] mr-2">
-            <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">IA Auto</span>
-            <button
-              onClick={async () => {
-                const newValue = !conversation.auto_reply_enabled;
-                const { error } = await supabase
-                  .from('conversations')
-                  .update({ auto_reply_enabled: newValue } as any)
-                  .eq('id', conversation.id);
-                
-                if (!error) {
-                  toast.success(newValue ? 'Auto-resposta ativada para este chat' : 'Auto-resposta desativada para este chat');
-                }
-              }}
-              className={`h-5 w-9 rounded-full relative transition-colors ${conversation.auto_reply_enabled ? 'bg-cyan-500' : 'bg-zinc-700'}`}
+          <div className="relative">
+            <button 
+              onClick={() => setShowLabels(!showLabels)}
+              className={`flex items-center gap-1.5 px-2 py-1.5 rounded-lg border transition-all text-xs ${
+                showLabels ? 'bg-cyan-500/10 border-cyan-500/30 text-cyan-400' : 'bg-[#151821] border-[#1F232E] text-zinc-400 hover:text-white'
+              }`}
             >
-              <div className={`h-3 w-3 rounded-full bg-white absolute top-1 transition-all ${conversation.auto_reply_enabled ? 'right-1' : 'left-1'}`} />
+              <Tag className="h-4 w-4" />
+              <span className="hidden md:block">Etiquetas</span>
+              <ChevronDown className={`h-3 w-3 transition-transform ${showLabels ? 'rotate-180' : ''}`} />
             </button>
+            
+            <AnimatePresence>
+              {showLabels && (
+                <motion.div 
+                  initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                  className="absolute right-0 mt-2 w-48 bg-[#0F1117] border border-[#1F232E] rounded-xl shadow-2xl z-30 p-2 space-y-1"
+                >
+                  <p className="px-2 py-1 text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Atribuir Etiquetas</p>
+                  {availableLabels.map(label => {
+                    const isTagged = conversation.labels?.some(l => l.id === label.id);
+                    return (
+                      <button
+                        key={label.id}
+                        onClick={() => toggleLabel(label.id)}
+                        className={`w-full flex items-center justify-between px-2 py-1.5 rounded-lg text-xs transition-colors ${
+                          isTagged ? 'bg-cyan-500/10 text-cyan-400' : 'text-zinc-400 hover:bg-zinc-800'
+                        }`}
+                      >
+                        <div className="flex items-center gap-2">
+                          <div className="h-2 w-2 rounded-full" style={{ backgroundColor: label.color }} />
+                          {label.name}
+                        </div>
+                        {isTagged && <CheckCircle2 className="h-3 w-3" />}
+                      </button>
+                    );
+                  })}
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
+
+          <div className="h-8 w-px bg-[#1F232E] mx-1" />
+
           <button 
             onClick={() => setShowTransfer(!showTransfer)}
             className={`p-2 transition-colors ${showTransfer ? 'text-cyan-400' : 'text-zinc-400 hover:text-white'}`}
@@ -374,21 +401,18 @@ export function ChatWindow({ conversation }: ChatWindowProps) {
           >
             <UserPlus className="h-5 w-5" />
           </button>
-          {conversation.status !== 'resolved' && conversation.status !== 'archived' ? (
-            <>
-              <button onClick={() => updateStatus('resolved')} className="p-2 text-zinc-400 hover:text-emerald-400 transition-colors" title="Resolver atendimento">
-                <CheckCircle2 className="h-5 w-5" />
-              </button>
-              <button onClick={() => updateStatus('archived')} className="p-2 text-zinc-400 hover:text-amber-400 transition-colors" title="Arquivar">
-                <Archive className="h-5 w-5" />
-              </button>
-            </>
-          ) : (
-            <button onClick={() => updateStatus('active')} className="p-2 text-zinc-400 hover:text-cyan-400 transition-colors" title="Reabrir">
-              <RotateCcw className="h-5 w-5" />
-            </button>
-          )}
+          
+          <button 
+            onClick={() => updateStatus(conversation.status === 'resolved' ? 'active' : 'resolved')} 
+            className={`p-2 transition-colors ${
+              conversation.status === 'resolved' ? 'text-emerald-500' : 'text-zinc-400 hover:text-emerald-400'
+            }`} 
+            title={conversation.status === 'resolved' ? "Reabrir atendimento" : "Resolver atendimento"}
+          >
+            {conversation.status === 'resolved' ? <RotateCcw className="h-5 w-5" /> : <CheckCircle2 className="h-5 w-5" />}
+          </button>
         </div>
+
       </div>
 
       <AnimatePresence>
