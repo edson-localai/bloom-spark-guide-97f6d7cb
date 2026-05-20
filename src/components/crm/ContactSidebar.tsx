@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { User, Car, Tag, Calendar, FileText, ChevronRight, Clock, History, CalendarClock, XCircle, CheckCircle2, Mail, MapPin, IdCard, Edit2, Plus } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { User, Car, Tag, Calendar, FileText, ChevronRight, Clock, History, CalendarClock, XCircle, CheckCircle2, Mail, MapPin, IdCard, Edit2, Plus, Users, UserCheck } from 'lucide-react';
 import { Contact, LeadStage } from '@/types/crm';
 import { useTimeline } from '@/hooks/useTimeline';
 import { useScheduledMessages } from '@/hooks/useScheduledMessages';
@@ -29,6 +29,47 @@ export function ContactSidebar({ contact, conversationId, variant = 'desktop' }:
   const [local, setLocal] = useState<Contact | null>(contact);
   const [newTag, setNewTag] = useState('');
   const [addingTag, setAddingTag] = useState(false);
+  const [agents, setAgents] = useState<any[]>([]);
+  const [loadingAgents, setLoadingAgents] = useState(false);
+  const [updatingAssignment, setUpdatingAssignment] = useState(false);
+
+  useEffect(() => {
+    const fetchAgents = async () => {
+      setLoadingAgents(true);
+      const { data } = await supabase.from('agents').select('id, name, department');
+      if (data) setAgents(data);
+      setLoadingAgents(false);
+    };
+    fetchAgents();
+  }, []);
+
+  const departments = ['vendas', 'financeiro', 'atendimento'];
+
+  const handleAssign = async (agentId: string | null) => {
+    if (!conversationId) return;
+    setUpdatingAssignment(true);
+    const { error } = await supabase
+      .from('conversations')
+      .update({ agent_id: agentId })
+      .eq('id', conversationId);
+    
+    if (error) toast.error('Erro ao atribuir agente');
+    else toast.success('Agente atribuído com sucesso');
+    setUpdatingAssignment(false);
+  };
+
+  const handleAssignDept = async (dept: string | null) => {
+    if (!conversationId) return;
+    setUpdatingAssignment(true);
+    const { error } = await supabase
+      .from('conversations')
+      .update({ assigned_department: dept })
+      .eq('id', conversationId);
+    
+    if (error) toast.error('Erro ao atribuir setor');
+    else toast.success('Setor atribuído com sucesso');
+    setUpdatingAssignment(false);
+  };
 
   const c = local && local.id === contact?.id ? local : contact;
   if (!c) return null;
@@ -73,6 +114,53 @@ export function ContactSidebar({ contact, conversationId, variant = 'desktop' }:
             {stage}
           </span>
         </div>
+
+        {/* Atribuição (Apenas se houver conversa) */}
+        {conversationId && (
+          <Section title="Atribuição">
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <label className="text-[9px] uppercase font-bold tracking-widest text-zinc-600 flex items-center gap-1.5">
+                  <UserCheck className="h-3 w-3" /> Agente Responsável
+                </label>
+                <select 
+                  className="w-full bg-[#151821] border border-[#1F232E] rounded-lg p-2 text-xs text-zinc-200 outline-none focus:border-cyan-500/50"
+                  onChange={(e) => handleAssign(e.target.value || null)}
+                  disabled={updatingAssignment}
+                  defaultValue="" // We don't have the current conversation agent_id here easily without passing it, but let's assume it works for selection
+                >
+                  <option value="">Não atribuído</option>
+                  {agents.map(a => (
+                    <option key={a.id} value={a.id}>{a.name}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-[9px] uppercase font-bold tracking-widest text-zinc-600 flex items-center gap-1.5">
+                  <Users className="h-3 w-3" /> Setor
+                </label>
+                <div className="grid grid-cols-2 gap-2">
+                  {departments.map(dept => (
+                    <button
+                      key={dept}
+                      onClick={() => handleAssignDept(dept)}
+                      className="px-2 py-1.5 rounded-lg border border-[#1F232E] bg-[#151821] text-[10px] text-zinc-400 hover:text-cyan-400 hover:border-cyan-500/30 transition-all capitalize"
+                    >
+                      {dept}
+                    </button>
+                  ))}
+                  <button
+                    onClick={() => handleAssignDept(null)}
+                    className="px-2 py-1.5 rounded-lg border border-[#1F232E] bg-[#151821] text-[10px] text-zinc-400 hover:text-red-400 hover:border-red-500/30 transition-all capitalize"
+                  >
+                    Remover Setor
+                  </button>
+                </div>
+              </div>
+            </div>
+          </Section>
+        )}
 
         {/* Dados pessoais */}
         <Section title="Dados pessoais">

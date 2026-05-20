@@ -322,6 +322,7 @@ export type Database = {
           agent_id: string | null
           ai_intent: string | null
           ai_summary: string | null
+          assigned_department: string | null
           auto_reply_enabled: boolean | null
           bot_active: boolean | null
           bot_disabled_at: string | null
@@ -350,6 +351,7 @@ export type Database = {
           agent_id?: string | null
           ai_intent?: string | null
           ai_summary?: string | null
+          assigned_department?: string | null
           auto_reply_enabled?: boolean | null
           bot_active?: boolean | null
           bot_disabled_at?: string | null
@@ -378,6 +380,7 @@ export type Database = {
           agent_id?: string | null
           ai_intent?: string | null
           ai_summary?: string | null
+          assigned_department?: string | null
           auto_reply_enabled?: boolean | null
           bot_active?: boolean | null
           bot_disabled_at?: string | null
@@ -517,6 +520,50 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "messages_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "conversations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      notifications: {
+        Row: {
+          conversation_id: string | null
+          created_at: string | null
+          department: string | null
+          id: string
+          is_read: boolean | null
+          message: string
+          title: string
+          type: string
+          user_id: string | null
+        }
+        Insert: {
+          conversation_id?: string | null
+          created_at?: string | null
+          department?: string | null
+          id?: string
+          is_read?: boolean | null
+          message: string
+          title: string
+          type: string
+          user_id?: string | null
+        }
+        Update: {
+          conversation_id?: string | null
+          created_at?: string | null
+          department?: string | null
+          id?: string
+          is_read?: boolean | null
+          message?: string
+          title?: string
+          type?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notifications_conversation_id_fkey"
             columns: ["conversation_id"]
             isOneToOne: false
             referencedRelation: "conversations"

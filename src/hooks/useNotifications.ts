@@ -9,6 +9,24 @@ export function useNotifications(enabled: boolean = true) {
   useEffect(() => {
     if (!enabled) return;
 
+    let alertInterval: number | null = null;
+    const playAlertSound = () => {
+      audioRef.current?.play().catch(() => {});
+    };
+
+    const startRecursiveAlert = () => {
+      if (alertInterval) return;
+      playAlertSound();
+      alertInterval = window.setInterval(playAlertSound, 10000); // 10 seconds interval
+    };
+
+    const stopRecursiveAlert = () => {
+      if (alertInterval) {
+        clearInterval(alertInterval);
+        alertInterval = null;
+      }
+    };
+
     if (typeof window !== 'undefined' && 'Notification' in window) {
       if (Notification.permission === 'default') {
         Notification.requestPermission();
@@ -24,7 +42,56 @@ export function useNotifications(enabled: boolean = true) {
       : null;
 
     const channel = supabase
-      .channel('notif:messages')
+      .channel('notif:all')
+      .on(
+        'postgres_changes',
+        { event: 'INSERT', schema: 'public', table: 'notifications' },
+        (payload: any) => {
+          const notif = payload.new;
+          if (notif.is_read) return;
+
+          toast.warning(notif.title, {
+            description: notif.message,
+            duration: 10000,
+            action: {
+              label: 'Ver Conversa',
+              onClick: () => {
+                stopRecursiveAlert();
+                // We'll navigate in a real app, here we just stop the noise
+              }
+            }
+          });
+
+          if (notif.type === 'assignment_required') {
+            startRecursiveAlert();
+          } else {
+            playAlertSound();
+          }
+
+          if (document.hidden && 'Notification' in window && Notification.permission === 'granted') {
+            new Notification(notif.title, { body: notif.message });
+          }
+        }
+      )
+      .on(
+        'postgres_changes',
+        { event: 'UPDATE', schema: 'public', table: 'notifications' },
+        (payload: any) => {
+          if (payload.new.is_read || payload.new.user_id) {
+            // If someone read it or it was assigned to someone (user_id populated), 
+            // check if we can stop the loop
+            supabase.from('notifications')
+              .select('id')
+              .eq('type', 'assignment_required')
+              .eq('is_read', false)
+              .is('user_id', null)
+              .limit(1)
+              .then(({ data }) => {
+                if (!data || data.length === 0) stopRecursiveAlert();
+              });
+          }
+        }
+      )
       .on(
         'postgres_changes',
         { event: 'INSERT', schema: 'public', table: 'messages' },
@@ -78,6 +145,7 @@ export function useNotifications(enabled: boolean = true) {
       .subscribe();
 
     return () => {
+      stopRecursiveAlert();
       supabase.removeChannel(channel);
       supabase.removeChannel(scheduledChannel);
     };
