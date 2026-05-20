@@ -26,11 +26,26 @@ export const handleAutoReply = createServerFn({ method: "POST" })
       // 2. Verifica status da conversa e se auto-reply individual está ativo
       const { data: conv } = await supabaseAdmin
         .from('conversations')
-        .select('status, bot_active, auto_reply_enabled, contact_id')
+        .select('status, bot_active, auto_reply_enabled, contact_id, bot_disabled_at')
         .eq('id', conversationId)
         .single();
 
-      if (!conv || conv.status !== 'bot' || !conv.bot_active || !conv.auto_reply_enabled) return { handled: false };
+      if (!conv) return { handled: false };
+
+      // Reativa automaticamente se passou de 24 horas
+      const isExpired = conv.bot_disabled_at && 
+        (new Date().getTime() - new Date(conv.bot_disabled_at).getTime()) > 24 * 60 * 60 * 1000;
+      
+      let botActive = conv.bot_active;
+      if (!botActive && isExpired) {
+        await supabaseAdmin
+          .from('conversations')
+          .update({ bot_active: true, bot_disabled_at: null })
+          .eq('id', conversationId);
+        botActive = true;
+      }
+
+      if (conv.status !== 'bot' || !botActive || !conv.auto_reply_enabled) return { handled: false };
 
       // 3. Busca histórico e prompt
       const { data: promptSetting } = await supabaseAdmin
@@ -61,14 +76,40 @@ export const handleAutoReply = createServerFn({ method: "POST" })
         body: JSON.stringify({
           model: 'google/gemini-2.0-flash-exp',
           messages: [
-            { role: 'system', content: promptSetting?.value || 'Você é a Ana.' },
+            { 
+              role: 'system', 
+              content: `${promptSetting?.value || 'Você é a Ana.'}\n\nSe o cliente solicitar falar com um humano, ou se você não souber responder, ou se o assunto for complexo, você deve obrigatoriamente incluir a tag [HANDOVER] na sua resposta. Isso desativará o atendimento automático.` 
+            },
             { role: 'user', content: `Histórico:\n${history}\n\nResponda ao cliente:` }
           ]
         })
       });
 
       const aiData = await aiResponse.json();
-      const replyContent = aiData.choices[0].message.content;
+      let replyContent = aiData.choices[0].message.content;
+      const isHandover = replyContent.includes('[HANDOVER]');
+
+      if (isHandover) {
+        replyContent = replyContent.replace('[HANDOVER]', '').trim();
+        
+        // Desativa o bot e marca o tempo
+        await supabaseAdmin
+          .from('conversations')
+          .update({ 
+            bot_active: false, 
+            bot_disabled_at: new Date().toISOString(),
+            status: 'open' // Transfere para humano
+          })
+          .eq('id', conversationId);
+
+        // Insere mensagem de sistema para notificação
+        await supabaseAdmin.from('messages').insert({
+          conversation_id: conversationId,
+          content: 'Transbordamento para atendimento humano solicitado pela IA.',
+          sender_type: 'system',
+          content_type: 'event'
+        });
+      }
 
       // 5. Insere resposta
       await supabaseAdmin.from('messages').insert({
