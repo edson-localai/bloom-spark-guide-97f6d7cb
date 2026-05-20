@@ -194,7 +194,7 @@ function WhatsAppPage() {
                   >
                     Desconectar
                   </button>
-                  {isAdmin && (
+                  {isSupervisor && (
                     <button
                       disabled={!!busy}
                       onClick={() => {
@@ -277,10 +277,9 @@ function WhatsAppPage() {
 // ============== MODALS ==============
 
 function CreateInstanceModal({ onClose, onCreated }: { onClose: () => void; onCreated: (qr: string | null, name: string) => void }) {
-  const [provider, setProvider] = useState<'evolution' | 'wapi'>('evolution');
+  const [provider] = useState<'wapi'>('wapi');
   const [name, setName] = useState('');
   const [displayName, setDisplayName] = useState('');
-  const [apiKey, setApiKey] = useState('');
   const [wapiInstanceId, setWapiInstanceId] = useState('');
   const [wapiToken, setWapiToken] = useState('');
   const [submitting, setSubmitting] = useState(false);
@@ -291,13 +290,13 @@ function CreateInstanceModal({ onClose, onCreated }: { onClose: () => void; onCr
     setSubmitting(true);
     setError(null);
     try {
-      const payload: any = { provider, name: name.trim(), displayName: displayName.trim() };
-      if (provider === 'evolution') {
-        payload.apiKey = apiKey.trim() || undefined;
-      } else {
-        payload.wapiInstanceId = wapiInstanceId.trim();
-        payload.wapiToken = wapiToken.trim();
-      }
+      const payload: any = { 
+        provider: 'wapi', 
+        name: name.trim(), 
+        displayName: displayName.trim(),
+        wapiInstanceId: wapiInstanceId.trim(),
+        wapiToken: wapiToken.trim()
+      };
       const res: any = await createWhatsAppInstance({ data: payload });
       toast.success('Instância criada! Escaneie o QR Code para conectar.');
       onCreated(res?.qr || null, name.trim());
@@ -318,32 +317,9 @@ function CreateInstanceModal({ onClose, onCreated }: { onClose: () => void; onCr
           <button type="button" onClick={onClose} className="text-zinc-500 hover:text-white"><X className="h-5 w-5" /></button>
         </div>
 
-        <div>
-          <label className="text-xs uppercase font-bold text-zinc-500 mb-1 block">Provedor</label>
-          <div className="grid grid-cols-2 gap-2">
-            <button
-              type="button"
-              onClick={() => setProvider('evolution')}
-              className={`py-2 rounded-lg text-sm font-semibold border transition-all ${
-                provider === 'evolution'
-                  ? 'bg-cyan-500/15 border-cyan-500/40 text-cyan-300'
-                  : 'bg-[#151821] border-[#1F232E] text-zinc-400 hover:text-white'
-              }`}
-            >
-              Evolution API
-            </button>
-            <button
-              type="button"
-              onClick={() => setProvider('wapi')}
-              className={`py-2 rounded-lg text-sm font-semibold border transition-all ${
-                provider === 'wapi'
-                  ? 'bg-cyan-500/15 border-cyan-500/40 text-cyan-300'
-                  : 'bg-[#151821] border-[#1F232E] text-zinc-400 hover:text-white'
-              }`}
-            >
-              W-API
-            </button>
-          </div>
+        <div className="bg-cyan-500/5 border border-cyan-500/10 rounded-xl p-4 mb-4">
+          <p className="text-xs text-cyan-400 font-medium">Provedor: <span className="font-bold">W-API</span></p>
+          <p className="text-[10px] text-zinc-500 mt-1">Utilizando conexão de alta performance via W-API.</p>
         </div>
 
         <div>
