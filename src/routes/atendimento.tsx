@@ -197,6 +197,7 @@ function getNavItems(role?: string) {
     { to: '/atendimento/treinamento', icon: GraduationCap, label: 'Treinamento' },
     { to: '/atendimento/usuarios', icon: ShieldCheck, label: 'Usuários', roles: ['admin'] },
     { to: '/atendimento/config', icon: Settings, label: 'Config', roles: ['admin'] },
+    { to: '/atendimento/perfil', icon: User, label: 'Meu Perfil' },
   ];
   return all.filter(item => !item.roles || (role && item.roles.includes(role)));
 }
