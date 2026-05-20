@@ -196,7 +196,10 @@ export function ProfilePanel() {
           user_id: user.id,
           name: agentData.name,
           avatar_url: publicUrl,
-          email: user.email || ''
+          email: user.email || '',
+          role: agentData.role,
+          status: 'online',
+          description: agentData.description
         }, { onConflict: 'user_id' });
 
       toast.success('Foto atualizada!');
