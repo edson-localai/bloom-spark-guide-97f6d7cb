@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect, useMemo } from 'react';
-import { Send, User, Bot, Paperclip, MoreVertical, ShieldCheck, Clock, Sparkles, Loader2, Smile, Zap, Hammer, StickyNote, MessageCircle, CalendarClock, File as FileIcon, UserPlus, CheckCircle2, Archive, RotateCcw, Command, Trash2 } from 'lucide-react';
+import { Send, User, Bot, Paperclip, MoreVertical, ShieldCheck, Clock, Sparkles, Loader2, Smile, Zap, Hammer, StickyNote, MessageCircle, CalendarClock, File as FileIcon, UserPlus, CheckCircle2, Archive, RotateCcw, Command, Trash2, Tag, ChevronDown } from 'lucide-react';
+
 import { Message, Conversation, Contact } from '@/types/crm';
 import { useMessages } from '@/hooks/useMessages';
 import { useAgents } from '@/hooks/useAgents';
