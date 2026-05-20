@@ -33,10 +33,12 @@ export function ProfilePanel() {
     name: string;
     avatar_url: string | null;
     description: string;
+    role: string;
   }>({
     name: '',
     avatar_url: null,
-    description: ''
+    description: '',
+    role: 'agent'
   });
   
   const [newPassword, setNewPassword] = useState('');
@@ -65,19 +67,21 @@ export function ProfilePanel() {
         setAgentData({
           name: data.name || user.user_metadata?.name || user.email?.split('@')[0] || '',
           avatar_url: data.avatar_url,
-          description: data.description || ''
+          description: data.description || '',
+          role: data.role || 'agent'
         });
       } else {
         // If agent doesn't exist, use auth data as default
         setAgentData({
           name: user.user_metadata?.name || user.email?.split('@')[0] || '',
           avatar_url: user.user_metadata?.avatar_url || null,
-          description: ''
+          description: '',
+          role: 'agent'
         });
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error('Error fetching profile:', err);
-      toast.error('Erro ao carregar dados do perfil');
+      toast.error(`Erro ao carregar dados do perfil: ${err.message || 'Erro desconhecido'}`);
     } finally {
       setLoading(false);
     }
@@ -103,7 +107,7 @@ export function ProfilePanel() {
           avatar_url: agentData.avatar_url,
           description: agentData.description,
           email: user.email || '',
-          role: 'agent', // Explicitly setting default values to avoid constraint issues
+          role: agentData.role, // Use existing role to avoid downgrading
           status: 'online'
         }, { onConflict: 'user_id' });
 
@@ -123,9 +127,9 @@ export function ProfilePanel() {
       if (authError) throw authError;
 
       toast.success('Perfil atualizado com sucesso!');
-    } catch (err) {
+    } catch (err: any) {
       console.error('Error updating profile:', err);
-      toast.error('Falha ao atualizar perfil.');
+      toast.error(`Falha ao atualizar perfil: ${err.message || 'Erro desconhecido'}`);
     } finally {
       setSaving(false);
     }
@@ -192,7 +196,10 @@ export function ProfilePanel() {
           user_id: user.id,
           name: agentData.name,
           avatar_url: publicUrl,
-          email: user.email || ''
+          email: user.email || '',
+          role: agentData.role,
+          status: 'online',
+          description: agentData.description
         }, { onConflict: 'user_id' });
 
       toast.success('Foto atualizada!');
