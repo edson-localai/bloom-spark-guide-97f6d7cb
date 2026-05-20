@@ -21,9 +21,9 @@ async function requireAdminOrSupervisor(supabase: any, userId: string) {
   }
 }
 
-function publicWebhookUrl(provider: 'evolution' | 'wapi'): string {
+function publicWebhookUrl(): string {
   const projectId = process.env.LOVABLE_PROJECT_ID || '1437f3b0-fe7f-4f6b-8c41-2858d825f265';
-  const path = provider === 'wapi' ? '/api/public/wapi/webhook' : '/api/public/whatsapp/webhook';
+  const path = '/api/public/wapi/webhook';
   return `https://project--${projectId}.lovable.app${path}`;
 }
 
@@ -53,13 +53,12 @@ export const createWhatsAppInstance = createServerFn({ method: 'POST' })
   .middleware([requireSupabaseAuth])
   .inputValidator((data) =>
     z.object({
-      provider: z.enum(['evolution', 'wapi']).default('evolution'),
+      provider: z.enum(['wapi']).default('wapi'),
       name: z.string().min(2).max(60).regex(/^[a-zA-Z0-9_-]+$/, 'Use letras, números, _ ou -'),
       displayName: z.string().min(1).max(100),
-      apiKey: z.string().optional(),
       // W-API only:
-      wapiInstanceId: z.string().min(1).optional(),
-      wapiToken: z.string().min(1).optional(),
+      wapiInstanceId: z.string().min(1),
+      wapiToken: z.string().min(1),
     }).parse(data),
   )
   .handler(async ({ data, context }) => {
@@ -67,51 +66,42 @@ export const createWhatsAppInstance = createServerFn({ method: 'POST' })
     const { supabaseAdmin } = await import('@/integrations/supabase/client.server');
 
     try {
-      if (data.provider === 'wapi') {
-        if (!data.wapiInstanceId || !data.wapiToken) {
-          throw AppError.validation('Para W-API informe instance_id e token.');
-        }
-        // Não buscar QR durante a criação para evitar timeout do worker.
-        // O frontend chama getWhatsAppQr() logo em seguida.
-        const qr: string | null = null;
-        const status: 'connected' | 'disconnected' | 'connecting' = 'connecting';
-        const { data: row, error } = await supabaseAdmin
-          .from('whatsapp_instances')
-          .insert({
-            provider: 'wapi',
-            name: data.name,
-            display_name: data.displayName,
-            status,
-            qr_code: qr,
-            instance_key: data.wapiToken,
-            webhook_url: publicWebhookUrl('wapi'),
-            instance_data: { wapi: { instance_id: data.wapiInstanceId } } as any,
-          })
-          .select()
-          .single();
-        if (error) throw new Error(error.message);
-        // Register webhook event URLs at W-API (best-effort).
-        try {
-          const { wapiSetWebhooks } = await import('./wapi.server');
-          await wapiSetWebhooks(
-            { instanceId: data.wapiInstanceId, token: data.wapiToken },
-            publicWebhookUrl('wapi'),
-          );
-        } catch (e: any) {
-          console.warn('[createWhatsAppInstance] wapiSetWebhooks failed:', e?.message);
-        }
-        return { instance: row, qr };
+      if (data.provider !== 'wapi') {
+        throw AppError.validation('Apenas o provedor W-API é suportado no momento.');
       }
 
-      // evolution (default)
-      const { WhatsAppService } = await import('@/services/WhatsAppService');
-      const service = WhatsAppService.getInstance();
-      return await service.createInstance({
-        name: data.name,
-        displayName: data.displayName,
-        apiKey: data.apiKey,
-        webhookUrl: publicWebhookUrl('evolution'),
-      });
+      // Não buscar QR durante a criação para evitar timeout do worker.
+      // O frontend chama getWhatsAppQr() logo em seguida.
+      const qr: string | null = null;
+      const status: 'connected' | 'disconnected' | 'connecting' = 'connecting';
+      const { data: row, error } = await supabaseAdmin
+        .from('whatsapp_instances')
+        .insert({
+          provider: 'wapi',
+          name: data.name,
+          display_name: data.displayName,
+          status,
+          qr_code: qr,
+          instance_key: data.wapiToken,
+          webhook_url: publicWebhookUrl(),
+          instance_data: { wapi: { instance_id: data.wapiInstanceId } } as any,
+        })
+        .select()
+        .single();
+      
+      if (error) throw new Error(error.message);
+
+      // Register webhook event URLs at W-API (best-effort).
+      try {
+        const { wapiSetWebhooks } = await import('./wapi.server');
+        await wapiSetWebhooks(
+          { instanceId: data.wapiInstanceId, token: data.wapiToken },
+          publicWebhookUrl(),
+        );
+      } catch (e: any) {
+        console.warn('[createWhatsAppInstance] wapiSetWebhooks failed:', e?.message);
+      }
+      return { instance: row, qr };
     } catch (err) {
       handleServerError(err);
     }
@@ -126,28 +116,21 @@ export const getWhatsAppQrCode = createServerFn({ method: 'POST' })
     const { supabaseAdmin } = await import('@/integrations/supabase/client.server');
     const inst = await getInstance(data.name);
 
-    if (inst.provider === 'wapi') {
-      const { wapiGetQr } = await import('./wapi.server');
-      const { qr, connected } = await wapiGetQr(wapiCredsFrom(inst));
-      await supabaseAdmin
-        .from('whatsapp_instances')
-        .update({
-          qr_code: qr,
-          status: connected ? 'connected' : 'connecting',
-          updated_at: new Date().toISOString(),
-        })
-        .eq('name', data.name);
-      return { qr, connected };
+    if (inst.provider !== 'wapi') {
+      throw AppError.validation('Apenas o provedor W-API é suportado no momento.');
     }
 
-    const { evoFetch } = await import('./whatsapp.server');
-    const res = await evoFetch(`/instance/connect/${encodeURIComponent(data.name)}`);
-    const qr = res?.base64 || res?.qrcode?.base64 || res?.code || null;
+    const { wapiGetQr } = await import('./wapi.server');
+    const { qr, connected } = await wapiGetQr(wapiCredsFrom(inst));
     await supabaseAdmin
       .from('whatsapp_instances')
-      .update({ qr_code: qr, status: 'connecting', updated_at: new Date().toISOString() })
+      .update({
+        qr_code: qr,
+        status: connected ? 'connected' : 'connecting',
+        updated_at: new Date().toISOString(),
+      })
       .eq('name', data.name);
-    return { qr };
+    return { qr, connected };
   });
 
 // --- Sync status from API ---
@@ -158,24 +141,23 @@ export const syncWhatsAppInstance = createServerFn({ method: 'POST' })
     await requireAdminOrSupervisor(context.supabase, context.userId);
     try {
       const inst = await getInstance(data.name);
-      if (inst.provider === 'wapi') {
-        const { supabaseAdmin } = await import('@/integrations/supabase/client.server');
-        const { wapiIsConnected } = await import('./wapi.server');
-        const connected = await wapiIsConnected(wapiCredsFrom(inst));
-        const status = connected ? 'connected' : (inst.qr_code ? 'connecting' : 'disconnected');
-        await supabaseAdmin
-          .from('whatsapp_instances')
-          .update({
-            status,
-            qr_code: connected ? null : inst.qr_code,
-            updated_at: new Date().toISOString(),
-            last_seen: new Date().toISOString(),
-          })
-          .eq('name', data.name);
-        return { status };
+      if (inst.provider !== 'wapi') {
+        throw AppError.validation('Apenas o provedor W-API é suportado no momento.');
       }
-      const { WhatsAppService } = await import('@/services/WhatsAppService');
-      return await WhatsAppService.getInstance().syncInstance(data.name);
+      const { supabaseAdmin } = await import('@/integrations/supabase/client.server');
+      const { wapiIsConnected } = await import('./wapi.server');
+      const connected = await wapiIsConnected(wapiCredsFrom(inst));
+      const status = connected ? 'connected' : (inst.qr_code ? 'connecting' : 'disconnected');
+      await supabaseAdmin
+        .from('whatsapp_instances')
+        .update({
+          status,
+          qr_code: connected ? null : inst.qr_code,
+          updated_at: new Date().toISOString(),
+          last_seen: new Date().toISOString(),
+        })
+        .eq('name', data.name);
+      return { status };
     } catch (err) {
       handleServerError(err);
     }
@@ -189,21 +171,15 @@ export const restartWhatsAppInstance = createServerFn({ method: 'POST' })
     await requireAdminOrSupervisor(context.supabase, context.userId);
     const { supabaseAdmin } = await import('@/integrations/supabase/client.server');
     const inst = await getInstance(data.name);
-    if (inst.provider === 'wapi') {
-      // No documented restart endpoint — just refresh QR.
-      const { wapiGetQr } = await import('./wapi.server');
-      const { qr } = await wapiGetQr(wapiCredsFrom(inst));
-      await supabaseAdmin
-        .from('whatsapp_instances')
-        .update({ qr_code: qr, status: 'connecting', updated_at: new Date().toISOString() })
-        .eq('name', data.name);
-      return { ok: true };
+    if (inst.provider !== 'wapi') {
+      throw AppError.validation('Apenas o provedor W-API é suportado no momento.');
     }
-    const { evoFetch } = await import('./whatsapp.server');
-    await evoFetch(`/instance/restart/${encodeURIComponent(data.name)}`, { method: 'POST' });
+    // No documented restart endpoint — just refresh QR.
+    const { wapiGetQr } = await import('./wapi.server');
+    const { qr } = await wapiGetQr(wapiCredsFrom(inst));
     await supabaseAdmin
       .from('whatsapp_instances')
-      .update({ status: 'connecting', updated_at: new Date().toISOString() })
+      .update({ qr_code: qr, status: 'connecting', updated_at: new Date().toISOString() })
       .eq('name', data.name);
     return { ok: true };
   });
@@ -216,17 +192,16 @@ export const disconnectWhatsAppInstance = createServerFn({ method: 'POST' })
     await requireAdminOrSupervisor(context.supabase, context.userId);
     try {
       const inst = await getInstance(data.name);
-      if (inst.provider === 'wapi') {
-        // W-API não expõe logout público — apenas marcar como desconectado localmente.
-        const { supabaseAdmin } = await import('@/integrations/supabase/client.server');
-        await supabaseAdmin
-          .from('whatsapp_instances')
-          .update({ status: 'disconnected', qr_code: null, phone_number: null, updated_at: new Date().toISOString() })
-          .eq('name', data.name);
-        return { ok: true };
+      if (inst.provider !== 'wapi') {
+        throw AppError.validation('Apenas o provedor W-API é suportado no momento.');
       }
-      const { WhatsAppService } = await import('@/services/WhatsAppService');
-      return await WhatsAppService.getInstance().logoutInstance(data.name);
+      // W-API não expõe logout público — apenas marcar como desconectado localmente.
+      const { supabaseAdmin } = await import('@/integrations/supabase/client.server');
+      await supabaseAdmin
+        .from('whatsapp_instances')
+        .update({ status: 'disconnected', qr_code: null, phone_number: null, updated_at: new Date().toISOString() })
+        .eq('name', data.name);
+      return { ok: true };
     } catch (err) {
       handleServerError(err);
     }
@@ -242,28 +217,9 @@ export const deleteWhatsAppInstance = createServerFn({ method: 'POST' })
   .handler(async ({ data, context }) => {
     const sb = context.supabase;
 
-    // Best-effort: cleanup remoto (apenas Evolution; W-API gerencia via painel).
     try {
-      const { data: inst } = await sb
-        .from('whatsapp_instances')
-        .select('provider')
-        .eq('name', data.name)
-        .maybeSingle();
-      if (!inst || inst.provider === 'evolution') {
-        const { data: settings } = await sb
-          .from('app_settings')
-          .select('key, value')
-          .in('key', ['whatsapp_api_url', 'whatsapp_api_key']);
-        const map = Object.fromEntries((settings || []).map((r: any) => [r.key, r.value]));
-        const url = (map.whatsapp_api_url || '').replace(/\/+$/, '');
-        const apiKey = map.whatsapp_api_key || '';
-        if (url && apiKey && data.name) {
-          await fetch(`${url}/instance/delete/${encodeURIComponent(data.name)}`, {
-            method: 'DELETE',
-            headers: { 'Content-Type': 'application/json', apikey: apiKey },
-          }).catch(() => {});
-        }
-      }
+      // W-API não requer cleanup remoto via API pública (gerenciado via painel).
+      // Se houvesse, colocaríamos aqui.
     } catch (e) {
       console.warn('[deleteWhatsAppInstance] external cleanup skipped:', (e as any)?.message);
     }
@@ -339,12 +295,7 @@ export const sendWhatsAppMessage = createServerFn({ method: 'POST' })
         console.log('[sendWhatsAppMessage] wapi send-text →', { phone: wapiPhone, response: res });
         return { ok: true, id: res?.messageId || res?.insertedId || null };
       }
-      const { evoFetch } = await import('./whatsapp.server');
-      const res = await evoFetch(`/message/sendText/${encodeURIComponent(inst.name)}`, {
-        method: 'POST',
-        body: JSON.stringify({ number, text: data.content }),
-      });
-      return { ok: true, id: res?.key?.id || null };
+      throw new Error('Provedor não suportado para envio de mensagens');
     } catch (err: any) {
       console.error('WhatsApp send failed:', err);
       return { ok: false, error: err.message };
