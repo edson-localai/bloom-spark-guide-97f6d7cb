@@ -102,7 +102,7 @@ export function ProfilePanel() {
           name: agentData.name,
           avatar_url: agentData.avatar_url,
           description: agentData.description,
-          email: user.email,
+          email: user.email || '',
         }, { onConflict: 'user_id' });
 
       if (agentError) throw agentError;
