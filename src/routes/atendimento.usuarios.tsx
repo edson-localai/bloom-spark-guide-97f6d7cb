@@ -157,7 +157,8 @@ function UsuariosPage() {
           name: userName,
           email: userEmail !== editingUser.email ? userEmail : undefined,
           password: userPassword || undefined,
-          role: userRole
+          role: userRole,
+          department: userDepartment
         }
       });
 
