@@ -15,7 +15,9 @@ import {
   restartWhatsAppInstance,
   disconnectWhatsAppInstance,
   deleteWhatsAppInstance,
+  syncWhatsAppContacts,
 } from '@/lib/whatsapp.functions';
+
 
 export const Route = createFileRoute('/atendimento/whatsapp')({
   component: WhatsAppPage,
