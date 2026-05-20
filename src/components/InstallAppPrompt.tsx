@@ -21,7 +21,10 @@ export function InstallAppPrompt() {
     if (standalone) return;
 
     const dismissed = localStorage.getItem(DISMISS_KEY);
-    if (dismissed && Date.now() - Number(dismissed) < 7 * 24 * 60 * 60 * 1000) return;
+    // On /atendimento we ignore the dismissal logic to always show for new/active sessions as requested
+    const isAtendimentoPage = window.location.pathname.startsWith('/atendimento');
+    
+    if (!isAtendimentoPage && dismissed && Date.now() - Number(dismissed) < 7 * 24 * 60 * 60 * 1000) return;
 
     const ua = window.navigator.userAgent.toLowerCase();
     const ios = /iphone|ipad|ipod/.test(ua) && !/crios|fxios/.test(ua);
@@ -34,7 +37,10 @@ export function InstallAppPrompt() {
     };
     window.addEventListener('beforeinstallprompt', handler);
 
-    if (ios) setShow(true);
+    // Always show prompt initially if not standalone
+    setShow(true);
+
+    if (ios) setIsIOS(true);
 
     return () => window.removeEventListener('beforeinstallprompt', handler);
   }, []);
