@@ -15,7 +15,9 @@ import {
   restartWhatsAppInstance,
   disconnectWhatsAppInstance,
   deleteWhatsAppInstance,
+  syncWhatsAppContacts,
 } from '@/lib/whatsapp.functions';
+
 
 export const Route = createFileRoute('/atendimento/whatsapp')({
   component: WhatsAppPage,
@@ -174,11 +176,19 @@ function WhatsAppPage() {
                   </button>
                   <button
                     disabled={!!busy}
+                    onClick={() => runAction(`sync-contacts-${inst.name}`, () => syncWhatsAppContacts({ data: { name: inst.name } }), 'Contatos sincronizados')}
+                    className="flex-1 min-w-[120px] bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/20 py-2.5 rounded-xl text-sm font-semibold transition-all"
+                  >
+                    Sync Contatos
+                  </button>
+                  <button
+                    disabled={!!busy}
                     onClick={() => runAction(`restart-${inst.name}`, () => restartWhatsAppInstance({ data: { name: inst.name } }), 'Instância reiniciada')}
                     className="flex-1 min-w-[120px] bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-400 border border-cyan-500/20 py-2.5 rounded-xl text-sm font-semibold transition-all"
                   >
                     Reiniciar
                   </button>
+
                   <button
                     disabled={!!busy}
                     onClick={() => runAction(`logout-${inst.name}`, () => disconnectWhatsAppInstance({ data: { name: inst.name } }), 'Desconectado')}

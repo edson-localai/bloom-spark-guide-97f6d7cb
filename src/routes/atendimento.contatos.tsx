@@ -1,11 +1,14 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { useMemo, useState } from 'react';
 import { useContacts } from '@/hooks/useContacts';
-import { Search, User, Car, Loader2, Plus, Edit2 } from 'lucide-react';
+import { Search, User, Car, Loader2, Plus, Edit2, RefreshCw } from 'lucide-react';
 import { ContactEditor } from '@/components/crm/ContactEditor';
 import { Contact } from '@/types/crm';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { useWhatsApp } from '@/hooks/useWhatsApp';
+import { syncWhatsAppContacts } from '@/lib/whatsapp.functions';
+
 
 export const Route = createFileRoute('/atendimento/contatos')({
   component: ContatosPage,
@@ -13,8 +16,29 @@ export const Route = createFileRoute('/atendimento/contatos')({
 
 function ContatosPage() {
   const { contacts, loading, fetchContacts } = useContacts();
+  const { instances } = useWhatsApp();
   const [search, setSearch] = useState('');
   const [editing, setEditing] = useState<Contact | null>(null);
+  const [syncing, setSyncing] = useState(false);
+
+  const handleSync = async () => {
+    const connected = instances.find(i => i.status === 'connected');
+    if (!connected) {
+      return toast.error('Nenhuma instância de WhatsApp conectada encontrada.');
+    }
+    
+    setSyncing(true);
+    try {
+      const res: any = await syncWhatsAppContacts({ data: { name: connected.name } });
+      toast.success(`Sincronização concluída! ${res.created} novos contatos, ${res.updated} atualizados.`);
+      fetchContacts();
+    } catch (err: any) {
+      toast.error(err?.message || 'Erro ao sincronizar');
+    } finally {
+      setSyncing(false);
+    }
+  };
+
 
   const filtered = useMemo(() => {
     const s = search.toLowerCase();
@@ -42,9 +66,20 @@ function ContatosPage() {
           <h1 className="text-2xl font-bold text-white">Gestão de Contatos</h1>
           <p className="text-zinc-500 text-sm">Gerencie leads, dados pessoais, endereço e veículo.</p>
         </div>
-        <button onClick={newContact} className="flex items-center gap-2 bg-cyan-500 hover:bg-cyan-400 text-black px-4 py-2 rounded-lg font-semibold text-sm">
-          <Plus className="h-4 w-4" /> Novo Contato
-        </button>
+        <div className="flex gap-3">
+          <button 
+            onClick={handleSync} 
+            disabled={syncing}
+            className="flex items-center gap-2 bg-[#151821] border border-[#1F232E] text-zinc-400 hover:text-white px-4 py-2 rounded-lg font-semibold text-sm transition-colors"
+          >
+            <RefreshCw className={`h-4 w-4 ${syncing ? 'animate-spin' : ''}`} />
+            Sincronizar WhatsApp
+          </button>
+          <button onClick={newContact} className="flex items-center gap-2 bg-cyan-500 hover:bg-cyan-400 text-black px-4 py-2 rounded-lg font-semibold text-sm">
+            <Plus className="h-4 w-4" /> Novo Contato
+          </button>
+        </div>
+
       </div>
 
       <div className="px-8 py-4">

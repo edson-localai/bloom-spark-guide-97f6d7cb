@@ -104,3 +104,19 @@ export async function wapiSetWebhooks(creds: WapiCreds, url: string): Promise<vo
   );
 }
 
+export async function wapiGetContacts(creds: WapiCreds): Promise<any[]> {
+  try {
+    // Tenta primeiro forçar uma sincronização da agenda (W-API)
+    await wapiFetch('/v1/contact/sync-contacts', { method: 'POST' }, creds).catch(() => {});
+    
+    // Agora busca todos os contatos
+    const res = await wapiFetch('/v1/contact/all', { method: 'GET' }, creds);
+    return Array.isArray(res) ? res : (res?.contacts || res?.data || []);
+  } catch (e: any) {
+    console.error('[wapiGetContacts] error:', e?.message);
+    throw e;
+  }
+}
+
+
+
