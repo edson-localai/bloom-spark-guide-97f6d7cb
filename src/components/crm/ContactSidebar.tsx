@@ -29,6 +29,47 @@ export function ContactSidebar({ contact, conversationId, variant = 'desktop' }:
   const [local, setLocal] = useState<Contact | null>(contact);
   const [newTag, setNewTag] = useState('');
   const [addingTag, setAddingTag] = useState(false);
+  const [agents, setAgents] = useState<any[]>([]);
+  const [loadingAgents, setLoadingAgents] = useState(false);
+  const [updatingAssignment, setUpdatingAssignment] = useState(false);
+
+  useEffect(() => {
+    const fetchAgents = async () => {
+      setLoadingAgents(true);
+      const { data } = await supabase.from('agents').select('id, name, department');
+      if (data) setAgents(data);
+      setLoadingAgents(false);
+    };
+    fetchAgents();
+  }, []);
+
+  const departments = ['vendas', 'financeiro', 'atendimento'];
+
+  const handleAssign = async (agentId: string | null) => {
+    if (!conversationId) return;
+    setUpdatingAssignment(true);
+    const { error } = await supabase
+      .from('conversations')
+      .update({ agent_id: agentId })
+      .eq('id', conversationId);
+    
+    if (error) toast.error('Erro ao atribuir agente');
+    else toast.success('Agente atribuído com sucesso');
+    setUpdatingAssignment(false);
+  };
+
+  const handleAssignDept = async (dept: string | null) => {
+    if (!conversationId) return;
+    setUpdatingAssignment(true);
+    const { error } = await supabase
+      .from('conversations')
+      .update({ assigned_department: dept })
+      .eq('id', conversationId);
+    
+    if (error) toast.error('Erro ao atribuir setor');
+    else toast.success('Setor atribuído com sucesso');
+    setUpdatingAssignment(false);
+  };
 
   const c = local && local.id === contact?.id ? local : contact;
   if (!c) return null;
