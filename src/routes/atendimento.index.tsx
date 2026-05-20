@@ -61,7 +61,7 @@ function InboxPage() {
     return conversations;
   }, [conversations, filter]);
 
-  if (loading && conversations.length === 0) {
+  if (loading && conversations.length === 0 && filter !== 'profile') {
     return (
       <div className="h-full flex items-center justify-center">
         <Loader2 className="h-6 w-6 animate-spin text-cyan-400" />
