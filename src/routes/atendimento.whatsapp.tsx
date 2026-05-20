@@ -71,15 +71,7 @@ function WhatsAppPage() {
           <p className="text-zinc-500 text-sm">Gerencie as instâncias e aparelhos conectados ao CRM.</p>
         </div>
         <div className="flex gap-3">
-          {isAdmin && (
-            <button
-              onClick={() => setShowConfig(true)}
-              className="p-2.5 bg-[#151821] border border-[#1F232E] text-zinc-400 hover:text-white rounded-lg transition-colors"
-              title="Configurar API"
-            >
-              <SettingsIcon className="h-5 w-5" />
-            </button>
-          )}
+          {/* Configuração global removida, pois W-API usa credenciais por instância */}
           <button
             onClick={() => fetchInstances()}
             className="p-2.5 bg-[#151821] border border-[#1F232E] text-zinc-400 hover:text-white rounded-lg transition-colors"
