@@ -29,7 +29,11 @@ export function useMessages(conversationId: string | null) {
         },
         (payload) => {
           const newMsg = payload.new as Message;
-          setMessages((prev) => [...prev, newMsg]);
+          setMessages((prev) => {
+            if (prev.find(m => m.id === newMsg.id)) return prev;
+            return [...prev, newMsg];
+          });
+
 
           // Trigger Auto-reply se for mensagem do contato
           if (newMsg.sender_type === 'contact') {
