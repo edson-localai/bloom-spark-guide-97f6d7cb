@@ -67,14 +67,16 @@ export function ProfilePanel() {
         setAgentData({
           name: data.name || user.user_metadata?.name || user.email?.split('@')[0] || '',
           avatar_url: data.avatar_url,
-          description: data.description || ''
+          description: data.description || '',
+          role: data.role || 'agent'
         });
       } else {
         // If agent doesn't exist, use auth data as default
         setAgentData({
           name: user.user_metadata?.name || user.email?.split('@')[0] || '',
           avatar_url: user.user_metadata?.avatar_url || null,
-          description: ''
+          description: '',
+          role: 'agent'
         });
       }
     } catch (err: any) {
