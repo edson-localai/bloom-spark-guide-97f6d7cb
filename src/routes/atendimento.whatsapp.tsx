@@ -28,7 +28,7 @@ function WhatsAppPage() {
   const { instances, loading, fetchInstances } = useWhatsApp();
 
   const [showCreate, setShowCreate] = useState(false);
-  const [showConfig, setShowConfig] = useState(false);
+  // Configuração global removida, pois W-API usa credenciais por instância
   const [qrModal, setQrModal] = useState<{ name: string; qr: string | null } | null>(null);
   const [busy, setBusy] = useState<string | null>(null);
 
@@ -71,15 +71,7 @@ function WhatsAppPage() {
           <p className="text-zinc-500 text-sm">Gerencie as instâncias e aparelhos conectados ao CRM.</p>
         </div>
         <div className="flex gap-3">
-          {isAdmin && (
-            <button
-              onClick={() => setShowConfig(true)}
-              className="p-2.5 bg-[#151821] border border-[#1F232E] text-zinc-400 hover:text-white rounded-lg transition-colors"
-              title="Configurar API"
-            >
-              <SettingsIcon className="h-5 w-5" />
-            </button>
-          )}
+          {/* Configuração global removida, pois W-API usa credenciais por instância */}
           <button
             onClick={() => fetchInstances()}
             className="p-2.5 bg-[#151821] border border-[#1F232E] text-zinc-400 hover:text-white rounded-lg transition-colors"
@@ -266,9 +258,7 @@ function WhatsAppPage() {
           }}
         />
       )}
-      {showConfig && isAdmin && (
-        <ConfigApiModal onClose={() => setShowConfig(false)} />
-      )}
+      {/* ConfigApiModal removido */}
       {qrModal && <QrModal data={qrModal} onClose={() => { setQrModal(null); fetchInstances(); }} />}
     </div>
   );
@@ -505,103 +495,3 @@ function QrModal({ data, onClose }: { data: { name: string; qr: string | null };
   );
 }
 
-function ConfigApiModal({ onClose }: { onClose: () => void }) {
-  const [url, setUrl] = useState('');
-  const [apiKey, setApiKey] = useState('');
-  const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
-
-  useEffect(() => {
-    (async () => {
-      const { data } = await supabase
-        .from('app_settings')
-        .select('key, value')
-        .in('key', ['whatsapp_api_url', 'whatsapp_api_key']);
-      const map = Object.fromEntries((data || []).map((r: any) => [r.key, r.value]));
-      setUrl(map.whatsapp_api_url || '');
-      setApiKey(map.whatsapp_api_key || '');
-      setLoading(false);
-    })();
-  }, []);
-
-  async function handleSave(e: React.FormEvent) {
-    e.preventDefault();
-    setSaving(true);
-    try {
-      await supabase.from('app_settings').upsert({ key: 'whatsapp_api_url', value: url.trim() }, { onConflict: 'key' });
-      await supabase.from('app_settings').upsert({ key: 'whatsapp_api_key', value: apiKey.trim() }, { onConflict: 'key' });
-      toast.success('Configuração salva!');
-      onClose();
-    } catch (err: any) {
-      toast.error(err?.message || 'Erro ao salvar');
-    } finally {
-      setSaving(false);
-    }
-  }
-
-  return (
-    <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <form onSubmit={handleSave} className="bg-[#0F1117] border border-[#1F232E] rounded-2xl p-6 w-full max-w-lg space-y-4">
-        <div className="flex justify-between items-center">
-          <div className="flex items-center gap-2">
-            <SettingsIcon className="h-5 w-5 text-cyan-500" />
-            <h3 className="text-lg font-bold text-white">Configuração da Evolution API</h3>
-          </div>
-          <button type="button" onClick={onClose} className="text-zinc-500 hover:text-white"><X className="h-5 w-5" /></button>
-        </div>
-
-        {loading ? (
-          <div className="py-12 flex justify-center"><Loader2 className="h-6 w-6 animate-spin text-cyan-400" /></div>
-        ) : (
-          <>
-            <div className="space-y-4">
-              <div>
-                <label className="text-xs uppercase font-bold text-zinc-500 mb-1 block">API URL</label>
-                <input
-                  value={url}
-                  onChange={(e) => setUrl(e.target.value)}
-                  placeholder="https://api.seudominio.com"
-                  required
-                  className="w-full bg-[#151821] border border-[#1F232E] rounded-lg px-3 py-2 text-white text-sm focus:border-cyan-500 outline-none"
-                />
-                <p className="text-[10px] text-zinc-600 mt-1">URL base da sua Evolution API (sem / no final).</p>
-              </div>
-              <div>
-                <label className="text-xs uppercase font-bold text-zinc-500 mb-1 block">Global API Key</label>
-                <div className="relative">
-                  <input
-                    type="password"
-                    value={apiKey}
-                    onChange={(e) => setApiKey(e.target.value)}
-                    placeholder="Sua chave global da API"
-                    required
-                    className="w-full bg-[#151821] border border-[#1F232E] rounded-lg px-3 py-2 text-white text-sm focus:border-cyan-500 outline-none"
-                  />
-                </div>
-                <p className="text-[10px] text-zinc-600 mt-1">Chave de autenticação global configurada na Evolution API.</p>
-              </div>
-            </div>
-
-            <div className="pt-4 flex gap-3">
-              <button
-                type="button"
-                onClick={onClose}
-                className="flex-1 bg-transparent hover:bg-white/5 text-zinc-400 py-2.5 rounded-lg font-semibold text-sm border border-[#1F232E]"
-              >
-                Cancelar
-              </button>
-              <button
-                disabled={saving}
-                type="submit"
-                className="flex-1 bg-cyan-500 hover:bg-cyan-400 text-black py-2.5 rounded-lg font-semibold text-sm flex items-center justify-center gap-2"
-              >
-                {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
-                Salvar Alterações
-              </button>
-            </div>
-          </>
-        )}
-      </form>
-    </div>
-  );
-}
