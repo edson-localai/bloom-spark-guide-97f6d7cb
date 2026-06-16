@@ -357,11 +357,11 @@ function CreateInstanceModal({
   onClose: () => void;
   onCreated: (qr: string | null, name: string) => void;
 }) {
-  const [provider] = useState<"wapi">("wapi");
   const [name, setName] = useState("");
   const [displayName, setDisplayName] = useState("");
-  const [wapiInstanceId, setWapiInstanceId] = useState("");
-  const [wapiToken, setWapiToken] = useState("");
+  const [stevoApiUrl, setStevoApiUrl] = useState("");
+  const [stevoApiKey, setStevoApiKey] = useState("");
+  const [stevoInstanceName, setStevoInstanceName] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -371,11 +371,12 @@ function CreateInstanceModal({
     setError(null);
     try {
       const payload: any = {
-        provider: "wapi",
+        provider: "stevo",
         name: name.trim(),
         displayName: displayName.trim(),
-        wapiInstanceId: wapiInstanceId.trim(),
-        wapiToken: wapiToken.trim(),
+        stevoApiUrl: stevoApiUrl.trim().replace(/\/+$/, ""),
+        stevoApiKey: stevoApiKey.trim(),
+        stevoInstanceName: stevoInstanceName.trim(),
       };
       const res: any = await createWhatsAppInstance({ data: payload });
       toast.success("Instância criada! Escaneie o QR Code para conectar.");
@@ -402,12 +403,12 @@ function CreateInstanceModal({
           </button>
         </div>
 
-        <div className="bg-cyan-500/5 border border-cyan-500/10 rounded-xl p-4 mb-4">
-          <p className="text-xs text-cyan-400 font-medium">
-            Provedor: <span className="font-bold">W-API</span>
+        <div className="bg-emerald-500/5 border border-emerald-500/10 rounded-xl p-4 mb-4">
+          <p className="text-xs text-emerald-400 font-medium">
+            Provedor: <span className="font-bold">Stevo</span>
           </p>
           <p className="text-[10px] text-zinc-500 mt-1">
-            Utilizando conexão de alta performance via W-API.
+            Conexão via Stevo Manager API v2.
           </p>
         </div>
 
@@ -420,7 +421,7 @@ function CreateInstanceModal({
             onChange={(e) => setName(e.target.value.toLowerCase().replace(/[^a-z0-9_-]/g, ""))}
             placeholder="hcb-principal"
             required
-            className="w-full bg-[#151821] border border-[#1F232E] rounded-lg px-3 py-2 text-white text-sm focus:border-cyan-500 outline-none"
+            className="w-full bg-[#151821] border border-[#1F232E] rounded-lg px-3 py-2 text-white text-sm focus:border-emerald-500 outline-none"
           />
           <p className="text-[10px] text-zinc-600 mt-1">
             Apenas letras, números, _ e -. Não pode ser alterado depois.
@@ -435,44 +436,57 @@ function CreateInstanceModal({
             onChange={(e) => setDisplayName(e.target.value)}
             placeholder="HCB Atendimento"
             required
-            className="w-full bg-[#151821] border border-[#1F232E] rounded-lg px-3 py-2 text-white text-sm focus:border-cyan-500 outline-none"
+            className="w-full bg-[#151821] border border-[#1F232E] rounded-lg px-3 py-2 text-white text-sm focus:border-emerald-500 outline-none"
           />
         </div>
 
         <>
           <div>
             <label className="text-xs uppercase font-bold text-zinc-500 mb-1 block">
-              W-API Instance ID
+              URL da API Stevo
             </label>
             <input
-              value={wapiInstanceId}
-              onChange={(e) => setWapiInstanceId(e.target.value)}
-              placeholder="ID da instância no painel W-API"
+              value={stevoApiUrl}
+              onChange={(e) => setStevoApiUrl(e.target.value)}
+              placeholder="https://api.seudominio.com"
               required
-              className="w-full bg-[#151821] border border-[#1F232E] rounded-lg px-3 py-2 text-white text-sm focus:border-cyan-500 outline-none"
+              className="w-full bg-[#151821] border border-[#1F232E] rounded-lg px-3 py-2 text-white text-sm focus:border-emerald-500 outline-none"
             />
             <p className="text-[10px] text-zinc-600 mt-1">
-              Disponível em painel.w-api.app após criar a instância.
+              Domínio base fornecido pela Stevo (sem barra no final).
             </p>
           </div>
           <div>
             <label className="text-xs uppercase font-bold text-zinc-500 mb-1 block">
-              W-API Token (Bearer)
+              API Key (header apikey)
             </label>
             <input
               type="password"
-              value={wapiToken}
-              onChange={(e) => setWapiToken(e.target.value)}
-              placeholder="Token de autenticação da instância"
+              value={stevoApiKey}
+              onChange={(e) => setStevoApiKey(e.target.value)}
+              placeholder="apikey de autenticação"
               required
-              className="w-full bg-[#151821] border border-[#1F232E] rounded-lg px-3 py-2 text-white text-sm focus:border-cyan-500 outline-none"
+              className="w-full bg-[#151821] border border-[#1F232E] rounded-lg px-3 py-2 text-white text-sm focus:border-emerald-500 outline-none"
+            />
+          </div>
+          <div>
+            <label className="text-xs uppercase font-bold text-zinc-500 mb-1 block">
+              Nome da Instância na Stevo
+            </label>
+            <input
+              value={stevoInstanceName}
+              onChange={(e) => setStevoInstanceName(e.target.value)}
+              placeholder="ex: hcb-principal"
+              required
+              className="w-full bg-[#151821] border border-[#1F232E] rounded-lg px-3 py-2 text-white text-sm focus:border-emerald-500 outline-none"
             />
             <p className="text-[10px] text-zinc-600 mt-1">
-              Configure o webhook no painel da W-API para:&nbsp;
-              <code className="text-cyan-400">/api/public/wapi/webhook</code>
+              Configure o webhook no painel da Stevo para:&nbsp;
+              <code className="text-emerald-400">/api/public/stevo/webhook</code>
             </p>
           </div>
         </>
+
         {error && (
           <div className="rounded-lg border border-red-500/20 bg-red-500/10 px-3 py-2 text-sm text-red-200">
             {error}
