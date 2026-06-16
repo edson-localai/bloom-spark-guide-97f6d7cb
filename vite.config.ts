@@ -12,23 +12,4 @@ export default defineConfig({
   tanstackStart: {
     server: { entry: "server" },
   },
-  vite: {
-    build: {
-      rollupOptions: {
-        output: {
-          manualChunks: {
-            "vendor-react": ["react", "react-dom"],
-            "vendor-tanstack": [
-              "@tanstack/react-query",
-              "@tanstack/react-router",
-              "@tanstack/react-start",
-            ],
-            "vendor-framer": ["framer-motion"],
-            "vendor-lucide": ["lucide-react"],
-          },
-        },
-      },
-      chunkSizeWarningLimit: 1000,
-    },
-  },
 });
