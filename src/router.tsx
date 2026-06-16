@@ -60,7 +60,26 @@ if (typeof window !== "undefined" && !(window as any).__lovableServerFnFetchPatc
 }
 
 export const getRouter = () => {
-  const queryClient = new QueryClient();
+  const queryClient = new QueryClient({
+    queryCache: new QueryCache({
+      onError: (error, query) => {
+        // Only toast on background refetches (when cached data was already shown).
+        // Initial errors are surfaced via Suspense / errorComponent.
+        if (query.state.data !== undefined) {
+          toastError(error, "Não foi possível atualizar os dados.");
+        } else {
+          console.error("[query]", query.queryKey, error);
+        }
+      },
+    }),
+    mutationCache: new MutationCache({
+      onError: (error, _vars, _ctx, mutation) => {
+        // Skip if the mutation provides its own onError (component-level toast/inline).
+        if (mutation.options.onError) return;
+        toastError(error);
+      },
+    }),
+  });
 
   const router = createRouter({
     routeTree,
