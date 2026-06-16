@@ -45,7 +45,9 @@ function ConfigPage() {
     setSaving(true);
     try {
       for (const setting of settings) {
-        await supabase.from("app_settings").update({ value: setting.value }).eq("key", setting.key);
+        await supabase
+          .from("app_settings")
+          .upsert({ key: setting.key, value: setting.value }, { onConflict: "key" });
       }
       toast.success("Configurações salvas com sucesso!");
     } catch (error) {
@@ -56,7 +58,11 @@ function ConfigPage() {
   }
 
   const updateSetting = (key: string, value: string) => {
-    setSettings((prev) => prev.map((s) => (s.key === key ? { ...s, value } : s)));
+    setSettings((prev) => {
+      const exists = prev.some((s) => s.key === key);
+      if (exists) return prev.map((s) => (s.key === key ? { ...s, value } : s));
+      return [...prev, { key, value }];
+    });
   };
 
   const getSetting = (key: string) => settings.find((s) => s.key === key)?.value || "";
