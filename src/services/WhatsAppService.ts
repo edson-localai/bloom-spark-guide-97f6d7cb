@@ -1,5 +1,5 @@
-import { supabaseAdmin } from '@/integrations/supabase/client.server';
-import { EvoConfig, evoFetch, normalizeStatus, jidToPhone } from '@/lib/whatsapp.server';
+import { supabaseAdmin } from "@/integrations/supabase/client.server";
+import { EvoConfig, evoFetch, normalizeStatus, jidToPhone } from "@/lib/whatsapp.server";
 
 export class WhatsAppService {
   private static instance: WhatsAppService;
@@ -22,18 +22,20 @@ export class WhatsAppService {
     }
 
     const { data, error } = await supabaseAdmin
-      .from('app_settings')
-      .select('key, value')
-      .in('key', ['whatsapp_api_url', 'whatsapp_api_key']);
+      .from("app_settings")
+      .select("key, value")
+      .in("key", ["whatsapp_api_url", "whatsapp_api_key"]);
 
     if (error) throw new Error(`Failed to read WhatsApp settings: ${error.message}`);
 
     const map = Object.fromEntries((data || []).map((r: any) => [r.key, r.value]));
-    const url = (map.whatsapp_api_url || '').replace(/\/+$/, '');
-    const apiKey = map.whatsapp_api_key || '';
+    const url = (map.whatsapp_api_url || "").replace(/\/+$/, "");
+    const apiKey = map.whatsapp_api_key || "";
 
     if (!url || !apiKey) {
-      throw new Error('WhatsApp API not configured. Set whatsapp_api_url and whatsapp_api_key in settings.');
+      throw new Error(
+        "WhatsApp API not configured. Set whatsapp_api_url and whatsapp_api_key in settings.",
+      );
     }
 
     this.configCache = { url, apiKey };
@@ -46,18 +48,23 @@ export class WhatsAppService {
     return evoFetch(path, init, config);
   }
 
-  async createInstance(data: { name: string; displayName: string; apiKey?: string; webhookUrl: string }) {
-    const created = await this.fetch('/instance/create', {
-      method: 'POST',
+  async createInstance(data: {
+    name: string;
+    displayName: string;
+    apiKey?: string;
+    webhookUrl: string;
+  }) {
+    const created = await this.fetch("/instance/create", {
+      method: "POST",
       body: JSON.stringify({
         instanceName: data.name,
         qrcode: true,
         token: data.apiKey,
-        integration: 'WHATSAPP-BAILEYS',
+        integration: "WHATSAPP-BAILEYS",
         webhookUrl: data.webhookUrl,
         webhookByEvents: false,
         webhookBase64: false,
-        events: ['MESSAGES_UPSERT', 'CONNECTION_UPDATE', 'QRCODE_UPDATED'],
+        events: ["MESSAGES_UPSERT", "CONNECTION_UPDATE", "QRCODE_UPDATED"],
       }),
     });
 
@@ -65,7 +72,7 @@ export class WhatsAppService {
     const status = normalizeStatus(created?.instance?.status);
 
     const { data: row, error } = await supabaseAdmin
-      .from('whatsapp_instances')
+      .from("whatsapp_instances")
       .insert({
         name: data.name,
         display_name: data.displayName,
@@ -84,8 +91,8 @@ export class WhatsAppService {
 
   async deleteInstance(idOrName: string) {
     const { data: target, error: findError } = await supabaseAdmin
-      .from('whatsapp_instances')
-      .select('id, name')
+      .from("whatsapp_instances")
+      .select("id, name")
       .or(`id.eq.${idOrName},name.eq.${idOrName}`)
       .maybeSingle();
 
@@ -95,18 +102,20 @@ export class WhatsAppService {
 
     // Clear references
     await supabaseAdmin
-      .from('conversations')
+      .from("conversations")
       .update({ instance_id: null, updated_at: new Date().toISOString() })
-      .eq('instance_id', target.id);
+      .eq("instance_id", target.id);
 
     try {
-      await this.fetch(`/instance/delete/${encodeURIComponent(target.name)}`, { method: 'DELETE' }).catch(() => {});
+      await this.fetch(`/instance/delete/${encodeURIComponent(target.name)}`, {
+        method: "DELETE",
+      }).catch(() => {});
     } catch {}
 
     const { error, count } = await supabaseAdmin
-      .from('whatsapp_instances')
-      .delete({ count: 'exact' })
-      .eq('id', target.id);
+      .from("whatsapp_instances")
+      .delete({ count: "exact" })
+      .eq("id", target.id);
 
     if (error) throw new Error(error.message);
     return { ok: true, count };
@@ -118,25 +127,40 @@ export class WhatsAppService {
 
     let phone: string | null = null;
     try {
-      const list = await this.fetch(`/instance/fetchInstances?instanceName=${encodeURIComponent(name)}`);
+      const list = await this.fetch(
+        `/instance/fetchInstances?instanceName=${encodeURIComponent(name)}`,
+      );
       const inst = Array.isArray(list) ? list[0] : list;
-      phone = inst?.instance?.owner ? jidToPhone(inst.instance.owner) : (inst?.owner ? jidToPhone(inst.owner) : null);
+      phone = inst?.instance?.owner
+        ? jidToPhone(inst.instance.owner)
+        : inst?.owner
+          ? jidToPhone(inst.owner)
+          : null;
     } catch {}
 
-    const update: any = { status, updated_at: new Date().toISOString(), last_seen: new Date().toISOString() };
+    const update: any = {
+      status,
+      updated_at: new Date().toISOString(),
+      last_seen: new Date().toISOString(),
+    };
     if (phone) update.phone_number = phone;
-    if (status === 'connected') update.qr_code = null;
+    if (status === "connected") update.qr_code = null;
 
-    await supabaseAdmin.from('whatsapp_instances').update(update).eq('name', name);
+    await supabaseAdmin.from("whatsapp_instances").update(update).eq("name", name);
     return { status, phone };
   }
 
   async logoutInstance(name: string) {
-    await this.fetch(`/instance/logout/${encodeURIComponent(name)}`, { method: 'DELETE' });
+    await this.fetch(`/instance/logout/${encodeURIComponent(name)}`, { method: "DELETE" });
     await supabaseAdmin
-      .from('whatsapp_instances')
-      .update({ status: 'disconnected', qr_code: null, phone_number: null, updated_at: new Date().toISOString() })
-      .eq('name', name);
+      .from("whatsapp_instances")
+      .update({
+        status: "disconnected",
+        qr_code: null,
+        phone_number: null,
+        updated_at: new Date().toISOString(),
+      })
+      .eq("name", name);
     return { ok: true };
   }
 }

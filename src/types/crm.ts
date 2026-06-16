@@ -1,6 +1,6 @@
 // HCB CRM — tipos compartilhados
-export type AppRole = 'admin' | 'supervisor' | 'agent';
-export type AgentStatus = 'online' | 'busy' | 'away' | 'offline';
+export type AppRole = "admin" | "supervisor" | "agent";
+export type AgentStatus = "online" | "busy" | "away" | "offline";
 
 export interface Label {
   id: string;
@@ -29,13 +29,13 @@ export interface Agent {
   updated_at: string;
 }
 
-export type InstanceStatus = 'connected' | 'disconnected' | 'connecting' | 'error';
+export type InstanceStatus = "connected" | "disconnected" | "connecting" | "error";
 
 export interface WhatsAppInstance {
   id: string;
   name: string;
   display_name: string;
-  provider: 'wapi';
+  provider: "wapi";
   phone_number: string | null;
   status: InstanceStatus;
   qr_code: string | null;
@@ -46,7 +46,7 @@ export interface WhatsAppInstance {
   instance_key?: string | null;
 }
 
-export type LeadStage = 'novo' | 'qualificado' | 'proposta' | 'fechado' | 'perdido';
+export type LeadStage = "novo" | "qualificado" | "proposta" | "fechado" | "perdido";
 
 export interface Contact {
   id: string;
@@ -74,8 +74,8 @@ export interface Contact {
   updated_at: string;
 }
 
-export type ConversationStatus = 'bot' | 'queue' | 'active' | 'resolved' | 'archived';
-export type ConversationPriority = 'low' | 'normal' | 'high' | 'urgent';
+export type ConversationStatus = "bot" | "queue" | "active" | "resolved" | "archived";
+export type ConversationPriority = "low" | "normal" | "high" | "urgent";
 
 export interface Conversation {
   id: string;
@@ -102,10 +102,18 @@ export interface Conversation {
   labels?: Label[];
 }
 
-export type SenderType = 'contact' | 'agent' | 'bot' | 'system';
+export type SenderType = "contact" | "agent" | "bot" | "system";
 export type MessageContentType =
-  | 'text' | 'image' | 'audio' | 'video' | 'document' | 'sticker' | 'location' | 'system' | 'event';
-export type MessageStatus = 'pending' | 'sent' | 'delivered' | 'read' | 'failed';
+  | "text"
+  | "image"
+  | "audio"
+  | "video"
+  | "document"
+  | "sticker"
+  | "location"
+  | "system"
+  | "event";
+export type MessageStatus = "pending" | "sent" | "delivered" | "read" | "failed";
 
 export interface Message {
   id: string;
@@ -140,7 +148,7 @@ export interface ScheduledMessage {
   content: string;
   scheduled_for: string;
   sent_at: string | null;
-  status: 'pending' | 'sent' | 'cancelled';
+  status: "pending" | "sent" | "cancelled";
   created_at: string;
 }
 
@@ -155,7 +163,7 @@ export interface Proposal {
   discount: number;
   total: number;
   notes: string | null;
-  status: 'draft' | 'sent' | 'accepted' | 'rejected';
+  status: "draft" | "sent" | "accepted" | "rejected";
   valid_until: string | null;
   created_at: string;
   updated_at: string;

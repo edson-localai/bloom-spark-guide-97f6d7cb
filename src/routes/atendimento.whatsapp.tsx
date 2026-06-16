@@ -1,13 +1,24 @@
-import { createFileRoute } from '@tanstack/react-router';
-import { useState, useEffect, useRef } from 'react';
-import { useWhatsApp } from '@/hooks/useWhatsApp';
+import { createFileRoute } from "@tanstack/react-router";
+import { useState, useEffect, useRef } from "react";
+import { useWhatsApp } from "@/hooks/useWhatsApp";
 import {
-  Smartphone, RefreshCw, Plus, CheckCircle2, XCircle, Loader2, QrCode,
-  Shield, ShieldAlert, X, Trash2, Settings as SettingsIcon, Save,
-} from 'lucide-react';
-import { useCrmAuth } from '@/hooks/useCrmAuth';
-import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+  Smartphone,
+  RefreshCw,
+  Plus,
+  CheckCircle2,
+  XCircle,
+  Loader2,
+  QrCode,
+  Shield,
+  ShieldAlert,
+  X,
+  Trash2,
+  Settings as SettingsIcon,
+  Save,
+} from "lucide-react";
+import { useCrmAuth } from "@/hooks/useCrmAuth";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 import {
   createWhatsAppInstance,
   getWhatsAppQrCode,
@@ -16,17 +27,16 @@ import {
   disconnectWhatsAppInstance,
   deleteWhatsAppInstance,
   syncWhatsAppContacts,
-} from '@/lib/whatsapp.functions';
+} from "@/lib/whatsapp.functions";
 
-
-export const Route = createFileRoute('/atendimento/whatsapp')({
+export const Route = createFileRoute("/atendimento/whatsapp")({
   component: WhatsAppPage,
 });
 
 function WhatsAppPage() {
   const { roles, loading: authLoading } = useCrmAuth();
-  const isSupervisor = roles.includes('admin') || roles.includes('supervisor');
-  const isAdmin = roles.includes('admin');
+  const isSupervisor = roles.includes("admin") || roles.includes("supervisor");
+  const isAdmin = roles.includes("admin");
   const { instances, loading, fetchInstances } = useWhatsApp();
 
   const [showCreate, setShowCreate] = useState(false);
@@ -45,7 +55,8 @@ function WhatsAppPage() {
           </div>
           <h2 className="text-xl font-bold text-white mb-2">Acesso Negado</h2>
           <p className="text-zinc-500 text-sm leading-relaxed">
-            Você não tem permissão para acessar as Conexões de WhatsApp. Este módulo é restrito a supervisores e administradores.
+            Você não tem permissão para acessar as Conexões de WhatsApp. Este módulo é restrito a
+            supervisores e administradores.
           </p>
         </div>
       </div>
@@ -59,18 +70,20 @@ function WhatsAppPage() {
       toast.success(success);
       await fetchInstances();
     } catch (err: any) {
-      toast.error(err?.message || 'Erro');
+      toast.error(err?.message || "Erro");
     } finally {
       setBusy(null);
     }
   };
 
   return (
-    <div className="h-full flex flex-col" style={{ background: '#0A0A0F' }}>
+    <div className="h-full flex flex-col" style={{ background: "#0A0A0F" }}>
       <div className="p-8 pb-4 flex justify-between items-center">
         <div>
           <h1 className="text-2xl font-bold text-white">Conexões WhatsApp</h1>
-          <p className="text-zinc-500 text-sm">Gerencie as instâncias e aparelhos conectados ao CRM.</p>
+          <p className="text-zinc-500 text-sm">
+            Gerencie as instâncias e aparelhos conectados ao CRM.
+          </p>
         </div>
         <div className="flex gap-3">
           {/* Configuração global removida, pois W-API usa credenciais por instância */}
@@ -101,31 +114,39 @@ function WhatsAppPage() {
               key={inst.id}
               className="bg-[#0F1117] rounded-3xl border border-[#1F232E] p-8 flex flex-col md:flex-row gap-8 hover:border-cyan-500/20 transition-all relative overflow-hidden group"
             >
-              <div className={`absolute top-0 right-0 w-64 h-64 blur-[100px] opacity-10 pointer-events-none transition-colors ${
-                inst.status === 'connected' ? 'bg-emerald-500' : 'bg-red-500'
-              }`} />
+              <div
+                className={`absolute top-0 right-0 w-64 h-64 blur-[100px] opacity-10 pointer-events-none transition-colors ${
+                  inst.status === "connected" ? "bg-emerald-500" : "bg-red-500"
+                }`}
+              />
 
               <div className="flex-1 space-y-6">
                 <div className="flex items-center gap-4">
-                  <div className={`h-14 w-14 rounded-2xl flex items-center justify-center border ${
-                    inst.status === 'connected'
-                      ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400'
-                      : 'bg-zinc-500/10 border-zinc-500/20 text-zinc-500'
-                  }`}>
+                  <div
+                    className={`h-14 w-14 rounded-2xl flex items-center justify-center border ${
+                      inst.status === "connected"
+                        ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-400"
+                        : "bg-zinc-500/10 border-zinc-500/20 text-zinc-500"
+                    }`}
+                  >
                     <Smartphone className="h-7 w-7" />
                   </div>
                   <div>
                     <h3 className="text-lg font-bold text-white">{inst.display_name}</h3>
                     <div className="flex flex-col">
                       <p className="text-xs text-zinc-500 font-mono">ID: {inst.name}</p>
-                      {inst.phone_number && <p className="text-xs text-zinc-500 font-mono">Fone: {inst.phone_number}</p>}
+                      {inst.phone_number && (
+                        <p className="text-xs text-zinc-500 font-mono">Fone: {inst.phone_number}</p>
+                      )}
                     </div>
                   </div>
                 </div>
 
                 {isAdmin && (
                   <div className="bg-amber-500/5 border border-amber-500/10 rounded-2xl p-4 space-y-2">
-                    <p className="text-[10px] uppercase font-bold tracking-widest text-amber-500/60">Credenciais da Instância</p>
+                    <p className="text-[10px] uppercase font-bold tracking-widest text-amber-500/60">
+                      Credenciais da Instância
+                    </p>
                     <div className="flex flex-col gap-1">
                       <div className="flex justify-between items-center">
                         <span className="text-[10px] text-zinc-600 font-mono">Instance Name:</span>
@@ -133,8 +154,11 @@ function WhatsAppPage() {
                       </div>
                       <div className="flex justify-between items-center">
                         <span className="text-[10px] text-zinc-600 font-mono">API Key:</span>
-                        <span className="text-[10px] text-zinc-400 font-mono truncate max-w-[150px]" title={inst.instance_key || ''}>
-                          {inst.instance_key || 'N/A'}
+                        <span
+                          className="text-[10px] text-zinc-400 font-mono truncate max-w-[150px]"
+                          title={inst.instance_key || ""}
+                        >
+                          {inst.instance_key || "N/A"}
                         </span>
                       </div>
                     </div>
@@ -143,22 +167,34 @@ function WhatsAppPage() {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="bg-[#151821] rounded-2xl p-4 border border-[#1F232E]">
-                    <p className="text-[10px] uppercase font-bold tracking-widest text-zinc-600 mb-1">Status</p>
+                    <p className="text-[10px] uppercase font-bold tracking-widest text-zinc-600 mb-1">
+                      Status
+                    </p>
                     <div className="flex items-center gap-2">
-                      {inst.status === 'connected' ? (
-                        <><CheckCircle2 className="h-4 w-4 text-emerald-500" />
-                          <span className="text-sm font-semibold text-emerald-500">Conectado</span></>
-                      ) : inst.status === 'connecting' ? (
-                        <><Loader2 className="h-4 w-4 text-amber-500 animate-spin" />
-                          <span className="text-sm font-semibold text-amber-500">Conectando</span></>
+                      {inst.status === "connected" ? (
+                        <>
+                          <CheckCircle2 className="h-4 w-4 text-emerald-500" />
+                          <span className="text-sm font-semibold text-emerald-500">Conectado</span>
+                        </>
+                      ) : inst.status === "connecting" ? (
+                        <>
+                          <Loader2 className="h-4 w-4 text-amber-500 animate-spin" />
+                          <span className="text-sm font-semibold text-amber-500">Conectando</span>
+                        </>
                       ) : (
-                        <><XCircle className="h-4 w-4 text-red-500" />
-                          <span className="text-sm font-semibold text-red-500 italic">Desconectado</span></>
+                        <>
+                          <XCircle className="h-4 w-4 text-red-500" />
+                          <span className="text-sm font-semibold text-red-500 italic">
+                            Desconectado
+                          </span>
+                        </>
                       )}
                     </div>
                   </div>
                   <div className="bg-[#151821] rounded-2xl p-4 border border-[#1F232E]">
-                    <p className="text-[10px] uppercase font-bold tracking-widest text-zinc-600 mb-1">Sessão</p>
+                    <p className="text-[10px] uppercase font-bold tracking-widest text-zinc-600 mb-1">
+                      Sessão
+                    </p>
                     <div className="flex items-center gap-2">
                       <Shield className="h-4 w-4 text-cyan-500" />
                       <span className="text-sm font-semibold text-zinc-300">Criptografada</span>
@@ -169,21 +205,39 @@ function WhatsAppPage() {
                 <div className="pt-4 flex flex-wrap gap-2">
                   <button
                     disabled={!!busy}
-                    onClick={() => runAction(`sync-${inst.name}`, () => syncWhatsAppInstance({ data: { name: inst.name } }), 'Status atualizado')}
+                    onClick={() =>
+                      runAction(
+                        `sync-${inst.name}`,
+                        () => syncWhatsAppInstance({ data: { name: inst.name } }),
+                        "Status atualizado",
+                      )
+                    }
                     className="flex-1 min-w-[120px] bg-[#151821] hover:bg-[#1F232E] text-zinc-200 border border-[#1F232E] py-2.5 rounded-xl text-sm font-semibold transition-all"
                   >
                     Sincronizar
                   </button>
                   <button
                     disabled={!!busy}
-                    onClick={() => runAction(`sync-contacts-${inst.name}`, () => syncWhatsAppContacts({ data: { name: inst.name } }), 'Contatos sincronizados')}
+                    onClick={() =>
+                      runAction(
+                        `sync-contacts-${inst.name}`,
+                        () => syncWhatsAppContacts({ data: { name: inst.name } }),
+                        "Contatos sincronizados",
+                      )
+                    }
                     className="flex-1 min-w-[120px] bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/20 py-2.5 rounded-xl text-sm font-semibold transition-all"
                   >
                     Sync Contatos
                   </button>
                   <button
                     disabled={!!busy}
-                    onClick={() => runAction(`restart-${inst.name}`, () => restartWhatsAppInstance({ data: { name: inst.name } }), 'Instância reiniciada')}
+                    onClick={() =>
+                      runAction(
+                        `restart-${inst.name}`,
+                        () => restartWhatsAppInstance({ data: { name: inst.name } }),
+                        "Instância reiniciada",
+                      )
+                    }
                     className="flex-1 min-w-[120px] bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-400 border border-cyan-500/20 py-2.5 rounded-xl text-sm font-semibold transition-all"
                   >
                     Reiniciar
@@ -191,7 +245,13 @@ function WhatsAppPage() {
 
                   <button
                     disabled={!!busy}
-                    onClick={() => runAction(`logout-${inst.name}`, () => disconnectWhatsAppInstance({ data: { name: inst.name } }), 'Desconectado')}
+                    onClick={() =>
+                      runAction(
+                        `logout-${inst.name}`,
+                        () => disconnectWhatsAppInstance({ data: { name: inst.name } }),
+                        "Desconectado",
+                      )
+                    }
                     className="flex-1 min-w-[120px] bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20 py-2.5 rounded-xl text-sm font-semibold transition-all"
                   >
                     Desconectar
@@ -201,7 +261,11 @@ function WhatsAppPage() {
                       disabled={!!busy}
                       onClick={() => {
                         if (!confirm(`Excluir definitivamente a instância "${inst.name}"?`)) return;
-                        runAction(`del-${inst.name}`, () => deleteWhatsAppInstance({ data: { id: inst.id, name: inst.name } }), 'Instância excluída');
+                        runAction(
+                          `del-${inst.name}`,
+                          () => deleteWhatsAppInstance({ data: { id: inst.id, name: inst.name } }),
+                          "Instância excluída",
+                        );
                       }}
                       className="p-2.5 bg-red-500/5 hover:bg-red-500/15 text-red-500 border border-red-500/10 rounded-xl transition-all"
                       title="Excluir instância"
@@ -213,10 +277,12 @@ function WhatsAppPage() {
               </div>
 
               <div className="w-full md:w-48 shrink-0 flex flex-col items-center justify-center p-6 bg-[#151821] rounded-2xl border border-[#1F232E] relative">
-                {inst.status === 'connected' ? (
+                {inst.status === "connected" ? (
                   <div className="text-center space-y-2">
                     <CheckCircle2 className="h-12 w-12 text-emerald-500 mx-auto opacity-30" />
-                    <p className="text-[10px] text-emerald-500/60 font-bold uppercase tracking-wider">Pronto para uso</p>
+                    <p className="text-[10px] text-emerald-500/60 font-bold uppercase tracking-wider">
+                      Pronto para uso
+                    </p>
                   </div>
                 ) : (
                   <button
@@ -227,7 +293,7 @@ function WhatsAppPage() {
                         const res: any = await getWhatsAppQrCode({ data: { name: inst.name } });
                         setQrModal({ name: inst.name, qr: res?.qr || inst.qr_code || null });
                       } catch (err: any) {
-                        toast.error(err?.message || 'Erro ao gerar QR');
+                        toast.error(err?.message || "Erro ao gerar QR");
                       } finally {
                         setBusy(null);
                       }
@@ -236,7 +302,7 @@ function WhatsAppPage() {
                   >
                     <QrCode className="h-32 w-32 text-zinc-700 opacity-40 group-hover/qr:text-cyan-500 group-hover/qr:opacity-100 transition-all" />
                     <span className="text-xs font-bold text-cyan-400 bg-cyan-500/10 px-3 py-1.5 rounded-full border border-cyan-500/20">
-                      {busy === `qr-${inst.name}` ? 'Gerando...' : 'Gerar QR Code'}
+                      {busy === `qr-${inst.name}` ? "Gerando..." : "Gerar QR Code"}
                     </span>
                   </button>
                 )}
@@ -269,19 +335,33 @@ function WhatsAppPage() {
         />
       )}
       {/* ConfigApiModal removido */}
-      {qrModal && <QrModal data={qrModal} onClose={() => { setQrModal(null); fetchInstances(); }} />}
+      {qrModal && (
+        <QrModal
+          data={qrModal}
+          onClose={() => {
+            setQrModal(null);
+            fetchInstances();
+          }}
+        />
+      )}
     </div>
   );
 }
 
 // ============== MODALS ==============
 
-function CreateInstanceModal({ onClose, onCreated }: { onClose: () => void; onCreated: (qr: string | null, name: string) => void }) {
-  const [provider] = useState<'wapi'>('wapi');
-  const [name, setName] = useState('');
-  const [displayName, setDisplayName] = useState('');
-  const [wapiInstanceId, setWapiInstanceId] = useState('');
-  const [wapiToken, setWapiToken] = useState('');
+function CreateInstanceModal({
+  onClose,
+  onCreated,
+}: {
+  onClose: () => void;
+  onCreated: (qr: string | null, name: string) => void;
+}) {
+  const [provider] = useState<"wapi">("wapi");
+  const [name, setName] = useState("");
+  const [displayName, setDisplayName] = useState("");
+  const [wapiInstanceId, setWapiInstanceId] = useState("");
+  const [wapiToken, setWapiToken] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -290,18 +370,18 @@ function CreateInstanceModal({ onClose, onCreated }: { onClose: () => void; onCr
     setSubmitting(true);
     setError(null);
     try {
-      const payload: any = { 
-        provider: 'wapi', 
-        name: name.trim(), 
+      const payload: any = {
+        provider: "wapi",
+        name: name.trim(),
         displayName: displayName.trim(),
         wapiInstanceId: wapiInstanceId.trim(),
-        wapiToken: wapiToken.trim()
+        wapiToken: wapiToken.trim(),
       };
       const res: any = await createWhatsAppInstance({ data: payload });
-      toast.success('Instância criada! Escaneie o QR Code para conectar.');
+      toast.success("Instância criada! Escaneie o QR Code para conectar.");
       onCreated(res?.qr || null, name.trim());
     } catch (err: any) {
-      const message = err?.message || 'Erro ao criar instância';
+      const message = err?.message || "Erro ao criar instância";
       setError(message);
       toast.error(message);
     } finally {
@@ -311,30 +391,45 @@ function CreateInstanceModal({ onClose, onCreated }: { onClose: () => void; onCr
 
   return (
     <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <form onSubmit={handleSubmit} className="bg-[#0F1117] border border-[#1F232E] rounded-2xl p-6 w-full max-w-md space-y-4">
+      <form
+        onSubmit={handleSubmit}
+        className="bg-[#0F1117] border border-[#1F232E] rounded-2xl p-6 w-full max-w-md space-y-4"
+      >
         <div className="flex justify-between items-center">
           <h3 className="text-lg font-bold text-white">Nova Conexão WhatsApp</h3>
-          <button type="button" onClick={onClose} className="text-zinc-500 hover:text-white"><X className="h-5 w-5" /></button>
+          <button type="button" onClick={onClose} className="text-zinc-500 hover:text-white">
+            <X className="h-5 w-5" />
+          </button>
         </div>
 
         <div className="bg-cyan-500/5 border border-cyan-500/10 rounded-xl p-4 mb-4">
-          <p className="text-xs text-cyan-400 font-medium">Provedor: <span className="font-bold">W-API</span></p>
-          <p className="text-[10px] text-zinc-500 mt-1">Utilizando conexão de alta performance via W-API.</p>
+          <p className="text-xs text-cyan-400 font-medium">
+            Provedor: <span className="font-bold">W-API</span>
+          </p>
+          <p className="text-[10px] text-zinc-500 mt-1">
+            Utilizando conexão de alta performance via W-API.
+          </p>
         </div>
 
         <div>
-          <label className="text-xs uppercase font-bold text-zinc-500 mb-1 block">Identificador (interno)</label>
+          <label className="text-xs uppercase font-bold text-zinc-500 mb-1 block">
+            Identificador (interno)
+          </label>
           <input
             value={name}
-            onChange={(e) => setName(e.target.value.toLowerCase().replace(/[^a-z0-9_-]/g, ''))}
+            onChange={(e) => setName(e.target.value.toLowerCase().replace(/[^a-z0-9_-]/g, ""))}
             placeholder="hcb-principal"
             required
             className="w-full bg-[#151821] border border-[#1F232E] rounded-lg px-3 py-2 text-white text-sm focus:border-cyan-500 outline-none"
           />
-          <p className="text-[10px] text-zinc-600 mt-1">Apenas letras, números, _ e -. Não pode ser alterado depois.</p>
+          <p className="text-[10px] text-zinc-600 mt-1">
+            Apenas letras, números, _ e -. Não pode ser alterado depois.
+          </p>
         </div>
         <div>
-          <label className="text-xs uppercase font-bold text-zinc-500 mb-1 block">Nome de exibição</label>
+          <label className="text-xs uppercase font-bold text-zinc-500 mb-1 block">
+            Nome de exibição
+          </label>
           <input
             value={displayName}
             onChange={(e) => setDisplayName(e.target.value)}
@@ -346,7 +441,9 @@ function CreateInstanceModal({ onClose, onCreated }: { onClose: () => void; onCr
 
         <>
           <div>
-            <label className="text-xs uppercase font-bold text-zinc-500 mb-1 block">W-API Instance ID</label>
+            <label className="text-xs uppercase font-bold text-zinc-500 mb-1 block">
+              W-API Instance ID
+            </label>
             <input
               value={wapiInstanceId}
               onChange={(e) => setWapiInstanceId(e.target.value)}
@@ -354,10 +451,14 @@ function CreateInstanceModal({ onClose, onCreated }: { onClose: () => void; onCr
               required
               className="w-full bg-[#151821] border border-[#1F232E] rounded-lg px-3 py-2 text-white text-sm focus:border-cyan-500 outline-none"
             />
-            <p className="text-[10px] text-zinc-600 mt-1">Disponível em painel.w-api.app após criar a instância.</p>
+            <p className="text-[10px] text-zinc-600 mt-1">
+              Disponível em painel.w-api.app após criar a instância.
+            </p>
           </div>
           <div>
-            <label className="text-xs uppercase font-bold text-zinc-500 mb-1 block">W-API Token (Bearer)</label>
+            <label className="text-xs uppercase font-bold text-zinc-500 mb-1 block">
+              W-API Token (Bearer)
+            </label>
             <input
               type="password"
               value={wapiToken}
@@ -382,16 +483,22 @@ function CreateInstanceModal({ onClose, onCreated }: { onClose: () => void; onCr
           type="submit"
           className="w-full bg-cyan-500 hover:bg-cyan-400 text-black py-2.5 rounded-lg font-semibold text-sm disabled:opacity-50"
         >
-          {submitting ? 'Criando...' : 'Criar e gerar QR Code'}
+          {submitting ? "Criando..." : "Criar e gerar QR Code"}
         </button>
       </form>
     </div>
   );
 }
 
-function QrModal({ data, onClose }: { data: { name: string; qr: string | null }; onClose: () => void }) {
+function QrModal({
+  data,
+  onClose,
+}: {
+  data: { name: string; qr: string | null };
+  onClose: () => void;
+}) {
   const [qr, setQr] = useState<string | null>(data.qr);
-  const [status, setStatus] = useState<'connecting' | 'connected' | 'disconnected'>('connecting');
+  const [status, setStatus] = useState<"connecting" | "connected" | "disconnected">("connecting");
   const [attempts, setAttempts] = useState(0);
   const [lastPollAt, setLastPollAt] = useState<Date | null>(null);
   const [stopped, setStopped] = useState(false);
@@ -410,15 +517,17 @@ function QrModal({ data, onClose }: { data: { name: string; qr: string | null };
           const first: any = await getWhatsAppQrCode({ data: { name: data.name } });
           if (cancelled) return;
           if (first?.connected) {
-            setStatus('connected');
+            setStatus("connected");
             setQr(null);
-            setTimeout(() => { if (!cancelled) onCloseRef.current(); }, 1500);
+            setTimeout(() => {
+              if (!cancelled) onCloseRef.current();
+            }, 1500);
             return;
           }
           if (first?.qr) setQr(first.qr);
         } catch {
           if (cancelled) return;
-          setStatus('disconnected');
+          setStatus("disconnected");
         }
       }
       while (!cancelled && n < 40) {
@@ -428,53 +537,70 @@ function QrModal({ data, onClose }: { data: { name: string; qr: string | null };
           const res: any = await syncWhatsAppInstance({ data: { name: data.name } });
           if (cancelled) return;
           setLastPollAt(new Date());
-          if (res?.status === 'connected') {
-            setStatus('connected');
+          if (res?.status === "connected") {
+            setStatus("connected");
             setQr(null);
-            setTimeout(() => { if (!cancelled) onCloseRef.current(); }, 1500);
+            setTimeout(() => {
+              if (!cancelled) onCloseRef.current();
+            }, 1500);
             return;
           }
-          setStatus(res?.status === 'disconnected' ? 'disconnected' : 'connecting');
+          setStatus(res?.status === "disconnected" ? "disconnected" : "connecting");
         } catch {
           if (cancelled) return;
           setLastPollAt(new Date());
-          setStatus('disconnected');
+          setStatus("disconnected");
         }
         await new Promise((r) => setTimeout(r, 2500));
       }
       if (!cancelled) setStopped(true);
     }
     poll();
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, [data.name, data.qr]);
 
   const src = qr
-    ? (qr.startsWith('data:') ? qr : `data:image/png;base64,${qr.replace(/^data:image\/[^;]+;base64,/, '')}`)
+    ? qr.startsWith("data:")
+      ? qr
+      : `data:image/png;base64,${qr.replace(/^data:image\/[^;]+;base64,/, "")}`
     : null;
 
   const statusMeta =
-    status === 'connected'
-      ? { dot: 'bg-emerald-400', text: 'text-emerald-300', label: 'Conectado' }
-      : status === 'disconnected'
-      ? { dot: 'bg-red-400', text: 'text-red-300', label: 'Desconectado' }
-      : { dot: 'bg-amber-400 animate-pulse', text: 'text-amber-300', label: 'Conectando...' };
+    status === "connected"
+      ? { dot: "bg-emerald-400", text: "text-emerald-300", label: "Conectado" }
+      : status === "disconnected"
+        ? { dot: "bg-red-400", text: "text-red-300", label: "Desconectado" }
+        : { dot: "bg-amber-400 animate-pulse", text: "text-amber-300", label: "Conectando..." };
 
   return (
-    <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={onClose}>
-      <div onClick={(e) => e.stopPropagation()} className="bg-[#0F1117] border border-[#1F232E] rounded-2xl p-8 w-full max-w-sm text-center space-y-4">
+    <div
+      className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+      onClick={onClose}
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className="bg-[#0F1117] border border-[#1F232E] rounded-2xl p-8 w-full max-w-sm text-center space-y-4"
+      >
         <div className="flex justify-between items-center">
           <h3 className="text-lg font-bold text-white">Escaneie no WhatsApp</h3>
-          <button onClick={onClose} className="text-zinc-500 hover:text-white"><X className="h-5 w-5" /></button>
+          <button onClick={onClose} className="text-zinc-500 hover:text-white">
+            <X className="h-5 w-5" />
+          </button>
         </div>
 
         <div className="flex items-center justify-center gap-2 text-xs">
           <span className={`h-2 w-2 rounded-full ${statusMeta.dot}`} />
           <span className={`font-semibold ${statusMeta.text}`}>{statusMeta.label}</span>
           <span className="text-zinc-600">•</span>
-          <span className="text-zinc-500">tentativa {attempts}{stopped ? ' (parado)' : ''}</span>
+          <span className="text-zinc-500">
+            tentativa {attempts}
+            {stopped ? " (parado)" : ""}
+          </span>
         </div>
 
-        {status === 'connected' ? (
+        {status === "connected" ? (
           <div className="py-12">
             <div className="h-12 w-12 rounded-full bg-emerald-500/20 border border-emerald-500/40 mx-auto flex items-center justify-center">
               <span className="text-emerald-300 text-2xl">✓</span>
@@ -493,7 +619,8 @@ function QrModal({ data, onClose }: { data: { name: string; qr: string | null };
         )}
 
         <p className="text-xs text-zinc-500 leading-relaxed">
-          Abra o WhatsApp no celular → <b>Aparelhos conectados</b> → <b>Conectar um aparelho</b> e escaneie o código.
+          Abra o WhatsApp no celular → <b>Aparelhos conectados</b> → <b>Conectar um aparelho</b> e
+          escaneie o código.
         </p>
         {lastPollAt && (
           <p className="text-[10px] text-zinc-600">
@@ -504,4 +631,3 @@ function QrModal({ data, onClose }: { data: { name: string; qr: string | null };
     </div>
   );
 }
-

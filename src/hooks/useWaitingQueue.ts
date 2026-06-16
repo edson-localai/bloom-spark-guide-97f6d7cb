@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import { useAgents } from './useAgents';
-import { toast } from 'sonner';
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { useAgents } from "./useAgents";
+import { toast } from "sonner";
 
 export interface QueueEntry {
   id: string;
@@ -20,11 +20,9 @@ export function useWaitingQueue() {
     fetchQueue();
 
     const channel = supabase
-      .channel('public:waiting_queue')
-      .on(
-        'postgres_changes',
-        { event: '*', schema: 'public', table: 'waiting_queue' },
-        () => fetchQueue()
+      .channel("public:waiting_queue")
+      .on("postgres_changes", { event: "*", schema: "public", table: "waiting_queue" }, () =>
+        fetchQueue(),
       )
       .subscribe();
 
@@ -44,13 +42,13 @@ export function useWaitingQueue() {
     setLoading(true);
     try {
       const { data, error } = await supabase
-        .from('waiting_queue')
-        .select('*')
-        .order('entered_at', { ascending: true });
+        .from("waiting_queue")
+        .select("*")
+        .order("entered_at", { ascending: true });
       if (error) throw error;
       setQueue(data as QueueEntry[]);
     } catch (err) {
-      console.error('Error fetching queue:', err);
+      console.error("Error fetching queue:", err);
     } finally {
       setLoading(false);
     }
@@ -63,9 +61,9 @@ export function useWaitingQueue() {
 
       // Pega o primeiro agente online disponível
       const { data: agents } = await supabase
-        .from('agents')
-        .select('id, name, user_id')
-        .in('user_id', onlineAgents)
+        .from("agents")
+        .select("id, name, user_id")
+        .in("user_id", onlineAgents)
         .limit(1);
 
       if (!agents || agents.length === 0) return;
@@ -73,33 +71,34 @@ export function useWaitingQueue() {
       const targetAgent = agents[0];
 
       const { error } = await supabase
-        .from('conversations')
-        .update({ 
+        .from("conversations")
+        .update({
           agent_id: targetAgent.id,
-          status: 'active' as any
+          status: "active" as any,
         })
-        .eq('id', oldestEntry.conversation_id);
+        .eq("id", oldestEntry.conversation_id);
 
       if (!error) {
         toast.success(`Conversa atribuída automaticamente para ${targetAgent.name}`);
       }
     } catch (err) {
-      console.error('Auto-assign error:', err);
+      console.error("Auto-assign error:", err);
     }
   }
 
   async function addToQueue(conversationId: string, contactId?: string) {
     try {
-      const { error } = await supabase
-        .from('waiting_queue')
-        .upsert({
+      const { error } = await supabase.from("waiting_queue").upsert(
+        {
           conversation_id: conversationId,
           contact_id: contactId,
-        }, { onConflict: 'conversation_id' });
-      
+        },
+        { onConflict: "conversation_id" },
+      );
+
       if (error) throw error;
     } catch (err) {
-      console.error('Error adding to queue:', err);
+      console.error("Error adding to queue:", err);
       throw err;
     }
   }

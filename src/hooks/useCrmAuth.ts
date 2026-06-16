@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react';
-import type { Session, User } from '@supabase/supabase-js';
-import { supabase } from '@/integrations/supabase/client';
-import type { AppRole } from '@/types/crm';
+import { useEffect, useState } from "react";
+import type { Session, User } from "@supabase/supabase-js";
+import { supabase } from "@/integrations/supabase/client";
+import type { AppRole } from "@/types/crm";
 
 export interface CrmAuthState {
   loading: boolean;
@@ -46,23 +46,28 @@ export function useCrmAuth(): CrmAuthState {
     async function fetchRoles(userId: string, userEmail?: string) {
       // Prefer RPC (security definer) — bypasses any RLS oddities and is the
       // canonical way to fetch the current user's roles.
-      const rpc = await supabase.rpc('get_my_roles');
+      const rpc = await supabase.rpc("get_my_roles");
       if (!rpc.error && rpc.data) {
-        const fetchedRoles = (rpc.data as { role?: AppRole }[] | AppRole[]).map((r: any) =>
-          (typeof r === 'string' ? r : r.role) as AppRole,
+        const fetchedRoles = (rpc.data as { role?: AppRole }[] | AppRole[]).map(
+          (r: any) => (typeof r === "string" ? r : r.role) as AppRole,
         );
         setRoles(normalizeRoles(userEmail, fetchedRoles));
         return;
       }
       if (rpc.error) {
-        console.warn('[useCrmAuth] get_my_roles RPC failed, falling back', rpc.error);
+        console.warn("[useCrmAuth] get_my_roles RPC failed, falling back", rpc.error);
       }
       const { data, error } = await supabase
-        .from('user_roles')
-        .select('role')
-        .eq('user_id', userId);
-      if (error) console.error('[useCrmAuth] user_roles select failed', error);
-      setRoles(normalizeRoles(userEmail, (data ?? []).map((r) => r.role as AppRole)));
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", userId);
+      if (error) console.error("[useCrmAuth] user_roles select failed", error);
+      setRoles(
+        normalizeRoles(
+          userEmail,
+          (data ?? []).map((r) => r.role as AppRole),
+        ),
+      );
     }
 
     return () => sub.subscription.unsubscribe();
@@ -75,7 +80,7 @@ export function useCrmAuth(): CrmAuthState {
     roles,
     isAuthenticated: !!session,
     hasAnyRole: roles.length > 0,
-    isAdmin: roles.includes('admin'),
-    isSupervisor: roles.includes('supervisor') || roles.includes('admin'),
+    isAdmin: roles.includes("admin"),
+    isSupervisor: roles.includes("supervisor") || roles.includes("admin"),
   };
 }

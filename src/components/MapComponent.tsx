@@ -1,6 +1,6 @@
-import { ExternalLink, MapPin } from 'lucide-react';
-import storefrontImg from '@/assets/storefront.jpg';
-import { MAPS_CONFIG } from '@/constants/maps';
+import { ExternalLink, MapPin } from "lucide-react";
+import storefrontImg from "@/assets/storefront.jpg";
+import { MAPS_CONFIG } from "@/constants/maps";
 
 const MapComponent = () => {
   const { API_KEY, ADDRESS } = MAPS_CONFIG;
@@ -23,25 +23,31 @@ const MapComponent = () => {
         referrerPolicy="no-referrer-when-downgrade"
         className="rounded-2xl grayscale-[0.2] dark:invert-[0.9] dark:hue-rotate-180 opacity-95 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-500 shadow-inner"
       ></iframe>
-      
+
       {/* Overlay informativo personalizado com imagem da fachada */}
       <div className="absolute top-4 left-4 bg-white/95 dark:bg-[#0A0A0A]/95 backdrop-blur-md p-0 rounded-2xl border border-slate-200 dark:border-[#0066CC]/30 shadow-2xl hidden sm:block max-w-[200px] overflow-hidden group/overlay">
         <div className="relative h-24 overflow-hidden">
-          <img 
-            src={storefrontImg} 
-            alt="Fachada HCB Ar Condicionado" 
+          <img
+            src={storefrontImg}
+            alt="Fachada HCB Ar Condicionado"
             className="w-full h-full object-cover transition-transform duration-500 group-hover/overlay:scale-110"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
           <div className="absolute bottom-2 left-2 flex items-center gap-1">
             <MapPin className="w-3 h-3 text-[#60C0FF]" />
-            <span className="text-[10px] text-white font-bold uppercase tracking-tight">Centro, Castanhal</span>
+            <span className="text-[10px] text-white font-bold uppercase tracking-tight">
+              Centro, Castanhal
+            </span>
           </div>
         </div>
         <div className="p-3">
-          <h4 className="font-['Rajdhani'] font-bold text-slate-900 dark:text-[#F5F8FF] text-sm uppercase leading-tight mb-1">HCB Ar Condicionado</h4>
-          <p className="font-['Inter'] text-[10px] text-slate-500 dark:text-[#8A9BB5] mb-3">Especialistas em Refrigeração Automotiva</p>
-          <a 
+          <h4 className="font-['Rajdhani'] font-bold text-slate-900 dark:text-[#F5F8FF] text-sm uppercase leading-tight mb-1">
+            HCB Ar Condicionado
+          </h4>
+          <p className="font-['Inter'] text-[10px] text-slate-500 dark:text-[#8A9BB5] mb-3">
+            Especialistas em Refrigeração Automotiva
+          </p>
+          <a
             href={directionsUrl}
             target="_blank"
             rel="noopener noreferrer"
@@ -56,9 +62,13 @@ const MapComponent = () => {
       {/* Botão flutuante para mobile com imagem mini */}
       <div className="absolute bottom-4 right-4 sm:hidden flex flex-col items-end gap-2">
         <div className="bg-white dark:bg-[#0A0A0A] p-1 rounded-full border border-[#0066CC]/30 shadow-lg">
-          <img src={storefrontImg} alt="" className="w-10 h-10 rounded-full object-cover border border-white/20" />
+          <img
+            src={storefrontImg}
+            alt=""
+            className="w-10 h-10 rounded-full object-cover border border-white/20"
+          />
         </div>
-        <a 
+        <a
           href={directionsUrl}
           target="_blank"
           rel="noopener noreferrer"

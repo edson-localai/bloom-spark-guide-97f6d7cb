@@ -1,17 +1,28 @@
-import { useEffect, useState } from 'react';
-import { createFileRoute } from '@tanstack/react-router';
-import { supabase } from '@/integrations/supabase/client';
-import { Save, Bot, Shield, Clock, Bell, Loader2, Sparkles, ShieldAlert, Users, ChevronRight } from 'lucide-react';
-import { toast } from 'sonner';
-import { useCrmAuth } from '@/hooks/useCrmAuth';
+import { useEffect, useState } from "react";
+import { createFileRoute } from "@tanstack/react-router";
+import { supabase } from "@/integrations/supabase/client";
+import {
+  Save,
+  Bot,
+  Shield,
+  Clock,
+  Bell,
+  Loader2,
+  Sparkles,
+  ShieldAlert,
+  Users,
+  ChevronRight,
+} from "lucide-react";
+import { toast } from "sonner";
+import { useCrmAuth } from "@/hooks/useCrmAuth";
 
-export const Route = createFileRoute('/atendimento/config')({
+export const Route = createFileRoute("/atendimento/config")({
   component: ConfigPage,
 });
 
 function ConfigPage() {
   const { roles, loading: authLoading } = useCrmAuth();
-  const isAdmin = roles.includes('admin');
+  const isAdmin = roles.includes("admin");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [settings, setSettings] = useState<any[]>([]);
@@ -22,7 +33,7 @@ function ConfigPage() {
 
   async function fetchSettings() {
     setLoading(true);
-    const { data } = await supabase.from('app_settings').select('*');
+    const { data } = await supabase.from("app_settings").select("*");
     if (data) setSettings(data);
     setLoading(false);
   }
@@ -31,24 +42,21 @@ function ConfigPage() {
     setSaving(true);
     try {
       for (const setting of settings) {
-        await supabase
-          .from('app_settings')
-          .update({ value: setting.value })
-          .eq('key', setting.key);
+        await supabase.from("app_settings").update({ value: setting.value }).eq("key", setting.key);
       }
-      toast.success('Configurações salvas com sucesso!');
+      toast.success("Configurações salvas com sucesso!");
     } catch (error) {
-      toast.error('Erro ao salvar configurações.');
+      toast.error("Erro ao salvar configurações.");
     } finally {
       setSaving(false);
     }
   }
 
   const updateSetting = (key: string, value: string) => {
-    setSettings(prev => prev.map(s => s.key === key ? { ...s, value } : s));
+    setSettings((prev) => prev.map((s) => (s.key === key ? { ...s, value } : s)));
   };
 
-  const getSetting = (key: string) => settings.find(s => s.key === key)?.value || '';
+  const getSetting = (key: string) => settings.find((s) => s.key === key)?.value || "";
 
   if (authLoading || loading) {
     return (
@@ -67,7 +75,8 @@ function ConfigPage() {
           </div>
           <h2 className="text-xl font-bold text-white mb-2">Acesso Negado</h2>
           <p className="text-zinc-500 text-sm leading-relaxed">
-            Você não tem permissão para acessar as Configurações. Este módulo é restrito apenas a administradores.
+            Você não tem permissão para acessar as Configurações. Este módulo é restrito apenas a
+            administradores.
           </p>
         </div>
       </div>
@@ -75,11 +84,16 @@ function ConfigPage() {
   }
 
   return (
-    <div className="h-full flex flex-col overflow-auto custom-scrollbar" style={{ background: '#0A0A0F' }}>
+    <div
+      className="h-full flex flex-col overflow-auto custom-scrollbar"
+      style={{ background: "#0A0A0F" }}
+    >
       <div className="p-8 pb-4 flex justify-between items-center">
         <div>
           <h1 className="text-2xl font-bold text-white">Configurações do CRM</h1>
-          <p className="text-zinc-500 text-sm">Ajuste o comportamento da Ana e as regras do sistema.</p>
+          <p className="text-zinc-500 text-sm">
+            Ajuste o comportamento da Ana e as regras do sistema.
+          </p>
         </div>
         <button
           onClick={handleSave}
@@ -101,7 +115,9 @@ function ConfigPage() {
               </div>
               <div>
                 <h3 className="font-bold text-white">Personalidade da Ana</h3>
-                <p className="text-[10px] text-zinc-500 uppercase font-bold tracking-widest">IA Engine Settings</p>
+                <p className="text-[10px] text-zinc-500 uppercase font-bold tracking-widest">
+                  IA Engine Settings
+                </p>
               </div>
             </div>
             <div className="p-6 space-y-4">
@@ -111,18 +127,20 @@ function ConfigPage() {
                   <Sparkles className="h-3 w-3 text-cyan-400" />
                 </label>
                 <textarea
-                  value={getSetting('system_prompt')}
-                  onChange={(e) => updateSetting('system_prompt', e.target.value)}
+                  value={getSetting("system_prompt")}
+                  onChange={(e) => updateSetting("system_prompt", e.target.value)}
                   className="w-full h-64 bg-[#151821] border border-[#1F232E] rounded-2xl p-4 text-sm text-zinc-300 focus:outline-none focus:border-cyan-500/50 transition-colors resize-none"
                   placeholder="Instruções para a IA..."
                 />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <label className="text-xs font-bold text-zinc-400 uppercase tracking-wider">IA Provider</label>
-                  <select 
-                    value={getSetting('active_ai_provider')}
-                    onChange={(e) => updateSetting('active_ai_provider', e.target.value)}
+                  <label className="text-xs font-bold text-zinc-400 uppercase tracking-wider">
+                    IA Provider
+                  </label>
+                  <select
+                    value={getSetting("active_ai_provider")}
+                    onChange={(e) => updateSetting("active_ai_provider", e.target.value)}
                     className="w-full bg-[#151821] border border-[#1F232E] rounded-xl p-2.5 text-sm text-zinc-300 focus:outline-none focus:border-cyan-500/50"
                   >
                     <option value="lovable">Lovable (Recomendado)</option>
@@ -131,14 +149,16 @@ function ConfigPage() {
                   </select>
                 </div>
                 <div className="space-y-2">
-                  <label className="text-xs font-bold text-zinc-400 uppercase tracking-wider">Temperatura</label>
+                  <label className="text-xs font-bold text-zinc-400 uppercase tracking-wider">
+                    Temperatura
+                  </label>
                   <input
                     type="number"
                     step="0.1"
                     min="0"
                     max="1"
-                    value={getSetting('ai_temperature')}
-                    onChange={(e) => updateSetting('ai_temperature', e.target.value)}
+                    value={getSetting("ai_temperature")}
+                    onChange={(e) => updateSetting("ai_temperature", e.target.value)}
                     className="w-full bg-[#151821] border border-[#1F232E] rounded-xl p-2 text-sm text-zinc-300"
                   />
                 </div>
@@ -156,15 +176,19 @@ function ConfigPage() {
               </div>
               <div>
                 <h3 className="font-bold text-white">Horário de Funcionamento</h3>
-                <p className="text-[10px] text-zinc-500 uppercase font-bold tracking-widest">Business Rules</p>
+                <p className="text-[10px] text-zinc-500 uppercase font-bold tracking-widest">
+                  Business Rules
+                </p>
               </div>
             </div>
             <div className="p-6 space-y-4">
               <div className="space-y-2">
-                <label className="text-xs font-bold text-zinc-400 uppercase tracking-wider">Mensagem de Offline</label>
+                <label className="text-xs font-bold text-zinc-400 uppercase tracking-wider">
+                  Mensagem de Offline
+                </label>
                 <textarea
-                  value={getSetting('offline_message')}
-                  onChange={(e) => updateSetting('offline_message', e.target.value)}
+                  value={getSetting("offline_message")}
+                  onChange={(e) => updateSetting("offline_message", e.target.value)}
                   className="w-full h-24 bg-[#151821] border border-[#1F232E] rounded-2xl p-4 text-sm text-zinc-300 focus:outline-none focus:border-cyan-500/50 transition-colors resize-none"
                 />
               </div>
@@ -175,15 +199,24 @@ function ConfigPage() {
                     <p className="text-[10px] text-zinc-500">Ana responde sozinha em 'Bot'</p>
                   </div>
                   <button
-                    onClick={() => updateSetting('auto_reply_active', getSetting('auto_reply_active') === 'true' ? 'false' : 'true')}
-                    className={`h-6 w-11 rounded-full relative transition-colors ${getSetting('auto_reply_active') === 'true' ? 'bg-cyan-500' : 'bg-zinc-700'}`}
+                    onClick={() =>
+                      updateSetting(
+                        "auto_reply_active",
+                        getSetting("auto_reply_active") === "true" ? "false" : "true",
+                      )
+                    }
+                    className={`h-6 w-11 rounded-full relative transition-colors ${getSetting("auto_reply_active") === "true" ? "bg-cyan-500" : "bg-zinc-700"}`}
                   >
-                    <div className={`h-4 w-4 rounded-full bg-white absolute top-1 transition-all ${getSetting('auto_reply_active') === 'true' ? 'right-1' : 'left-1'}`} />
+                    <div
+                      className={`h-4 w-4 rounded-full bg-white absolute top-1 transition-all ${getSetting("auto_reply_active") === "true" ? "right-1" : "left-1"}`}
+                    />
                   </button>
                 </div>
                 <div className="h-px bg-[#1F232E]" />
                 <div className="flex items-center justify-between text-xs">
-                  <span className="text-zinc-400 font-bold uppercase tracking-widest">Segunda a Sexta</span>
+                  <span className="text-zinc-400 font-bold uppercase tracking-widest">
+                    Segunda a Sexta
+                  </span>
                   <span className="text-cyan-400 font-mono">08:00 — 18:00</span>
                 </div>
                 <div className="flex items-center justify-between text-xs">
@@ -205,7 +238,9 @@ function ConfigPage() {
               </div>
               <div>
                 <h3 className="font-bold text-white">Segurança & API</h3>
-                <p className="text-[10px] text-zinc-500 uppercase font-bold tracking-widest">Developer & Auth</p>
+                <p className="text-[10px] text-zinc-500 uppercase font-bold tracking-widest">
+                  Developer & Auth
+                </p>
               </div>
             </div>
             <div className="p-6 space-y-4">
@@ -220,23 +255,27 @@ function ConfigPage() {
               </div>
 
               <div className="pt-4 space-y-4">
-                 <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest px-2">Links Rápidos</p>
-                 <a 
-                   href="/atendimento/usuarios" 
-                   className="flex items-center justify-between p-4 bg-cyan-500/5 hover:bg-cyan-500/10 rounded-2xl border border-cyan-500/20 transition-all group"
-                 >
-                    <div className="flex items-center gap-3">
-                      <Users className="h-4 w-4 text-cyan-400" />
-                      <span className="text-sm text-cyan-100 font-semibold">Gerenciar Usuários & Roles</span>
-                    </div>
-                    <ChevronRight className="h-4 w-4 text-cyan-500 group-hover:translate-x-1 transition-transform" />
-                 </a>
+                <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest px-2">
+                  Links Rápidos
+                </p>
+                <a
+                  href="/atendimento/usuarios"
+                  className="flex items-center justify-between p-4 bg-cyan-500/5 hover:bg-cyan-500/10 rounded-2xl border border-cyan-500/20 transition-all group"
+                >
+                  <div className="flex items-center gap-3">
+                    <Users className="h-4 w-4 text-cyan-400" />
+                    <span className="text-sm text-cyan-100 font-semibold">
+                      Gerenciar Usuários & Roles
+                    </span>
+                  </div>
+                  <ChevronRight className="h-4 w-4 text-cyan-500 group-hover:translate-x-1 transition-transform" />
+                </a>
               </div>
             </div>
           </div>
         </div>
       </div>
-      
+
       <div className="p-8" />
     </div>
   );

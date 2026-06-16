@@ -1,24 +1,24 @@
-import { createFileRoute, useNavigate, Link } from '@tanstack/react-router';
-import { useEffect, useState, type FormEvent } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import { useCrmAuth } from '@/hooks/useCrmAuth';
-import { Loader2, MessageSquare } from 'lucide-react';
+import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
+import { useEffect, useState, type FormEvent } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { useCrmAuth } from "@/hooks/useCrmAuth";
+import { Loader2, MessageSquare } from "lucide-react";
 
-export const Route = createFileRoute('/login')({
+export const Route = createFileRoute("/login")({
   component: LoginPage,
-  head: () => ({ meta: [{ title: 'Login — HCB CRM' }] }),
+  head: () => ({ meta: [{ title: "Login — HCB CRM" }] }),
 });
 
 function LoginPage() {
   const navigate = useNavigate();
   const { isAuthenticated, loading: authLoading } = useCrmAuth();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!authLoading && isAuthenticated) navigate({ to: '/atendimento' });
+    if (!authLoading && isAuthenticated) navigate({ to: "/atendimento" });
   }, [authLoading, isAuthenticated, navigate]);
 
   async function handleSubmit(e: FormEvent) {
@@ -30,7 +30,7 @@ function LoginPage() {
       const { error: err } = await supabase.auth.signInWithPassword({ email, password });
       if (err) throw err;
     } catch (err) {
-      const msg = err instanceof Error ? err.message : 'Erro inesperado';
+      const msg = err instanceof Error ? err.message : "Erro inesperado";
       setError(translateAuthError(msg));
     } finally {
       setBusy(false);
@@ -40,16 +40,16 @@ function LoginPage() {
   return (
     <div
       className="min-h-screen flex items-center justify-center px-4"
-      style={{ background: '#0A0A0F' }}
+      style={{ background: "#0A0A0F" }}
     >
       <div
         className="w-full max-w-md rounded-2xl p-8 shadow-2xl"
-        style={{ background: '#151821', border: '1px solid #1F232E' }}
+        style={{ background: "#151821", border: "1px solid #1F232E" }}
       >
         <div className="flex items-center gap-3 mb-6">
           <div
             className="h-11 w-11 rounded-xl flex items-center justify-center"
-            style={{ background: 'rgba(0,204,238,0.15)', color: '#00CCEE' }}
+            style={{ background: "rgba(0,204,238,0.15)", color: "#00CCEE" }}
           >
             <MessageSquare className="h-5 w-5" />
           </div>
@@ -79,7 +79,10 @@ function LoginPage() {
           />
 
           {error && (
-            <p className="text-sm rounded-md px-3 py-2" style={{ background: 'rgba(239,68,68,0.1)', color: '#FCA5A5' }}>
+            <p
+              className="text-sm rounded-md px-3 py-2"
+              style={{ background: "rgba(239,68,68,0.1)", color: "#FCA5A5" }}
+            >
               {error}
             </p>
           )}
@@ -88,7 +91,7 @@ function LoginPage() {
             type="submit"
             disabled={busy}
             className="w-full py-2.5 rounded-md font-semibold text-sm flex items-center justify-center gap-2 transition-opacity disabled:opacity-60"
-            style={{ background: '#00CCEE', color: '#0A0A0F' }}
+            style={{ background: "#00CCEE", color: "#0A0A0F" }}
           >
             {busy && <Loader2 className="h-4 w-4 animate-spin" />}
             Entrar
@@ -100,7 +103,9 @@ function LoginPage() {
         </p>
 
         <p className="mt-2 text-xs text-zinc-600 text-center">
-          <Link to="/" className="hover:text-zinc-400">← Voltar ao site</Link>
+          <Link to="/" className="hover:text-zinc-400">
+            ← Voltar ao site
+          </Link>
         </p>
       </div>
     </div>
@@ -135,15 +140,16 @@ function Field({
         minLength={minLength}
         autoComplete={autoComplete}
         className="w-full px-3 py-2 rounded-md text-sm text-white outline-none transition-colors focus:border-cyan-400"
-        style={{ background: '#0F1117', border: '1px solid #1F232E' }}
+        style={{ background: "#0F1117", border: "1px solid #1F232E" }}
       />
     </label>
   );
 }
 
 function translateAuthError(msg: string): string {
-  if (msg.includes('Invalid login')) return 'E-mail ou senha incorretos.';
-  if (msg.includes('already registered') || msg.includes('User already')) return 'E-mail já cadastrado.';
-  if (msg.includes('Password should be')) return 'A senha deve ter no mínimo 6 caracteres.';
+  if (msg.includes("Invalid login")) return "E-mail ou senha incorretos.";
+  if (msg.includes("already registered") || msg.includes("User already"))
+    return "E-mail já cadastrado.";
+  if (msg.includes("Password should be")) return "A senha deve ter no mínimo 6 caracteres.";
   return msg;
 }

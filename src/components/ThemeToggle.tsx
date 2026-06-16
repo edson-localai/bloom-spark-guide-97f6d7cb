@@ -12,9 +12,7 @@ export function ThemeToggle() {
   }, []);
 
   if (!mounted) {
-    return (
-      <div className="w-10 h-10 rounded-full bg-[#0A0A0A]/20 dark:bg-white/5 animate-pulse" />
-    );
+    return <div className="w-10 h-10 rounded-full bg-[#0A0A0A]/20 dark:bg-white/5 animate-pulse" />;
   }
 
   return (

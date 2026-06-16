@@ -1,5 +1,19 @@
 import { useState, useRef, useEffect, useMemo } from "react";
-import { MessageCircle, X, Send, Loader2, CheckCircle2, AlertCircle, ArrowRight, Pencil, Save, User, Camera, Upload, Trash2 } from "lucide-react";
+import {
+  MessageCircle,
+  X,
+  Send,
+  Loader2,
+  CheckCircle2,
+  AlertCircle,
+  ArrowRight,
+  Pencil,
+  Save,
+  User,
+  Camera,
+  Upload,
+  Trash2,
+} from "lucide-react";
 import { useServerFn } from "@tanstack/react-start";
 import { landingChat, saveLandingLead, type LeadData } from "@/lib/landing-chat.functions";
 import { supabase } from "@/integrations/supabase/client";
@@ -34,7 +48,11 @@ export default function LandingChatBubble() {
   const saveLead = useServerFn(saveLandingLead);
   const [uploading, setUploading] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  const [optimizedImage, setOptimizedImage] = useState<{ blob: Blob; contentType: string; extension: string } | null>(null);
+  const [optimizedImage, setOptimizedImage] = useState<{
+    blob: Blob;
+    contentType: string;
+    extension: string;
+  } | null>(null);
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
@@ -55,15 +73,18 @@ export default function LandingChatBubble() {
         if (res.lead) setLead(res.lead);
       }
     } catch {
-      setMessages((m) => [...m, { role: "assistant", content: "Tive um problema. Vamos continuar pelo WhatsApp?" }]);
+      setMessages((m) => [
+        ...m,
+        { role: "assistant", content: "Tive um problema. Vamos continuar pelo WhatsApp?" },
+      ]);
       setHandoff("Olá! Vim pelo site e gostaria de mais informações.");
     } finally {
       setLoading(false);
     }
   };
 
-  const currentSummary = lead 
-    ? `Olá! Sou ${lead.name || 'cliente'}, tenho um ${lead.vehicle_brand || ''} ${lead.vehicle_model || ''} ${lead.vehicle_year || ''}. Preciso de: ${lead.need || 'suporte'}. Estou em ${lead.city || 'região'}.`
+  const currentSummary = lead
+    ? `Olá! Sou ${lead.name || "cliente"}, tenho um ${lead.vehicle_brand || ""} ${lead.vehicle_model || ""} ${lead.vehicle_year || ""}. Preciso de: ${lead.need || "suporte"}. Estou em ${lead.city || "região"}.`
     : handoff;
 
   const whatsappLink = currentSummary
@@ -73,7 +94,7 @@ export default function LandingChatBubble() {
   const handleWhatsAppClick = async (e?: React.MouseEvent) => {
     if (e) e.preventDefault();
     if (!lead || savingLead) return;
-    
+
     // Validation
     if (!lead.name?.trim() || !lead.city?.trim()) {
       setValidationError("Por favor, informe seu Nome e sua Cidade antes de continuar.");
@@ -89,14 +110,14 @@ export default function LandingChatBubble() {
         currentSummary,
         "",
         "HISTÓRICO DA CONVERSA:",
-        ...messages.map(m => `${m.role === 'user' ? 'Cliente' : 'Ana'}: ${m.content}`)
-      ].join('\n');
+        ...messages.map((m) => `${m.role === "user" ? "Cliente" : "Ana"}: ${m.content}`),
+      ].join("\n");
 
-      const res = await saveLead({ 
-        data: { 
-          ...lead, 
-          chat_transcript: transcript 
-        } 
+      const res = await saveLead({
+        data: {
+          ...lead,
+          chat_transcript: transcript,
+        },
       });
       if (res.ok && res.leadId) {
         setLeadSaved(res.leadId as any);
@@ -105,7 +126,7 @@ export default function LandingChatBubble() {
         setSaveError(true);
       }
     } catch (err) {
-      console.warn('[landing-chat] save lead failed', err);
+      console.warn("[landing-chat] save lead failed", err);
       setSaveError(true);
     } finally {
       setSavingLead(false);
@@ -122,7 +143,7 @@ export default function LandingChatBubble() {
       if (previewUrl) URL.revokeObjectURL(previewUrl);
       setPreviewUrl(URL.createObjectURL(result.blob));
     } catch (err) {
-      console.error('Error compressing image:', err);
+      console.error("Error compressing image:", err);
       setValidationError("Erro ao processar a imagem. Tente novamente.");
     } finally {
       setUploading(false);
@@ -131,31 +152,31 @@ export default function LandingChatBubble() {
 
   const handleConfirmUpload = async () => {
     if (!optimizedImage || !lead) return;
-    
+
     setUploading(true);
     try {
       const fileName = `${Math.random().toString(36).slice(2, 10)}.${optimizedImage.extension}`;
       const filePath = `leads/${fileName}`;
 
       const { error: uploadError } = await supabase.storage
-        .from('avatars')
+        .from("avatars")
         .upload(filePath, optimizedImage.blob, {
           contentType: optimizedImage.contentType,
-          upsert: true
+          upsert: true,
         });
 
       if (uploadError) throw uploadError;
 
-      const { data: { publicUrl } } = supabase.storage
-        .from('avatars')
-        .getPublicUrl(filePath);
+      const {
+        data: { publicUrl },
+      } = supabase.storage.from("avatars").getPublicUrl(filePath);
 
       if (previewUrl) URL.revokeObjectURL(previewUrl);
       setLead({ ...lead, avatar_url: publicUrl });
       setPreviewUrl(null);
       setOptimizedImage(null);
     } catch (err) {
-      console.error('Error uploading avatar:', err);
+      console.error("Error uploading avatar:", err);
       setValidationError("Erro ao salvar a foto. Tente novamente.");
     } finally {
       setUploading(false);
@@ -168,7 +189,7 @@ export default function LandingChatBubble() {
     setOptimizedImage(null);
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
-  
+
   const handleRemoveAvatar = () => {
     if (!lead) return;
     setLead({ ...lead, avatar_url: null });
@@ -209,9 +230,12 @@ export default function LandingChatBubble() {
             <span className="absolute bottom-0 right-0 w-3.5 h-3.5 bg-green-500 border-2 border-white dark:border-[#0A0A0A] rounded-full animate-pulse" />
           </span>
           <span className="hidden sm:flex flex-col items-start text-left">
-            <span className="text-xs text-slate-500 dark:text-white/60 leading-tight">Atendimento online</span>
-            <span className="text-sm font-semibold text-slate-900 dark:text-white leading-tight">Fale com a Ana</span>
-
+            <span className="text-xs text-slate-500 dark:text-white/60 leading-tight">
+              Atendimento online
+            </span>
+            <span className="text-sm font-semibold text-slate-900 dark:text-white leading-tight">
+              Fale com a Ana
+            </span>
           </span>
           <MessageCircle className="w-5 h-5 text-white sm:hidden" />
         </button>
@@ -246,7 +270,10 @@ export default function LandingChatBubble() {
           </div>
 
           {/* Messages */}
-          <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-3 bg-slate-50 dark:bg-[#0F0F0F]">
+          <div
+            ref={scrollRef}
+            className="flex-1 overflow-y-auto p-4 space-y-3 bg-slate-50 dark:bg-[#0F0F0F]"
+          >
             {messages.map((m, i) => (
               <div
                 key={i}
@@ -294,30 +321,38 @@ export default function LandingChatBubble() {
                 {lead && !leadSaved && !saveError && (
                   <div className="bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl p-3 space-y-2 mb-1 shadow-sm dark:shadow-none">
                     <div className="flex items-center justify-between mb-1">
-                      <h4 className="text-slate-500 dark:text-white/70 text-[10px] font-bold uppercase tracking-wider">Confirme seus dados</h4>
+                      <h4 className="text-slate-500 dark:text-white/70 text-[10px] font-bold uppercase tracking-wider">
+                        Confirme seus dados
+                      </h4>
                       {!isEditing ? (
-                        <button onClick={() => setIsEditing(true)} className="text-[#0066CC] hover:text-[#3385ff] text-xs flex items-center gap-1 font-medium">
+                        <button
+                          onClick={() => setIsEditing(true)}
+                          className="text-[#0066CC] hover:text-[#3385ff] text-xs flex items-center gap-1 font-medium"
+                        >
                           <Pencil className="w-3 h-3" /> Editar
                         </button>
                       ) : (
-                        <button onClick={() => setIsEditing(false)} className="text-green-500 hover:text-green-400 text-xs flex items-center gap-1 font-medium">
+                        <button
+                          onClick={() => setIsEditing(false)}
+                          className="text-green-500 hover:text-green-400 text-xs flex items-center gap-1 font-medium"
+                        >
                           <Save className="w-3 h-3" /> Concluir
                         </button>
                       )}
                     </div>
-                    
+
                     <div className="space-y-2 max-h-[180px] overflow-y-auto pr-1 custom-scrollbar">
                       <div className="flex items-center gap-3 py-2 border-b border-slate-100 dark:border-white/5">
                         <div className="relative group">
-                          {(previewUrl || lead.avatar_url) ? (
+                          {previewUrl || lead.avatar_url ? (
                             <div className="relative">
-                              <img 
-                                src={previewUrl || lead.avatar_url || ''} 
-                                alt="Sua foto" 
-                                className={`w-10 h-10 rounded-full object-cover border-2 ${previewUrl ? 'border-yellow-500 animate-pulse' : 'border-slate-200 dark:border-white/20'}`} 
+                              <img
+                                src={previewUrl || lead.avatar_url || ""}
+                                alt="Sua foto"
+                                className={`w-10 h-10 rounded-full object-cover border-2 ${previewUrl ? "border-yellow-500 animate-pulse" : "border-slate-200 dark:border-white/20"}`}
                               />
                               {!previewUrl && (
-                                <button 
+                                <button
                                   onClick={handleRemoveAvatar}
                                   className="absolute -top-1 -right-1 p-1 rounded-full bg-red-500 text-white shadow-lg hover:bg-red-600 transition-colors opacity-0 group-hover:opacity-100"
                                   title="Remover foto"
@@ -331,18 +366,22 @@ export default function LandingChatBubble() {
                               <User className="w-5 h-5 text-slate-400 dark:text-white/30" />
                             </div>
                           )}
-                          
+
                           {previewUrl ? (
                             <div className="absolute -bottom-1 -right-4 flex gap-1">
-                              <button 
+                              <button
                                 onClick={handleConfirmUpload}
                                 disabled={uploading}
                                 className="p-1 rounded-full bg-green-500 text-white shadow-lg hover:bg-green-600 transition-colors disabled:opacity-50"
                                 title="Confirmar upload"
                               >
-                                {uploading ? <Loader2 className="w-3 h-3 animate-spin" /> : <CheckCircle2 className="w-3 h-3" />}
+                                {uploading ? (
+                                  <Loader2 className="w-3 h-3 animate-spin" />
+                                ) : (
+                                  <CheckCircle2 className="w-3 h-3" />
+                                )}
                               </button>
-                              <button 
+                              <button
                                 onClick={handleCancelPreview}
                                 disabled={uploading}
                                 className="p-1 rounded-full bg-red-500 text-white shadow-lg hover:bg-red-600 transition-colors disabled:opacity-50"
@@ -352,33 +391,39 @@ export default function LandingChatBubble() {
                               </button>
                             </div>
                           ) : (
-                            <button 
+                            <button
                               onClick={() => fileInputRef.current?.click()}
                               disabled={uploading}
                               className="absolute -bottom-1 -right-1 p-1 rounded-full bg-[#0066CC] text-white shadow-lg hover:bg-[#3385ff] transition-colors disabled:opacity-50"
                             >
-                              {uploading ? <Loader2 className="w-3 h-3 animate-spin" /> : <Camera className="w-3 h-3" />}
+                              {uploading ? (
+                                <Loader2 className="w-3 h-3 animate-spin" />
+                              ) : (
+                                <Camera className="w-3 h-3" />
+                              )}
                             </button>
                           )}
-                          
-                          <input 
-                            type="file" 
-                            ref={fileInputRef} 
-                            onChange={handleFileChange} 
-                            accept="image/*" 
-                            className="hidden" 
+
+                          <input
+                            type="file"
+                            ref={fileInputRef}
+                            onChange={handleFileChange}
+                            accept="image/*"
+                            className="hidden"
                           />
                         </div>
                         <div className="flex-1">
                           <p className="text-[10px] text-slate-800 dark:text-white font-medium">
-                            {previewUrl ? 'Pré-visualização (otimizada)' : 'Sua foto de perfil'}
+                            {previewUrl ? "Pré-visualização (otimizada)" : "Sua foto de perfil"}
                           </p>
                           <p className="text-[9px] text-slate-500 dark:text-white/40 leading-tight">
-                            {previewUrl ? 'Clique no check verde para salvar esta versão.' : 'Será usada no chat se a do WhatsApp não carregar.'}
+                            {previewUrl
+                              ? "Clique no check verde para salvar esta versão."
+                              : "Será usada no chat se a do WhatsApp não carregar."}
                           </p>
 
-                          {(lead.avatar_url && !previewUrl) && (
-                            <button 
+                          {lead.avatar_url && !previewUrl && (
+                            <button
                               onClick={handleRemoveAvatar}
                               className="text-[9px] text-red-400 hover:text-red-300 mt-0.5 font-medium flex items-center gap-1 sm:hidden"
                             >
@@ -389,79 +434,91 @@ export default function LandingChatBubble() {
                       </div>
 
                       <div className="flex flex-col gap-0.5">
-                        <label className="text-[9px] text-slate-400 dark:text-white/40 uppercase font-semibold">Nome</label>
+                        <label className="text-[9px] text-slate-400 dark:text-white/40 uppercase font-semibold">
+                          Nome
+                        </label>
                         {isEditing ? (
-                            <input 
-                              className="w-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg px-2.5 py-1.5 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-[#0066CC]"
-
-                            value={lead.name || ''} 
-                            onChange={e => setLead({...lead, name: e.target.value})} 
+                          <input
+                            className="w-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg px-2.5 py-1.5 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-[#0066CC]"
+                            value={lead.name || ""}
+                            onChange={(e) => setLead({ ...lead, name: e.target.value })}
                           />
                         ) : (
-                          <p className="text-xs text-slate-800 dark:text-white px-0.5">{lead.name || 'Não informado'}</p>
-                        )}
-                      </div>
-
-                      <div className="flex flex-col gap-0.5">
-                        <label className="text-[9px] text-slate-400 dark:text-white/40 uppercase font-semibold">Veículo</label>
-                        {isEditing ? (
-                          <div className="grid grid-cols-3 gap-2">
-                            <input 
-                              placeholder="Marca"
-                              className="w-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg px-2.5 py-1.5 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-[#0066CC]"
-
-                              value={lead.vehicle_brand || ''} 
-                              onChange={e => setLead({...lead, vehicle_brand: e.target.value})} 
-                            />
-                            <input 
-                              placeholder="Modelo"
-                              className="w-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg px-2.5 py-1.5 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-[#0066CC]"
-
-                              value={lead.vehicle_model || ''} 
-                              onChange={e => setLead({...lead, vehicle_model: e.target.value})} 
-                            />
-                            <input 
-                              placeholder="Ano"
-                              type="number"
-                              className="w-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg px-2.5 py-1.5 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-[#0066CC]"
-
-                              value={lead.vehicle_year || ''} 
-                              onChange={e => setLead({...lead, vehicle_year: parseInt(e.target.value) || null})} 
-                            />
-                          </div>
-                        ) : (
                           <p className="text-xs text-slate-800 dark:text-white px-0.5">
-
-                            {lead.vehicle_brand} {lead.vehicle_model} {lead.vehicle_year && `(${lead.vehicle_year})`}
-                            {(!lead.vehicle_brand && !lead.vehicle_model) && 'Não informado'}
+                            {lead.name || "Não informado"}
                           </p>
                         )}
                       </div>
 
                       <div className="flex flex-col gap-0.5">
-                        <label className="text-[9px] text-slate-400 dark:text-white/40 uppercase font-semibold">Necessidade</label>
+                        <label className="text-[9px] text-slate-400 dark:text-white/40 uppercase font-semibold">
+                          Veículo
+                        </label>
                         {isEditing ? (
-                          <textarea 
-                            rows={2}
-                            className="w-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg px-2.5 py-1.5 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-[#0066CC] resize-none"
-                            value={lead.need || ''} 
-                            onChange={e => setLead({...lead, need: e.target.value})} 
-                          />
+                          <div className="grid grid-cols-3 gap-2">
+                            <input
+                              placeholder="Marca"
+                              className="w-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg px-2.5 py-1.5 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-[#0066CC]"
+                              value={lead.vehicle_brand || ""}
+                              onChange={(e) => setLead({ ...lead, vehicle_brand: e.target.value })}
+                            />
+                            <input
+                              placeholder="Modelo"
+                              className="w-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg px-2.5 py-1.5 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-[#0066CC]"
+                              value={lead.vehicle_model || ""}
+                              onChange={(e) => setLead({ ...lead, vehicle_model: e.target.value })}
+                            />
+                            <input
+                              placeholder="Ano"
+                              type="number"
+                              className="w-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg px-2.5 py-1.5 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-[#0066CC]"
+                              value={lead.vehicle_year || ""}
+                              onChange={(e) =>
+                                setLead({ ...lead, vehicle_year: parseInt(e.target.value) || null })
+                              }
+                            />
+                          </div>
                         ) : (
-                          <p className="text-xs text-slate-800 dark:text-white px-0.5 leading-relaxed">{lead.need || 'Não informado'}</p>
+                          <p className="text-xs text-slate-800 dark:text-white px-0.5">
+                            {lead.vehicle_brand} {lead.vehicle_model}{" "}
+                            {lead.vehicle_year && `(${lead.vehicle_year})`}
+                            {!lead.vehicle_brand && !lead.vehicle_model && "Não informado"}
+                          </p>
                         )}
                       </div>
 
                       <div className="flex flex-col gap-0.5">
-                        <label className="text-[9px] text-slate-400 dark:text-white/40 uppercase font-semibold">Cidade/Bairro</label>
+                        <label className="text-[9px] text-slate-400 dark:text-white/40 uppercase font-semibold">
+                          Necessidade
+                        </label>
                         {isEditing ? (
-                          <input 
-                            className="w-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg px-2.5 py-1.5 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-[#0066CC]"
-                            value={lead.city || ''} 
-                            onChange={e => setLead({...lead, city: e.target.value})} 
+                          <textarea
+                            rows={2}
+                            className="w-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg px-2.5 py-1.5 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-[#0066CC] resize-none"
+                            value={lead.need || ""}
+                            onChange={(e) => setLead({ ...lead, need: e.target.value })}
                           />
                         ) : (
-                          <p className="text-xs text-slate-800 dark:text-white px-0.5">{lead.city || 'Não informado'}</p>
+                          <p className="text-xs text-slate-800 dark:text-white px-0.5 leading-relaxed">
+                            {lead.need || "Não informado"}
+                          </p>
+                        )}
+                      </div>
+
+                      <div className="flex flex-col gap-0.5">
+                        <label className="text-[9px] text-slate-400 dark:text-white/40 uppercase font-semibold">
+                          Cidade/Bairro
+                        </label>
+                        {isEditing ? (
+                          <input
+                            className="w-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg px-2.5 py-1.5 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-[#0066CC]"
+                            value={lead.city || ""}
+                            onChange={(e) => setLead({ ...lead, city: e.target.value })}
+                          />
+                        ) : (
+                          <p className="text-xs text-slate-800 dark:text-white px-0.5">
+                            {lead.city || "Não informado"}
+                          </p>
                         )}
                       </div>
                     </div>
@@ -473,11 +530,11 @@ export default function LandingChatBubble() {
                     <AlertCircle className="w-4 h-4 text-red-400 mt-0.5 shrink-0" />
                     <div className="flex-1">
                       <p className="text-xs text-red-400 font-medium">{validationError}</p>
-                      <button 
+                      <button
                         onClick={() => {
                           setIsEditing(true);
                           setValidationError(null);
-                        }} 
+                        }}
                         className="text-[10px] text-slate-500 dark:text-white/60 hover:text-slate-900 dark:hover:text-white underline mt-1"
                       >
                         Corrigir agora
@@ -499,7 +556,7 @@ export default function LandingChatBubble() {
                       </>
                     ) : (
                       <>
-                        {isEditing ? 'Conclua a edição para continuar' : 'Continuar pelo WhatsApp'}
+                        {isEditing ? "Conclua a edição para continuar" : "Continuar pelo WhatsApp"}
                         {!isEditing && <ArrowRight className="w-4 h-4" />}
                       </>
                     )}
@@ -515,9 +572,8 @@ export default function LandingChatBubble() {
                       </p>
                     </div>
                     <p className="text-slate-500 dark:text-white/60 text-xs px-2">
-
-                      {isReused 
-                        ? "Já encontramos seu cadastro com esses dados. Vamos continuar o atendimento?" 
+                      {isReused
+                        ? "Já encontramos seu cadastro com esses dados. Vamos continuar o atendimento?"
                         : "Sua solicitação foi registrada. Clique abaixo para iniciar a conversa no WhatsApp."}
                     </p>
                     <button

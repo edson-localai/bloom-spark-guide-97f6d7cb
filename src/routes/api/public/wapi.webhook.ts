@@ -1,4 +1,4 @@
-import { createFileRoute } from '@tanstack/react-router';
+import { createFileRoute } from "@tanstack/react-router";
 
 function readTextMessage(message: any): string | null {
   return (
@@ -21,7 +21,7 @@ function readTextMessage(message: any): string | null {
 //
 // O parser é flexível pois a doc oficial não publica schemas exatos —
 // tenta os campos comuns (event/type, instanceId, phone/from, message/text/body, image/audio/document).
-export const Route = createFileRoute('/api/public/wapi/webhook')({
+export const Route = createFileRoute("/api/public/wapi/webhook")({
   server: {
     handlers: {
       POST: async ({ request }: { request: Request }) => {
@@ -30,11 +30,11 @@ export const Route = createFileRoute('/api/public/wapi/webhook')({
         const secret = process.env.WAPI_WEBHOOK_SECRET;
         if (secret) {
           const provided =
-            request.headers.get('x-webhook-secret') ||
-            request.headers.get('apikey') ||
-            request.headers.get('authorization')?.replace(/^Bearer\s+/i, '');
+            request.headers.get("x-webhook-secret") ||
+            request.headers.get("apikey") ||
+            request.headers.get("authorization")?.replace(/^Bearer\s+/i, "");
           if (provided !== secret) {
-            return new Response('Unauthorized', { status: 401 });
+            return new Response("Unauthorized", { status: 401 });
           }
         }
 
@@ -42,11 +42,13 @@ export const Route = createFileRoute('/api/public/wapi/webhook')({
         try {
           payload = await request.json();
         } catch {
-          return new Response('Invalid JSON', { status: 400 });
+          return new Response("Invalid JSON", { status: 400 });
         }
 
         // Identificar evento e instanceId
-        const eventRaw = String(payload?.event || payload?.type || payload?.eventType || '').toLowerCase();
+        const eventRaw = String(
+          payload?.event || payload?.type || payload?.eventType || "",
+        ).toLowerCase();
         const wapiInstanceId =
           payload?.instanceId ||
           payload?.instance?.id ||
@@ -55,16 +57,16 @@ export const Route = createFileRoute('/api/public/wapi/webhook')({
           null;
 
         try {
-          const { supabaseAdmin } = await import('@/integrations/supabase/client.server');
+          const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
           // Localiza nossa instância no banco a partir do instanceId da W-API
           let inst: any = null;
           if (wapiInstanceId) {
             const { data } = await supabaseAdmin
-              .from('whatsapp_instances')
-              .select('*')
-              .eq('provider', 'wapi')
-              .filter('instance_data->wapi->>instance_id', 'eq', wapiInstanceId)
+              .from("whatsapp_instances")
+              .select("*")
+              .eq("provider", "wapi")
+              .filter("instance_data->wapi->>instance_id", "eq", wapiInstanceId)
               .maybeSingle();
             inst = data;
           }
@@ -74,15 +76,34 @@ export const Route = createFileRoute('/api/public/wapi/webhook')({
             if (inst) {
               const isConnected =
                 payload?.connected === true ||
-                /connected|open|ready/i.test(String(payload?.status || payload?.data?.status || ''));
-              const isDisc = /disconnect|logout|close/i.test(eventRaw + ' ' + String(payload?.status || ''));
-              const qr = payload?.qrCode || payload?.qr || payload?.data?.qrCode || payload?.data?.base64 || null;
+                /connected|open|ready/i.test(
+                  String(payload?.status || payload?.data?.status || ""),
+                );
+              const isDisc = /disconnect|logout|close/i.test(
+                eventRaw + " " + String(payload?.status || ""),
+              );
+              const qr =
+                payload?.qrCode ||
+                payload?.qr ||
+                payload?.data?.qrCode ||
+                payload?.data?.base64 ||
+                null;
 
-              const update: any = { updated_at: new Date().toISOString(), last_seen: new Date().toISOString() };
-              if (isConnected) { update.status = 'connected'; update.qr_code = null; }
-              else if (isDisc) { update.status = 'disconnected'; update.qr_code = null; }
-              else if (qr) { update.status = 'connecting'; update.qr_code = qr; }
-              await supabaseAdmin.from('whatsapp_instances').update(update).eq('id', inst.id);
+              const update: any = {
+                updated_at: new Date().toISOString(),
+                last_seen: new Date().toISOString(),
+              };
+              if (isConnected) {
+                update.status = "connected";
+                update.qr_code = null;
+              } else if (isDisc) {
+                update.status = "disconnected";
+                update.qr_code = null;
+              } else if (qr) {
+                update.status = "connecting";
+                update.qr_code = qr;
+              }
+              await supabaseAdmin.from("whatsapp_instances").update(update).eq("id", inst.id);
             }
             return Response.json({ ok: true });
           }
@@ -90,16 +111,20 @@ export const Route = createFileRoute('/api/public/wapi/webhook')({
           // ----- Status de mensagem (sent/delivered/read/failed) -----
           if (/status|ack|delivery|message-status/i.test(eventRaw)) {
             const msgId = payload?.messageId || payload?.id || payload?.data?.messageId;
-            const st = String(payload?.status || payload?.data?.status || '').toLowerCase();
+            const st = String(payload?.status || payload?.data?.status || "").toLowerCase();
             if (msgId && st) {
               const mapped =
-                st === 'read' ? 'read' :
-                st === 'delivered' || st === 'received' ? 'delivered' :
-                st === 'failed' || st === 'error' ? 'failed' : 'sent';
+                st === "read"
+                  ? "read"
+                  : st === "delivered" || st === "received"
+                    ? "delivered"
+                    : st === "failed" || st === "error"
+                      ? "failed"
+                      : "sent";
               await supabaseAdmin
-                .from('messages')
+                .from("messages")
                 .update({ status: mapped })
-                .eq('wa_message_id', msgId);
+                .eq("wa_message_id", msgId);
             }
             return Response.json({ ok: true });
           }
@@ -107,13 +132,19 @@ export const Route = createFileRoute('/api/public/wapi/webhook')({
           // ----- Mensagem recebida (event tipo "message" / "received" / "messages") -----
           // Aceita estruturas variadas; ignora se for nossa própria saída.
           const isOutbound = payload?.fromMe === true || payload?.data?.fromMe === true;
-          if (isOutbound) return Response.json({ ok: true, skipped: 'fromMe' });
+          if (isOutbound) return Response.json({ ok: true, skipped: "fromMe" });
 
           // Log full payload (debug) — primeira chave de cada nível ajuda a entender estruturas novas
-          console.log('[wapi-webhook] payload:', JSON.stringify(payload).slice(0, 2000));
+          console.log("[wapi-webhook] payload:", JSON.stringify(payload).slice(0, 2000));
 
           // Extrai dados da mensagem
-          const msgRoot = payload?.msgContent || payload?.message || payload?.data?.msgContent || payload?.data?.message || payload?.data || payload;
+          const msgRoot =
+            payload?.msgContent ||
+            payload?.message ||
+            payload?.data?.msgContent ||
+            payload?.data?.message ||
+            payload?.data ||
+            payload;
 
           // chat.id = identificador da conversa (pode ser número@s.whatsapp.net, @lid ou @g.us)
           const chatIdRaw =
@@ -137,14 +168,16 @@ export const Route = createFileRoute('/api/public/wapi/webhook')({
             payload?.senderPhone,
             payload?.data?.senderPhone,
             // Caso o sender.id NÃO seja @lid, ele já é o telefone real
-            !String(payload?.sender?.id || '').endsWith('@lid') ? payload?.sender?.id : null,
+            !String(payload?.sender?.id || "").endsWith("@lid") ? payload?.sender?.id : null,
             // Idem para chat.id
-            !String(chatIdRaw || '').endsWith('@lid') && !String(chatIdRaw || '').endsWith('@g.us') ? chatIdRaw : null,
+            !String(chatIdRaw || "").endsWith("@lid") && !String(chatIdRaw || "").endsWith("@g.us")
+              ? chatIdRaw
+              : null,
           ];
-          let realPhone = '';
+          let realPhone = "";
           for (const c of numericPhoneCandidates) {
             if (!c) continue;
-            const digits = String(c).replace(/[^0-9]/g, '');
+            const digits = String(c).replace(/[^0-9]/g, "");
             if (digits && digits.length >= 8 && digits.length <= 15) {
               realPhone = digits;
               break;
@@ -162,33 +195,33 @@ export const Route = createFileRoute('/api/public/wapi/webhook')({
             payload?.chat?.name ||
             payload?.data?.chat?.name ||
             msgRoot?.senderName ||
-            '';
+            "";
 
           if (!chatIdRaw || !waMsgId) {
-            console.warn('W-API webhook ignored: no_message_payload', {
+            console.warn("W-API webhook ignored: no_message_payload", {
               event: eventRaw,
               hasChat: !!payload?.chat,
               hasSender: !!payload?.sender,
               hasMsgContent: !!payload?.msgContent,
             });
-            return Response.json({ ok: true, ignored: 'no_message_payload', event: eventRaw });
+            return Response.json({ ok: true, ignored: "no_message_payload", event: eventRaw });
           }
 
           // Normalizar chat_id (preservar sufixos @lid e @g.us)
           const chatStr = String(chatIdRaw);
-          const remoteJid = chatStr.includes('@')
+          const remoteJid = chatStr.includes("@")
             ? chatStr
-            : `${chatStr.replace(/[^0-9]/g, '')}@s.whatsapp.net`;
-          if (remoteJid.endsWith('@g.us')) {
-            return Response.json({ ok: true, skipped: 'group' });
+            : `${chatStr.replace(/[^0-9]/g, "")}@s.whatsapp.net`;
+          if (remoteJid.endsWith("@g.us")) {
+            return Response.json({ ok: true, skipped: "group" });
           }
 
           // Telefone para chave do contato: preferir o real; fallback para os dígitos do chat (mesmo que LID)
-          const phone = realPhone || chatStr.replace(/[^0-9]/g, '');
+          const phone = realPhone || chatStr.replace(/[^0-9]/g, "");
 
           // Extrair conteúdo / mídia
-          let content = '';
-          let contentType: string = 'text';
+          let content = "";
+          let contentType: string = "text";
           let mediaUrl: string | null = null;
           let mediaMime: string | null = null;
 
@@ -201,51 +234,51 @@ export const Route = createFileRoute('/api/public/wapi/webhook')({
           const location = msgRoot?.location || msgRoot?.locationMessage;
 
           if (image) {
-            content = image.caption || '[Imagem]';
-            contentType = 'image';
-            mediaMime = image.mimetype || image.mimeType || 'image/jpeg';
+            content = image.caption || "[Imagem]";
+            contentType = "image";
+            mediaMime = image.mimetype || image.mimeType || "image/jpeg";
             mediaUrl = image.url || image.link || image.imageUrl || null;
           } else if (audio) {
-            content = '[Áudio]';
-            contentType = 'audio';
-            mediaMime = audio.mimetype || audio.mimeType || 'audio/ogg';
+            content = "[Áudio]";
+            contentType = "audio";
+            mediaMime = audio.mimetype || audio.mimeType || "audio/ogg";
             mediaUrl = audio.url || audio.link || audio.audioUrl || null;
           } else if (video) {
-            content = video.caption || '[Vídeo]';
-            contentType = 'video';
-            mediaMime = video.mimetype || video.mimeType || 'video/mp4';
+            content = video.caption || "[Vídeo]";
+            contentType = "video";
+            mediaMime = video.mimetype || video.mimeType || "video/mp4";
             mediaUrl = video.url || video.link || video.videoUrl || null;
           } else if (doc) {
-            content = doc.fileName || doc.filename || '[Documento]';
-            contentType = 'document';
-            mediaMime = doc.mimetype || doc.mimeType || 'application/octet-stream';
+            content = doc.fileName || doc.filename || "[Documento]";
+            contentType = "document";
+            mediaMime = doc.mimetype || doc.mimeType || "application/octet-stream";
             mediaUrl = doc.url || doc.link || doc.documentUrl || null;
           } else if (sticker) {
-            content = '[Figurinha]';
-            contentType = 'sticker';
+            content = "[Figurinha]";
+            contentType = "sticker";
           } else if (location) {
             content = `[Localização] ${location.latitude || location.degreesLatitude},${location.longitude || location.degreesLongitude}`;
-            contentType = 'location';
-          } else if (typeof text === 'string' && text) {
+            contentType = "location";
+          } else if (typeof text === "string" && text) {
             content = text;
           } else {
-            content = '[Mensagem não suportada]';
+            content = "[Mensagem não suportada]";
           }
 
-          // 1) contato — chave por phone (real quando possível). 
+          // 1) contato — chave por phone (real quando possível).
           // Tenta vincular lead se houver referência [Ref: web-...]
           let contactId: string | null = null;
           {
-            const { linkLeadToContact } = await import('@/lib/whatsapp.server');
+            const { linkLeadToContact } = await import("@/lib/whatsapp.server");
             const linkedId = await linkLeadToContact(content, phone);
-            
+
             if (linkedId) {
               contactId = linkedId;
             } else {
               const { data: existing } = await supabaseAdmin
-                .from('contacts')
-                .select('id, name, phone')
-                .eq('phone', phone)
+                .from("contacts")
+                .select("id, name, phone")
+                .eq("phone", phone)
                 .maybeSingle();
               const looksLikeJustDigits = (n: string | null | undefined) =>
                 !n || /^[0-9]+$/.test(String(n).trim());
@@ -253,13 +286,16 @@ export const Route = createFileRoute('/api/public/wapi/webhook')({
                 contactId = existing.id;
                 // Atualiza o nome quando o atual está vazio ou é só dígitos (LID), e temos pushName real
                 if (pushName && looksLikeJustDigits(existing.name)) {
-                  await supabaseAdmin.from('contacts').update({ name: pushName }).eq('id', existing.id);
+                  await supabaseAdmin
+                    .from("contacts")
+                    .update({ name: pushName })
+                    .eq("id", existing.id);
                 }
               } else {
                 const { data: created } = await supabaseAdmin
-                  .from('contacts')
+                  .from("contacts")
                   .insert({ phone, name: pushName || null })
-                  .select('id')
+                  .select("id")
                   .single();
                 contactId = created?.id || null;
               }
@@ -274,158 +310,179 @@ export const Route = createFileRoute('/api/public/wapi/webhook')({
           let needsAssignment = false;
           {
             const { data: existing } = await supabaseAdmin
-              .from('conversations')
-              .select('id, agent_id, status')
-              .eq('whatsapp_chat_id', remoteJid)
+              .from("conversations")
+              .select("id, agent_id, status")
+              .eq("whatsapp_chat_id", remoteJid)
               .maybeSingle();
             if (existing?.id) {
               conversationId = existing.id;
               // Se a conversa foi reaberta (resolvida/arquivada) ou continua sem agente, reentrar na fila
-              const reopened = existing.status === 'resolved' || existing.status === 'archived';
+              const reopened = existing.status === "resolved" || existing.status === "archived";
               needsAssignment = !existing.agent_id || reopened;
               await supabaseAdmin
-                .from('conversations')
+                .from("conversations")
                 .update({
                   last_message: content,
                   last_message_at: new Date().toISOString(),
-                  unread_count: (existing as any).unread_count != null ? (existing as any).unread_count + 1 : 1,
-                  status: reopened ? 'queue' : existing.status,
+                  unread_count:
+                    (existing as any).unread_count != null ? (existing as any).unread_count + 1 : 1,
+                  status: reopened ? "queue" : existing.status,
                   updated_at: new Date().toISOString(),
                 })
-                .eq('id', existing.id);
+                .eq("id", existing.id);
             } else {
               isNewConversation = true;
               needsAssignment = true;
               const { data: created } = await supabaseAdmin
-                .from('conversations')
+                .from("conversations")
                 .insert({
                   contact_id: contactId,
                   instance_id: instanceRowId,
                   whatsapp_chat_id: remoteJid,
-                  status: 'queue',
-                  channel: 'whatsapp',
+                  status: "queue",
+                  channel: "whatsapp",
                   last_message: content,
                   last_message_at: new Date().toISOString(),
                   unread_count: 1,
                 })
-                .select('id')
+                .select("id")
                 .single();
               conversationId = created?.id || null;
             }
           }
 
-          if (!conversationId) return Response.json({ ok: true, skipped: 'no_conv' });
+          if (!conversationId) return Response.json({ ok: true, skipped: "no_conv" });
 
           // 3) idempotência
           const { data: dup } = await supabaseAdmin
-            .from('messages')
-            .select('id')
-            .eq('wa_message_id', String(waMsgId))
+            .from("messages")
+            .select("id")
+            .eq("wa_message_id", String(waMsgId))
             .maybeSingle();
           if (dup?.id) return Response.json({ ok: true, dedup: true });
 
-          await supabaseAdmin.from('messages').insert({
+          await supabaseAdmin.from("messages").insert({
             conversation_id: conversationId,
             wa_message_id: String(waMsgId),
-            sender_type: 'contact',
+            sender_type: "contact",
             content,
             content_type: contentType as any,
             media_url: mediaUrl,
             media_mime: mediaMime,
-            status: 'delivered',
+            status: "delivered",
           });
 
           // 4) atribuição automática + saudação na 1ª mensagem (Chatwoot-style)
           if (needsAssignment) {
             try {
-              const { assignConversation } = await import('@/lib/routing.server');
+              const { assignConversation } = await import("@/lib/routing.server");
               await assignConversation(conversationId, contactId);
             } catch (e) {
-              console.error('assignConversation failed:', e);
+              console.error("assignConversation failed:", e);
             }
           }
 
           if (isNewConversation) {
             try {
               const { data: welcome } = await supabaseAdmin
-                .from('app_settings')
-                .select('value')
-                .eq('key', 'welcome_message')
+                .from("app_settings")
+                .select("value")
+                .eq("key", "welcome_message")
                 .maybeSingle();
-              const text = (welcome?.value || '').trim();
+              const text = (welcome?.value || "").trim();
               if (text) {
-                await supabaseAdmin.from('messages').insert({
+                await supabaseAdmin.from("messages").insert({
                   conversation_id: conversationId,
                   content: text,
-                  sender_type: 'bot',
-                  status: 'sent',
+                  sender_type: "bot",
+                  status: "sent",
                 });
                 // Encaminha pelo WhatsApp via instância
                 try {
-                  if (inst?.provider === 'wapi') {
-                    const { wapiFetch } = await import('@/lib/wapi.server');
+                  if (inst?.provider === "wapi") {
+                    const { wapiFetch } = await import("@/lib/wapi.server");
                     const data = inst?.instance_data || {};
                     const credentials = {
                       instanceId: data?.wapi?.instance_id || inst.name,
                       token: inst.instance_key,
                     };
-                    const phoneTo = remoteJid.endsWith('@lid') || remoteJid.endsWith('@g.us') ? remoteJid : remoteJid.replace(/[^0-9]/g, '');
-                    await wapiFetch('/v1/message/send-text', {
-                      method: 'POST',
-                      body: JSON.stringify({ phone: phoneTo, message: text }),
-                    }, credentials as any);
+                    const phoneTo =
+                      remoteJid.endsWith("@lid") || remoteJid.endsWith("@g.us")
+                        ? remoteJid
+                        : remoteJid.replace(/[^0-9]/g, "");
+                    await wapiFetch(
+                      "/v1/message/send-text",
+                      {
+                        method: "POST",
+                        body: JSON.stringify({ phone: phoneTo, message: text }),
+                      },
+                      credentials as any,
+                    );
                   }
-                } catch (e) { console.warn('welcome wapi send failed:', (e as any)?.message); }
+                } catch (e) {
+                  console.warn("welcome wapi send failed:", (e as any)?.message);
+                }
               }
-            } catch (e) { console.error('welcome flow failed:', e); }
+            } catch (e) {
+              console.error("welcome flow failed:", e);
+            }
           }
 
           // 5) Auto-reply via IA (Lovable AI Gateway)
           try {
             const { data: aiActive } = await supabaseAdmin
-              .from('app_settings')
-              .select('value')
-              .eq('key', 'auto_reply_active')
+              .from("app_settings")
+              .select("value")
+              .eq("key", "auto_reply_active")
               .maybeSingle();
 
-            if (aiActive?.value === 'true') {
+            if (aiActive?.value === "true") {
               const { data: convRow } = await supabaseAdmin
-                .from('conversations')
-                .select('agent_id, bot_active, auto_reply_enabled')
-                .eq('id', conversationId)
+                .from("conversations")
+                .select("agent_id, bot_active, auto_reply_enabled")
+                .eq("id", conversationId)
                 .single();
 
-              const botEnabled = convRow && (convRow.bot_active !== false) && (convRow.auto_reply_enabled !== false);
+              const botEnabled =
+                convRow && convRow.bot_active !== false && convRow.auto_reply_enabled !== false;
               if (botEnabled) {
                 const { data: promptRow } = await supabaseAdmin
-                  .from('app_settings')
-                  .select('value')
-                  .eq('key', 'system_prompt')
+                  .from("app_settings")
+                  .select("value")
+                  .eq("key", "system_prompt")
                   .maybeSingle();
 
                 const { data: hist } = await supabaseAdmin
-                  .from('messages')
-                  .select('content, sender_type')
-                  .eq('conversation_id', conversationId)
-                  .order('created_at', { ascending: false })
+                  .from("messages")
+                  .select("content, sender_type")
+                  .eq("conversation_id", conversationId)
+                  .order("created_at", { ascending: false })
                   .limit(10);
 
                 const history = (hist || [])
                   .reverse()
                   .map((m: any) => `${m.sender_type}: ${m.content}`)
-                  .join('\n');
+                  .join("\n");
 
-                const aiResp = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
-                  method: 'POST',
+                const aiResp = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+                  method: "POST",
                   headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${process.env.LOVABLE_API_KEY}`,
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${process.env.LOVABLE_API_KEY}`,
                   },
                   body: JSON.stringify({
-                    model: 'google/gemini-2.5-flash',
+                    model: "google/gemini-2.5-flash",
                     messages: [
-                      { role: 'system', content: promptRow?.value || 'Você é um assistente prestativo. Responda de forma breve e amigável em português.' },
-                      { role: 'user', content: `Histórico da conversa:\n${history}\n\nResponda à última mensagem do contato.` },
+                      {
+                        role: "system",
+                        content:
+                          promptRow?.value ||
+                          "Você é um assistente prestativo. Responda de forma breve e amigável em português.",
+                      },
+                      {
+                        role: "user",
+                        content: `Histórico da conversa:\n${history}\n\nResponda à última mensagem do contato.`,
+                      },
                     ],
                   }),
                 });
@@ -434,41 +491,52 @@ export const Route = createFileRoute('/api/public/wapi/webhook')({
                   const aiData = await aiResp.json();
                   const reply = aiData?.choices?.[0]?.message?.content?.trim();
                   if (reply) {
-                    await supabaseAdmin.from('messages').insert({
+                    await supabaseAdmin.from("messages").insert({
                       conversation_id: conversationId,
                       content: reply,
-                      sender_type: 'bot',
-                      status: 'sent',
+                      sender_type: "bot",
+                      status: "sent",
                     });
                     try {
-                      if (inst?.provider === 'wapi') {
-                        const { wapiFetch } = await import('@/lib/wapi.server');
+                      if (inst?.provider === "wapi") {
+                        const { wapiFetch } = await import("@/lib/wapi.server");
                         const data = inst?.instance_data || {};
                         const credentials = {
                           instanceId: data?.wapi?.instance_id || inst.name,
                           token: inst.instance_key,
                         };
-                        const phoneTo = remoteJid.endsWith('@lid') || remoteJid.endsWith('@g.us') ? remoteJid : remoteJid.replace(/[^0-9]/g, '');
-                        await wapiFetch('/v1/message/send-text', {
-                          method: 'POST',
-                          body: JSON.stringify({ phone: phoneTo, message: reply }),
-                        }, credentials as any);
+                        const phoneTo =
+                          remoteJid.endsWith("@lid") || remoteJid.endsWith("@g.us")
+                            ? remoteJid
+                            : remoteJid.replace(/[^0-9]/g, "");
+                        await wapiFetch(
+                          "/v1/message/send-text",
+                          {
+                            method: "POST",
+                            body: JSON.stringify({ phone: phoneTo, message: reply }),
+                          },
+                          credentials as any,
+                        );
                       }
-                    } catch (e) { console.warn('AI reply wapi send failed:', (e as any)?.message); }
+                    } catch (e) {
+                      console.warn("AI reply wapi send failed:", (e as any)?.message);
+                    }
                   }
                 } else {
-                  console.warn('AI gateway error:', aiResp.status, await aiResp.text());
+                  console.warn("AI gateway error:", aiResp.status, await aiResp.text());
                 }
               }
             }
-          } catch (e) { console.error('auto-reply failed:', e); }
+          } catch (e) {
+            console.error("auto-reply failed:", e);
+          }
 
           return Response.json({ ok: true, newConversation: isNewConversation });
         } catch (err: any) {
-          console.error('W-API webhook error:', err);
+          console.error("W-API webhook error:", err);
           return new Response(JSON.stringify({ ok: false, error: err.message }), {
             status: 500,
-            headers: { 'Content-Type': 'application/json' },
+            headers: { "Content-Type": "application/json" },
           });
         }
       },

@@ -1,4 +1,4 @@
-import { supabase } from '@/integrations/supabase/client';
+import { supabase } from "@/integrations/supabase/client";
 
 export async function logAudit(params: {
   action: string;
@@ -8,10 +8,12 @@ export async function logAudit(params: {
   newData?: any;
 }) {
   try {
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
     if (!user) return;
 
-    await supabase.from('audit_logs').insert({
+    await supabase.from("audit_logs").insert({
       user_id: user.id,
       action: params.action,
       entity_type: params.entityType,
@@ -20,6 +22,6 @@ export async function logAudit(params: {
       new_data: params.newData,
     });
   } catch (err) {
-    console.warn('Audit log failed (non-blocking):', err);
+    console.warn("Audit log failed (non-blocking):", err);
   }
 }

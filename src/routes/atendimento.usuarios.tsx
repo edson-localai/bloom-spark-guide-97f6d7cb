@@ -1,13 +1,13 @@
-import { createFileRoute } from '@tanstack/react-router';
-import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import { useCrmAuth } from '@/hooks/useCrmAuth';
-import { 
-  Users, 
-  ShieldCheck, 
-  ShieldAlert, 
-  Loader2, 
-  Search, 
+import { createFileRoute } from "@tanstack/react-router";
+import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { useCrmAuth } from "@/hooks/useCrmAuth";
+import {
+  Users,
+  ShieldCheck,
+  ShieldAlert,
+  Loader2,
+  Search,
   MoreVertical,
   UserPlus,
   Shield,
@@ -19,10 +19,10 @@ import {
   User,
   Pencil,
   Trash2,
-  Building2
-} from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { toast } from 'sonner';
+  Building2,
+} from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { toast } from "sonner";
 import {
   Dialog,
   DialogContent,
@@ -42,7 +42,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-export const Route = createFileRoute('/atendimento/usuarios')({
+export const Route = createFileRoute("/atendimento/usuarios")({
   component: UsuariosPage,
 });
 
@@ -50,7 +50,7 @@ interface UserProfile {
   id: string;
   email: string;
   name: string;
-  role: 'admin' | 'supervisor' | 'agent';
+  role: "admin" | "supervisor" | "agent";
   department: string;
   user_id: string | null;
   status: string;
@@ -58,11 +58,11 @@ interface UserProfile {
 
 function UsuariosPage() {
   const { roles, loading: authLoading } = useCrmAuth();
-  const isAdmin = roles.includes('admin');
-  
+  const isAdmin = roles.includes("admin");
+
   const [loading, setLoading] = useState(true);
   const [users, setUsers] = useState<UserProfile[]>([]);
-  const [search, setSearch] = useState('');
+  const [search, setSearch] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
@@ -70,11 +70,11 @@ function UsuariosPage() {
   const [editingUser, setEditingUser] = useState<UserProfile | null>(null);
 
   // Form state
-  const [userName, setUserName] = useState('');
-  const [userEmail, setUserEmail] = useState('');
-  const [userPassword, setUserPassword] = useState('');
-  const [userRole, setUserRole] = useState<'admin' | 'supervisor' | 'agent'>('agent');
-  const [userDepartment, setUserDepartment] = useState('atendimento');
+  const [userName, setUserName] = useState("");
+  const [userEmail, setUserEmail] = useState("");
+  const [userPassword, setUserPassword] = useState("");
+  const [userRole, setUserRole] = useState<"admin" | "supervisor" | "agent">("agent");
+  const [userDepartment, setUserDepartment] = useState("atendimento");
 
   useEffect(() => {
     if (isAdmin) {
@@ -85,14 +85,16 @@ function UsuariosPage() {
   async function fetchUsers() {
     setLoading(true);
     try {
-      const { data, error } = await supabase.rpc('get_agents_with_email');
-      
+      const { data, error } = await supabase.rpc("get_agents_with_email");
+
       if (error) throw error;
-      const sorted = ((data as UserProfile[]) ?? []).slice().sort((a, b) => a.name.localeCompare(b.name));
+      const sorted = ((data as UserProfile[]) ?? [])
+        .slice()
+        .sort((a, b) => a.name.localeCompare(b.name));
       setUsers(sorted);
     } catch (err) {
-      console.error('Erro ao buscar usuários:', err);
-      toast.error('Não foi possível carregar a lista de usuários.');
+      console.error("Erro ao buscar usuários:", err);
+      toast.error("Não foi possível carregar a lista de usuários.");
     } finally {
       setLoading(false);
     }
@@ -101,35 +103,35 @@ function UsuariosPage() {
   const handleCreateUser = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsCreating(true);
-    
+
     try {
-      const { data, error } = await supabase.functions.invoke('create-user', {
+      const { data, error } = await supabase.functions.invoke("create-user", {
         body: {
           email: userEmail,
           password: userPassword,
           name: userName,
           role: userRole,
-          department: userDepartment
-        }
+          department: userDepartment,
+        },
       });
 
       if (error) throw error;
 
-      toast.success('Usuário criado com sucesso!');
+      toast.success("Usuário criado com sucesso!");
       setIsModalOpen(false);
-      
+
       // Reset form
-      setUserName('');
-      setUserEmail('');
-      setUserPassword('');
-      setUserRole('agent');
-      setUserDepartment('atendimento');
-      
+      setUserName("");
+      setUserEmail("");
+      setUserPassword("");
+      setUserRole("agent");
+      setUserDepartment("atendimento");
+
       // Refresh list
       fetchUsers();
     } catch (err) {
-      console.error('Erro ao criar usuário:', err);
-      toast.error(err instanceof Error ? err.message : 'Falha ao criar usuário.');
+      console.error("Erro ao criar usuário:", err);
+      toast.error(err instanceof Error ? err.message : "Falha ao criar usuário.");
     } finally {
       setIsCreating(false);
     }
@@ -140,89 +142,91 @@ function UsuariosPage() {
     setUserName(user.name);
     setUserEmail(user.email);
     setUserRole(user.role);
-    setUserDepartment(user.department || 'atendimento');
-    setUserPassword(''); // Don't show password, allow change if provided
+    setUserDepartment(user.department || "atendimento");
+    setUserPassword(""); // Don't show password, allow change if provided
     setIsEditModalOpen(true);
   };
 
   const handleUpdateUser = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!editingUser?.user_id) return;
-    
+
     setIsUpdating(true);
     try {
-      const { data, error } = await supabase.functions.invoke('update-user', {
+      const { data, error } = await supabase.functions.invoke("update-user", {
         body: {
           userId: editingUser.user_id,
           name: userName,
           email: userEmail !== editingUser.email ? userEmail : undefined,
           password: userPassword || undefined,
           role: userRole,
-          department: userDepartment
-        }
+          department: userDepartment,
+        },
       });
 
       if (error) throw error;
 
-      toast.success('Usuário atualizado com sucesso!');
+      toast.success("Usuário atualizado com sucesso!");
       setIsEditModalOpen(false);
       setEditingUser(null);
       fetchUsers();
     } catch (err) {
-      console.error('Erro ao atualizar usuário:', err);
-      toast.error(err instanceof Error ? err.message : 'Falha ao atualizar usuário.');
+      console.error("Erro ao atualizar usuário:", err);
+      toast.error(err instanceof Error ? err.message : "Falha ao atualizar usuário.");
     } finally {
       setIsUpdating(false);
     }
   };
 
   const handleDeleteUser = async (userId: string) => {
-    if (!confirm('Tem certeza que deseja excluir este usuário? Esta ação não pode ser desfeita.')) return;
-    
+    if (!confirm("Tem certeza que deseja excluir este usuário? Esta ação não pode ser desfeita."))
+      return;
+
     try {
-      const { data, error } = await supabase.functions.invoke('delete-user', {
-        body: { userId }
+      const { data, error } = await supabase.functions.invoke("delete-user", {
+        body: { userId },
       });
 
       if (error) throw error;
 
-      toast.success('Usuário excluído com sucesso!');
+      toast.success("Usuário excluído com sucesso!");
       fetchUsers();
     } catch (err) {
-      console.error('Erro ao excluir usuário:', err);
-      toast.error(err instanceof Error ? err.message : 'Falha ao excluir usuário.');
+      console.error("Erro ao excluir usuário:", err);
+      toast.error(err instanceof Error ? err.message : "Falha ao excluir usuário.");
     }
   };
 
-  const updateUserRole = async (userId: string, newRole: 'admin' | 'supervisor' | 'agent') => {
+  const updateUserRole = async (userId: string, newRole: "admin" | "supervisor" | "agent") => {
     try {
       // 1. Update user_roles table
       const { error: roleErr } = await supabase
-        .from('user_roles')
+        .from("user_roles")
         .update({ role: newRole })
-        .eq('user_id', userId);
-      
+        .eq("user_id", userId);
+
       if (roleErr) throw roleErr;
 
       // 2. Update agents table
       const { error: agentErr } = await supabase
-        .from('agents')
+        .from("agents")
         .update({ role: newRole })
-        .eq('user_id', userId);
-      
+        .eq("user_id", userId);
+
       if (agentErr) throw agentErr;
 
-      setUsers(prev => prev.map(u => u.user_id === userId ? { ...u, role: newRole } : u));
-      toast.success('Permissão atualizada com sucesso!');
+      setUsers((prev) => prev.map((u) => (u.user_id === userId ? { ...u, role: newRole } : u)));
+      toast.success("Permissão atualizada com sucesso!");
     } catch (err) {
-      console.error('Erro ao atualizar papel:', err);
-      toast.error('Falha ao atualizar permissões.');
+      console.error("Erro ao atualizar papel:", err);
+      toast.error("Falha ao atualizar permissões.");
     }
   };
 
-  const filteredUsers = users.filter(u => 
-    u.name.toLowerCase().includes(search.toLowerCase()) || 
-    u.email.toLowerCase().includes(search.toLowerCase())
+  const filteredUsers = users.filter(
+    (u) =>
+      u.name.toLowerCase().includes(search.toLowerCase()) ||
+      u.email.toLowerCase().includes(search.toLowerCase()),
   );
 
   if (authLoading || (isAdmin && loading)) {
@@ -242,7 +246,8 @@ function UsuariosPage() {
           </div>
           <h2 className="text-xl font-bold text-white mb-2">Acesso Negado</h2>
           <p className="text-zinc-500 text-sm leading-relaxed">
-            Você não tem permissão para gerenciar usuários. Este módulo é restrito apenas a administradores.
+            Você não tem permissão para gerenciar usuários. Este módulo é restrito apenas a
+            administradores.
           </p>
         </div>
       </div>
@@ -259,9 +264,9 @@ function UsuariosPage() {
           </h1>
           <p className="text-zinc-500 text-sm">Gerencie permissões e funções da equipe.</p>
         </div>
-        
+
         <div className="relative">
-          <Button 
+          <Button
             onClick={() => setIsModalOpen(true)}
             className="flex items-center gap-2 bg-cyan-500 hover:bg-cyan-400 text-black px-4 py-2.5 rounded-xl font-bold text-sm transition-all"
           >
@@ -269,7 +274,7 @@ function UsuariosPage() {
             Novo Usuário
           </Button>
         </div>
-        
+
         <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
           <DialogContent className="bg-[#0F1117] border-[#1F232E] text-white sm:max-w-[425px] rounded-3xl z-[1000]">
             <DialogHeader>
@@ -281,7 +286,12 @@ function UsuariosPage() {
             <form onSubmit={handleCreateUser} className="space-y-6 pt-4">
               <div className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="name" className="text-zinc-400 text-xs font-bold uppercase tracking-wider">Nome Completo</Label>
+                  <Label
+                    htmlFor="name"
+                    className="text-zinc-400 text-xs font-bold uppercase tracking-wider"
+                  >
+                    Nome Completo
+                  </Label>
                   <div className="relative">
                     <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
                     <Input
@@ -296,8 +306,16 @@ function UsuariosPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="department" className="text-zinc-400 text-xs font-bold uppercase tracking-wider">Setor</Label>
-                  <Select value={userDepartment} onValueChange={(value: any) => setUserDepartment(value)}>
+                  <Label
+                    htmlFor="department"
+                    className="text-zinc-400 text-xs font-bold uppercase tracking-wider"
+                  >
+                    Setor
+                  </Label>
+                  <Select
+                    value={userDepartment}
+                    onValueChange={(value: any) => setUserDepartment(value)}
+                  >
                     <SelectTrigger className="bg-[#151821] border-[#1F232E] h-12 rounded-xl">
                       <SelectValue placeholder="Selecione um setor" />
                     </SelectTrigger>
@@ -310,7 +328,12 @@ function UsuariosPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="email" className="text-zinc-400 text-xs font-bold uppercase tracking-wider">Email</Label>
+                  <Label
+                    htmlFor="email"
+                    className="text-zinc-400 text-xs font-bold uppercase tracking-wider"
+                  >
+                    Email
+                  </Label>
                   <div className="relative">
                     <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
                     <Input
@@ -326,7 +349,12 @@ function UsuariosPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="role" className="text-zinc-400 text-xs font-bold uppercase tracking-wider">Nível de Acesso</Label>
+                  <Label
+                    htmlFor="role"
+                    className="text-zinc-400 text-xs font-bold uppercase tracking-wider"
+                  >
+                    Nível de Acesso
+                  </Label>
                   <Select value={userRole} onValueChange={(value: any) => setUserRole(value)}>
                     <SelectTrigger className="bg-[#151821] border-[#1F232E] h-12 rounded-xl">
                       <SelectValue placeholder="Selecione um nível" />
@@ -340,7 +368,12 @@ function UsuariosPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="pass" className="text-zinc-400 text-xs font-bold uppercase tracking-wider">Senha Provisória</Label>
+                  <Label
+                    htmlFor="pass"
+                    className="text-zinc-400 text-xs font-bold uppercase tracking-wider"
+                  >
+                    Senha Provisória
+                  </Label>
                   <div className="relative">
                     <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
                     <Input
@@ -359,8 +392,8 @@ function UsuariosPage() {
               </div>
 
               <DialogFooter className="pt-2">
-                <Button 
-                  type="submit" 
+                <Button
+                  type="submit"
                   className="w-full bg-cyan-500 hover:bg-cyan-400 text-black font-bold h-12 rounded-xl"
                   disabled={isCreating}
                 >
@@ -390,8 +423,16 @@ function UsuariosPage() {
             <form onSubmit={handleUpdateUser} className="space-y-6 pt-4">
               <div className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="edit-department" className="text-zinc-400 text-xs font-bold uppercase tracking-wider">Setor</Label>
-                  <Select value={userDepartment} onValueChange={(value: any) => setUserDepartment(value)}>
+                  <Label
+                    htmlFor="edit-department"
+                    className="text-zinc-400 text-xs font-bold uppercase tracking-wider"
+                  >
+                    Setor
+                  </Label>
+                  <Select
+                    value={userDepartment}
+                    onValueChange={(value: any) => setUserDepartment(value)}
+                  >
                     <SelectTrigger className="bg-[#151821] border-[#1F232E] h-12 rounded-xl">
                       <SelectValue placeholder="Selecione um setor" />
                     </SelectTrigger>
@@ -404,7 +445,12 @@ function UsuariosPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="edit-name" className="text-zinc-400 text-xs font-bold uppercase tracking-wider">Nome Completo</Label>
+                  <Label
+                    htmlFor="edit-name"
+                    className="text-zinc-400 text-xs font-bold uppercase tracking-wider"
+                  >
+                    Nome Completo
+                  </Label>
                   <div className="relative">
                     <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
                     <Input
@@ -419,7 +465,12 @@ function UsuariosPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="edit-email" className="text-zinc-400 text-xs font-bold uppercase tracking-wider">Email</Label>
+                  <Label
+                    htmlFor="edit-email"
+                    className="text-zinc-400 text-xs font-bold uppercase tracking-wider"
+                  >
+                    Email
+                  </Label>
                   <div className="relative">
                     <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
                     <Input
@@ -435,7 +486,12 @@ function UsuariosPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="edit-role" className="text-zinc-400 text-xs font-bold uppercase tracking-wider">Nível de Acesso</Label>
+                  <Label
+                    htmlFor="edit-role"
+                    className="text-zinc-400 text-xs font-bold uppercase tracking-wider"
+                  >
+                    Nível de Acesso
+                  </Label>
                   <Select value={userRole} onValueChange={(value: any) => setUserRole(value)}>
                     <SelectTrigger className="bg-[#151821] border-[#1F232E] h-12 rounded-xl">
                       <SelectValue placeholder="Selecione um nível" />
@@ -449,7 +505,12 @@ function UsuariosPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="edit-pass" className="text-zinc-400 text-xs font-bold uppercase tracking-wider">Nova Senha (opcional)</Label>
+                  <Label
+                    htmlFor="edit-pass"
+                    className="text-zinc-400 text-xs font-bold uppercase tracking-wider"
+                  >
+                    Nova Senha (opcional)
+                  </Label>
                   <div className="relative">
                     <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
                     <Input
@@ -466,8 +527,8 @@ function UsuariosPage() {
               </div>
 
               <DialogFooter className="pt-2">
-                <Button 
-                  type="submit" 
+                <Button
+                  type="submit"
                   className="w-full bg-cyan-500 hover:bg-cyan-400 text-black font-bold h-12 rounded-xl"
                   disabled={isUpdating}
                 >
@@ -513,16 +574,20 @@ function UsuariosPage() {
                     {user.name.charAt(0)}
                   </div>
                   <div>
-                    <div className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest w-fit ${
-                      user.role === 'admin' ? 'bg-cyan-500/10 text-cyan-500' :
-                      user.role === 'supervisor' ? 'bg-purple-500/10 text-purple-500' :
-                      'bg-zinc-500/10 text-zinc-500'
-                    }`}>
+                    <div
+                      className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest w-fit ${
+                        user.role === "admin"
+                          ? "bg-cyan-500/10 text-cyan-500"
+                          : user.role === "supervisor"
+                            ? "bg-purple-500/10 text-purple-500"
+                            : "bg-zinc-500/10 text-zinc-500"
+                      }`}
+                    >
                       {user.role}
                     </div>
                   </div>
                 </div>
-                
+
                 <div className="flex gap-2">
                   <button
                     onClick={() => handleEditClick(user)}
@@ -555,38 +620,46 @@ function UsuariosPage() {
                     </div>
                   </div>
                 </div>
-                
+
                 <div className="flex items-center gap-4 py-3 border-y border-[#1F232E]">
                   <div className="flex-1">
-                    <p className="text-[10px] text-zinc-600 font-bold uppercase tracking-widest mb-1">Status</p>
+                    <p className="text-[10px] text-zinc-600 font-bold uppercase tracking-widest mb-1">
+                      Status
+                    </p>
                     <div className="flex items-center gap-1.5">
-                      <div className={`h-1.5 w-1.5 rounded-full ${user.status === 'online' ? 'bg-emerald-500' : 'bg-zinc-600'}`} />
+                      <div
+                        className={`h-1.5 w-1.5 rounded-full ${user.status === "online" ? "bg-emerald-500" : "bg-zinc-600"}`}
+                      />
                       <span className="text-xs text-zinc-400 capitalize">{user.status}</span>
                     </div>
                   </div>
                   <div className="flex-1">
-                    <p className="text-[10px] text-zinc-600 font-bold uppercase tracking-widest mb-1">ID</p>
-                    <p className="text-xs text-zinc-400 font-mono">#{user.id.split('-')[0]}</p>
+                    <p className="text-[10px] text-zinc-600 font-bold uppercase tracking-widest mb-1">
+                      ID
+                    </p>
+                    <p className="text-xs text-zinc-400 font-mono">#{user.id.split("-")[0]}</p>
                   </div>
                 </div>
               </div>
 
               <div className="space-y-3">
-                <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest">Alterar Nível de Acesso</p>
+                <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest">
+                  Alterar Nível de Acesso
+                </p>
                 <div className="grid grid-cols-3 gap-2">
-                  <RoleButton 
-                    active={user.role === 'agent'} 
-                    onClick={() => user.user_id && updateUserRole(user.user_id, 'agent')}
+                  <RoleButton
+                    active={user.role === "agent"}
+                    onClick={() => user.user_id && updateUserRole(user.user_id, "agent")}
                     label="Agente"
                   />
-                  <RoleButton 
-                    active={user.role === 'supervisor'} 
-                    onClick={() => user.user_id && updateUserRole(user.user_id, 'supervisor')}
+                  <RoleButton
+                    active={user.role === "supervisor"}
+                    onClick={() => user.user_id && updateUserRole(user.user_id, "supervisor")}
                     label="Sup"
                   />
-                  <RoleButton 
-                    active={user.role === 'admin'} 
-                    onClick={() => user.user_id && updateUserRole(user.user_id, 'admin')}
+                  <RoleButton
+                    active={user.role === "admin"}
+                    onClick={() => user.user_id && updateUserRole(user.user_id, "admin")}
                     label="Admin"
                   />
                 </div>
@@ -599,14 +672,22 @@ function UsuariosPage() {
   );
 }
 
-function RoleButton({ active, onClick, label }: { active: boolean; onClick: () => void; label: string }) {
+function RoleButton({
+  active,
+  onClick,
+  label,
+}: {
+  active: boolean;
+  onClick: () => void;
+  label: string;
+}) {
   return (
     <button
       onClick={onClick}
       className={`py-2 rounded-xl text-[10px] font-bold uppercase transition-all border ${
-        active 
-          ? 'bg-cyan-500 border-cyan-500 text-black shadow-lg shadow-cyan-500/20' 
-          : 'bg-[#151821] border-[#1F232E] text-zinc-500 hover:text-zinc-300 hover:border-zinc-700'
+        active
+          ? "bg-cyan-500 border-cyan-500 text-black shadow-lg shadow-cyan-500/20"
+          : "bg-[#151821] border-[#1F232E] text-zinc-500 hover:text-zinc-300 hover:border-zinc-700"
       }`}
     >
       {label}

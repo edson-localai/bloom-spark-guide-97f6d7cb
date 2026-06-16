@@ -1,41 +1,40 @@
-import { Car, Truck, Tractor, ChevronRight } from 'lucide-react';
-import { motion } from 'framer-motion';
-import segLight from '@/assets/segment-light.jpg';
-import segHeavy from '@/assets/segment-heavy.jpg';
-import segOffroad from '@/assets/segment-offroad.jpg';
-import segmentsBg from '@/assets/segments-bg.jpg';
+import { Car, Truck, Tractor, ChevronRight } from "lucide-react";
+import { motion } from "framer-motion";
+import segLight from "@/assets/segment-light.jpg";
+import segHeavy from "@/assets/segment-heavy.jpg";
+import segOffroad from "@/assets/segment-offroad.jpg";
+import segmentsBg from "@/assets/segments-bg.jpg";
 
-const SegmentCard = ({ 
-  icon: Icon, 
-  title, 
-  items, 
+const SegmentCard = ({
+  icon: Icon,
+  title,
+  items,
   image,
   imageAlt,
-  highlight = false 
-}: { 
-  icon: any, 
-  title: string, 
-  items: string[], 
-  image: string,
-  imageAlt: string,
-  highlight?: boolean 
+  highlight = false,
+}: {
+  icon: any;
+  title: string;
+  items: string[];
+  image: string;
+  imageAlt: string;
+  highlight?: boolean;
 }) => (
   <motion.div
     variants={{
       hidden: { opacity: 0, y: 30 },
-      visible: { opacity: 1, y: 0, transition: { duration: 0.5 } }
+      visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
     }}
     className={`bg-white/60 dark:bg-[#16191F]/60 backdrop-blur-md rounded-[32px] border transition-all duration-500 group hover:shadow-2xl overflow-hidden ${
-      highlight 
-        ? 'border-[#0066CC]/40 shadow-xl dark:shadow-[0_0_50px_rgba(0,102,204,0.2)] relative lg:scale-105 z-10' 
-        : 'border-slate-200 dark:border-[#1E2330] hover:border-[#0066CC]/20'
+      highlight
+        ? "border-[#0066CC]/40 shadow-xl dark:shadow-[0_0_50px_rgba(0,102,204,0.2)] relative lg:scale-105 z-10"
+        : "border-slate-200 dark:border-[#1E2330] hover:border-[#0066CC]/20"
     }`}
-
   >
     {/* Image */}
     <div className="relative h-48 overflow-hidden">
-      <img 
-        src={image} 
+      <img
+        src={image}
         alt={imageAlt}
         loading="lazy"
         width={1024}
@@ -55,9 +54,9 @@ const SegmentCard = ({
       </h3>
       <ul className="space-y-3">
         {items.map((item, idx) => (
-          <li 
-            key={idx} 
-            className={`flex items-center gap-3 py-2 ${idx < items.length - 1 ? 'border-b border-slate-100 dark:border-[#1E2330]/50' : ''}`}
+          <li
+            key={idx}
+            className={`flex items-center gap-3 py-2 ${idx < items.length - 1 ? "border-b border-slate-100 dark:border-[#1E2330]/50" : ""}`}
           >
             <ChevronRight className="w-4 h-4 text-[#0066CC] group-hover:translate-x-1 transition-transform" />
             <span className="font-['Rajdhani'] text-lg text-slate-700 dark:text-[#B8C8DC] font-medium group-hover:text-slate-900 dark:group-hover:text-white transition-colors">
@@ -72,20 +71,23 @@ const SegmentCard = ({
 
 const SegmentsSection = () => {
   return (
-    <section id="segmentos" className="relative bg-white dark:bg-[#0A0A0A] py-20 sm:py-32 px-[max(24px,5vw)] overflow-hidden transition-colors duration-500">
+    <section
+      id="segmentos"
+      className="relative bg-white dark:bg-[#0A0A0A] py-20 sm:py-32 px-[max(24px,5vw)] overflow-hidden transition-colors duration-500"
+    >
       {/* Background with Industrial Motion Lighting */}
       <div className="absolute inset-0 z-0 opacity-10">
-        <img 
-          src={segmentsBg} 
-          alt="Peças para ar condicionado de linha pesada e leve" 
+        <img
+          src={segmentsBg}
+          alt="Peças para ar condicionado de linha pesada e leve"
           className="w-full h-full object-cover grayscale"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-white via-slate-50/80 to-white dark:from-[#0A0A0A] dark:via-[#0D1520]/80 dark:to-[#0A0A0A]" />
       </div>
-      
+
       {/* Background decoration */}
       <div className="absolute inset-0 frost-overlay opacity-30 pointer-events-none z-0" />
-      
+
       <div className="relative z-10 max-w-7xl mx-auto">
         {/* Header */}
         <div className="text-center mb-16">
@@ -98,23 +100,22 @@ const SegmentsSection = () => {
             Atendemos todos os Segmentos
           </h2>
           <p className="font-['Inter'] text-lg text-slate-600 dark:text-[#8A9BB5] max-w-2xl mx-auto">
-
             Da picape ao caminhão fora de estrada. Se tem ar-condicionado, temos a peça.
           </p>
         </div>
 
         {/* Grid */}
-        <motion.div 
+        <motion.div
           initial="hidden"
           whileInView="visible"
-          viewport={{ once: true, margin: '-100px' }}
+          viewport={{ once: true, margin: "-100px" }}
           variants={{
             hidden: {},
-            visible: { transition: { staggerChildren: 0.1 } }
+            visible: { transition: { staggerChildren: 0.1 } },
           }}
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
         >
-          <SegmentCard 
+          <SegmentCard
             icon={Car}
             title="Linha Leve"
             image={segLight}
@@ -123,10 +124,10 @@ const SegmentsSection = () => {
               "Automóveis de passeio",
               "SUVs e crossovers",
               "Pickups e utilitários",
-              "Vans e minivans"
+              "Vans e minivans",
             ]}
           />
-          <SegmentCard 
+          <SegmentCard
             icon={Truck}
             title="Linha Pesada"
             highlight={true}
@@ -136,10 +137,10 @@ const SegmentsSection = () => {
               "Caminhões e carretas",
               "Ônibus urbanos e rodoviários",
               "Micro-ônibus",
-              "Tratores agrícolas"
+              "Tratores agrícolas",
             ]}
           />
-          <SegmentCard 
+          <SegmentCard
             icon={Tractor}
             title="Fora de Estrada"
             image={segOffroad}
@@ -148,7 +149,7 @@ const SegmentsSection = () => {
               "Máquinas de construção",
               "Escavadeiras e guindastes",
               "Retroescavadeiras",
-              "Veículos de mineração"
+              "Veículos de mineração",
             ]}
           />
         </motion.div>

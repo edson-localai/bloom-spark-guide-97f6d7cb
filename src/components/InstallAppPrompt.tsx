@@ -1,9 +1,9 @@
-import { useEffect, useState } from 'react';
-import { Download, X, Share } from 'lucide-react';
+import { useEffect, useState } from "react";
+import { Download, X, Share } from "lucide-react";
 
 type BIPEvent = Event & { prompt: () => Promise<void>; userChoice: Promise<{ outcome: string }> };
 
-const DISMISS_KEY = 'hcb_install_dismissed';
+const DISMISS_KEY = "hcb_install_dismissed";
 
 export function InstallAppPrompt() {
   const [deferred, setDeferred] = useState<BIPEvent | null>(null);
@@ -11,10 +11,10 @@ export function InstallAppPrompt() {
   const [isIOS, setIsIOS] = useState(false);
 
   useEffect(() => {
-    if (typeof window === 'undefined') return;
+    if (typeof window === "undefined") return;
 
     const standalone =
-      window.matchMedia('(display-mode: standalone)').matches ||
+      window.matchMedia("(display-mode: standalone)").matches ||
       // iOS Safari
       // @ts-expect-error - non-standard
       window.navigator.standalone === true;
@@ -22,9 +22,10 @@ export function InstallAppPrompt() {
 
     const dismissed = localStorage.getItem(DISMISS_KEY);
     // On /atendimento we ignore the dismissal logic to always show for new/active sessions as requested
-    const isAtendimentoPage = window.location.pathname.startsWith('/atendimento');
-    
-    if (!isAtendimentoPage && dismissed && Date.now() - Number(dismissed) < 7 * 24 * 60 * 60 * 1000) return;
+    const isAtendimentoPage = window.location.pathname.startsWith("/atendimento");
+
+    if (!isAtendimentoPage && dismissed && Date.now() - Number(dismissed) < 7 * 24 * 60 * 60 * 1000)
+      return;
 
     const ua = window.navigator.userAgent.toLowerCase();
     const ios = /iphone|ipad|ipod/.test(ua) && !/crios|fxios/.test(ua);
@@ -35,14 +36,14 @@ export function InstallAppPrompt() {
       setDeferred(e as BIPEvent);
       setShow(true);
     };
-    window.addEventListener('beforeinstallprompt', handler);
+    window.addEventListener("beforeinstallprompt", handler);
 
     // Always show prompt initially if not standalone
     setShow(true);
 
     if (ios) setIsIOS(true);
 
-    return () => window.removeEventListener('beforeinstallprompt', handler);
+    return () => window.removeEventListener("beforeinstallprompt", handler);
   }, []);
 
   const dismiss = () => {
@@ -62,7 +63,6 @@ export function InstallAppPrompt() {
 
   return (
     <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-50 w-[calc(100%-2rem)] max-w-md rounded-2xl shadow-2xl border border-cyan-500/30 dark:border-cyan-500/30 p-4 flex items-start gap-3 bg-white dark:bg-[#151821] transition-colors duration-500">
-
       <div className="h-10 w-10 rounded-xl bg-cyan-500/10 flex items-center justify-center shrink-0 border border-cyan-500/30">
         <Download className="h-5 w-5 text-cyan-400" />
       </div>
@@ -70,8 +70,8 @@ export function InstallAppPrompt() {
         <p className="text-sm font-semibold text-slate-900 dark:text-white">Instalar app HCB</p>
         {isIOS ? (
           <p className="text-[11px] text-slate-600 dark:text-zinc-400 mt-1 leading-snug">
-            Toque em <Share className="inline h-3 w-3 mx-0.5" /> Compartilhar e depois em <strong>Adicionar à Tela de Início</strong>.
-
+            Toque em <Share className="inline h-3 w-3 mx-0.5" /> Compartilhar e depois em{" "}
+            <strong>Adicionar à Tela de Início</strong>.
           </p>
         ) : (
           <p className="text-[11px] text-slate-600 dark:text-zinc-400 mt-1">
@@ -87,7 +87,11 @@ export function InstallAppPrompt() {
           </button>
         )}
       </div>
-      <button onClick={dismiss} className="text-slate-400 dark:text-zinc-500 hover:text-slate-900 dark:hover:text-white p-1" aria-label="Fechar">
+      <button
+        onClick={dismiss}
+        className="text-slate-400 dark:text-zinc-500 hover:text-slate-900 dark:hover:text-white p-1"
+        aria-label="Fechar"
+      >
         <X className="h-4 w-4" />
       </button>
     </div>

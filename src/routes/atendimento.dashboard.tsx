@@ -1,18 +1,29 @@
-import { createFileRoute } from '@tanstack/react-router';
-import { useEffect, useState } from 'react';
-import { BarChart3, Users, MessageSquare, Clock, TrendingUp, ArrowUpRight, ArrowDownRight, Download, Hourglass, ShieldAlert } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
-import { useCrmAuth } from '@/hooks/useCrmAuth';
+import { createFileRoute } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
+import {
+  BarChart3,
+  Users,
+  MessageSquare,
+  Clock,
+  TrendingUp,
+  ArrowUpRight,
+  ArrowDownRight,
+  Download,
+  Hourglass,
+  ShieldAlert,
+} from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
+import { useCrmAuth } from "@/hooks/useCrmAuth";
 
-export const Route = createFileRoute('/atendimento/dashboard')({
+export const Route = createFileRoute("/atendimento/dashboard")({
   component: DashboardPage,
 });
 
 function DashboardPage() {
   const { roles, loading: authLoading } = useCrmAuth();
-  const isSupervisor = roles.includes('admin') || roles.includes('supervisor');
-  const [avgWaitTime, setAvgWaitTime] = useState<string>('--');
+  const isSupervisor = roles.includes("admin") || roles.includes("supervisor");
+  const [avgWaitTime, setAvgWaitTime] = useState<string>("--");
   const [waitingNow, setWaitingNow] = useState<number>(0);
 
   useEffect(() => {
@@ -24,15 +35,15 @@ function DashboardPage() {
   async function fetchWaitMetrics() {
     try {
       const { count } = await supabase
-        .from('waiting_queue')
-        .select('*', { count: 'exact', head: true });
+        .from("waiting_queue")
+        .select("*", { count: "exact", head: true });
       setWaitingNow(count || 0);
 
       const { data } = await supabase
-        .from('conversations')
-        .select('created_at, updated_at, agent_id')
-        .not('agent_id', 'is', null)
-        .gte('created_at', new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString())
+        .from("conversations")
+        .select("created_at, updated_at, agent_id")
+        .not("agent_id", "is", null)
+        .gte("created_at", new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString())
         .limit(100);
 
       if (data && data.length > 0) {
@@ -41,43 +52,43 @@ function DashboardPage() {
           const assigned = new Date(c.updated_at!).getTime();
           return acc + Math.max(0, assigned - created);
         }, 0);
-        
-        const avgSec = Math.floor((totalMs / data.length) / 1000);
+
+        const avgSec = Math.floor(totalMs / data.length / 1000);
         const min = Math.floor(avgSec / 60);
         const sec = avgSec % 60;
         setAvgWaitTime(`${min}m ${sec}s`);
       }
     } catch (err) {
-      console.error('Failed to fetch wait metrics:', err);
+      console.error("Failed to fetch wait metrics:", err);
     }
   }
 
   const exportContacts = async () => {
     try {
-      const { data } = await supabase.from('contacts').select('*');
+      const { data } = await supabase.from("contacts").select("*");
       if (!data) return;
 
-      const headers = ['Nome', 'Telefone', 'Veículo', 'Ano', 'Tags'];
-      const rows = data.map(c => [
-        c.name || '',
+      const headers = ["Nome", "Telefone", "Veículo", "Ano", "Tags"];
+      const rows = data.map((c) => [
+        c.name || "",
         c.phone,
-        `${c.vehicle_brand || ''} ${c.vehicle_model || ''}`,
-        c.vehicle_year || '',
-        c.tags?.join(', ') || ''
+        `${c.vehicle_brand || ""} ${c.vehicle_model || ""}`,
+        c.vehicle_year || "",
+        c.tags?.join(", ") || "",
       ]);
 
-      const csvContent = [headers, ...rows].map(e => e.join(',')).join('\n');
-      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const csvContent = [headers, ...rows].map((e) => e.join(",")).join("\n");
+      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
       const url = URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.setAttribute('href', url);
-      link.setAttribute('download', `contatos_hcb_${new Date().toISOString().split('T')[0]}.csv`);
+      const link = document.createElement("a");
+      link.setAttribute("href", url);
+      link.setAttribute("download", `contatos_hcb_${new Date().toISOString().split("T")[0]}.csv`);
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-      toast.success('Relatório de contatos exportado!');
+      toast.success("Relatório de contatos exportado!");
     } catch (error) {
-      toast.error('Erro ao exportar relatório.');
+      toast.error("Erro ao exportar relatório.");
     }
   };
   if (authLoading) return null;
@@ -91,7 +102,8 @@ function DashboardPage() {
           </div>
           <h2 className="text-xl font-bold text-white mb-2">Acesso Negado</h2>
           <p className="text-zinc-500 text-sm leading-relaxed">
-            Você não tem permissão para acessar o Dashboard. Este módulo é restrito a supervisores e administradores.
+            Você não tem permissão para acessar o Dashboard. Este módulo é restrito a supervisores e
+            administradores.
           </p>
         </div>
       </div>
@@ -99,13 +111,18 @@ function DashboardPage() {
   }
 
   return (
-    <div className="h-full flex flex-col overflow-auto custom-scrollbar" style={{ background: '#0A0A0F' }}>
+    <div
+      className="h-full flex flex-col overflow-auto custom-scrollbar"
+      style={{ background: "#0A0A0F" }}
+    >
       <div className="p-8 pb-4 flex justify-between items-center">
         <div>
           <h1 className="text-2xl font-bold text-white">Dashboard de Performance</h1>
-          <p className="text-zinc-500 text-sm">Visão geral do atendimento e produtividade da equipe.</p>
+          <p className="text-zinc-500 text-sm">
+            Visão geral do atendimento e produtividade da equipe.
+          </p>
         </div>
-        <button 
+        <button
           onClick={exportContacts}
           className="flex items-center gap-2 bg-[#151821] border border-[#1F232E] text-zinc-300 hover:text-white px-4 py-2 rounded-xl text-sm font-semibold transition-all"
         >
@@ -115,37 +132,37 @@ function DashboardPage() {
       </div>
 
       <div className="p-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <StatCard 
-          title="Total de Atendimentos" 
-          value="1.284" 
-          change="+12.5%" 
-          trend="up" 
-          icon={MessageSquare} 
-          color="#00CCEE" 
+        <StatCard
+          title="Total de Atendimentos"
+          value="1.284"
+          change="+12.5%"
+          trend="up"
+          icon={MessageSquare}
+          color="#00CCEE"
         />
-        <StatCard 
-          title="Novos Contatos" 
-          value="84" 
-          change="+5.2%" 
-          trend="up" 
-          icon={Users} 
-          color="#8B5CF6" 
+        <StatCard
+          title="Novos Contatos"
+          value="84"
+          change="+5.2%"
+          trend="up"
+          icon={Users}
+          color="#8B5CF6"
         />
-        <StatCard 
-          title="Tempo Médio de Espera" 
-          value={avgWaitTime} 
-          change={waitingNow > 0 ? `${waitingNow} na fila` : 'Fila vazia'} 
-          trend={waitingNow > 0 ? 'up' : 'down'} 
-          icon={Hourglass} 
-          color="#F59E0B" 
+        <StatCard
+          title="Tempo Médio de Espera"
+          value={avgWaitTime}
+          change={waitingNow > 0 ? `${waitingNow} na fila` : "Fila vazia"}
+          trend={waitingNow > 0 ? "up" : "down"}
+          icon={Hourglass}
+          color="#F59E0B"
         />
-        <StatCard 
-          title="Taxa de Conversão" 
-          value="24.8%" 
-          change="+2.4%" 
-          trend="up" 
-          icon={TrendingUp} 
-          color="#10B981" 
+        <StatCard
+          title="Taxa de Conversão"
+          value="24.8%"
+          change="+2.4%"
+          trend="up"
+          icon={TrendingUp}
+          color="#10B981"
         />
       </div>
 
@@ -155,13 +172,21 @@ function DashboardPage() {
           <div className="flex justify-between items-center mb-8">
             <h3 className="font-bold text-white">Volume de Conversas</h3>
             <div className="flex gap-2">
-              <button className="text-[10px] px-3 py-1 rounded bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 font-bold uppercase">7 dias</button>
-              <button className="text-[10px] px-3 py-1 rounded text-zinc-600 hover:text-zinc-400 font-bold uppercase transition-colors">30 dias</button>
+              <button className="text-[10px] px-3 py-1 rounded bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 font-bold uppercase">
+                7 dias
+              </button>
+              <button className="text-[10px] px-3 py-1 rounded text-zinc-600 hover:text-zinc-400 font-bold uppercase transition-colors">
+                30 dias
+              </button>
             </div>
           </div>
           <div className="flex-1 flex items-end gap-2 pb-4">
             {[45, 78, 56, 92, 67, 84, 110, 89, 120, 105, 95, 130].map((h, i) => (
-              <div key={i} className="flex-1 bg-gradient-to-t from-cyan-500/5 to-cyan-500/40 rounded-t-lg group relative" style={{ height: `${h}%` }}>
+              <div
+                key={i}
+                className="flex-1 bg-gradient-to-t from-cyan-500/5 to-cyan-500/40 rounded-t-lg group relative"
+                style={{ height: `${h}%` }}
+              >
                 <div className="absolute -top-10 left-1/2 -translate-x-1/2 bg-[#1F232E] text-white text-[10px] px-2 py-1 rounded border border-[#1F232E] opacity-0 group-hover:opacity-100 transition-opacity">
                   {h * 2}
                 </div>
@@ -189,7 +214,7 @@ function DashboardPage() {
           </div>
         </div>
       </div>
-      
+
       <div className="p-8" />
     </div>
   );
@@ -199,14 +224,22 @@ function StatCard({ title, value, change, trend, icon: Icon, color }: any) {
   return (
     <div className="bg-[#0F1117] rounded-3xl border border-[#1F232E] p-6 hover:border-cyan-500/20 transition-all group">
       <div className="flex justify-between items-start mb-4">
-        <div className="h-10 w-10 rounded-xl flex items-center justify-center border transition-colors" 
-          style={{ background: `${color}10`, borderColor: `${color}20`, color: color }}>
+        <div
+          className="h-10 w-10 rounded-xl flex items-center justify-center border transition-colors"
+          style={{ background: `${color}10`, borderColor: `${color}20`, color: color }}
+        >
           <Icon className="h-5 w-5" />
         </div>
-        <div className={`flex items-center gap-1 text-[10px] font-bold px-2 py-1 rounded-full ${
-          trend === 'up' ? 'bg-emerald-500/10 text-emerald-500' : 'bg-red-500/10 text-red-500'
-        }`}>
-          {trend === 'up' ? <ArrowUpRight className="h-3 w-3" /> : <ArrowDownRight className="h-3 w-3" />}
+        <div
+          className={`flex items-center gap-1 text-[10px] font-bold px-2 py-1 rounded-full ${
+            trend === "up" ? "bg-emerald-500/10 text-emerald-500" : "bg-red-500/10 text-red-500"
+          }`}
+        >
+          {trend === "up" ? (
+            <ArrowUpRight className="h-3 w-3" />
+          ) : (
+            <ArrowDownRight className="h-3 w-3" />
+          )}
           {change}
         </div>
       </div>

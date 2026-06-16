@@ -1,11 +1,11 @@
-import { createFileRoute } from '@tanstack/react-router';
+import { createFileRoute } from "@tanstack/react-router";
 
 // Evolution API → Lovable webhook receiver.
 // Configure this URL in your Evolution API panel:
 // https://project--<PROJECT_ID>.lovable.app/api/public/whatsapp/webhook
 //
 // Handles MESSAGES_UPSERT, CONNECTION_UPDATE and QRCODE_UPDATED events.
-export const Route = createFileRoute('/api/public/whatsapp/webhook')({
+export const Route = createFileRoute("/api/public/whatsapp/webhook")({
   server: {
     handlers: {
       POST: async ({ request }: { request: Request }) => {
@@ -14,11 +14,11 @@ export const Route = createFileRoute('/api/public/whatsapp/webhook')({
         const secret = process.env.EVOLUTION_WEBHOOK_SECRET;
         if (secret) {
           const provided =
-            request.headers.get('apikey') ||
-            request.headers.get('x-webhook-secret') ||
-            request.headers.get('authorization')?.replace(/^Bearer\s+/i, '');
+            request.headers.get("apikey") ||
+            request.headers.get("x-webhook-secret") ||
+            request.headers.get("authorization")?.replace(/^Bearer\s+/i, "");
           if (provided !== secret) {
-            return new Response('Unauthorized', { status: 401 });
+            return new Response("Unauthorized", { status: 401 });
           }
         }
 
@@ -26,57 +26,64 @@ export const Route = createFileRoute('/api/public/whatsapp/webhook')({
         try {
           payload = await request.json();
         } catch {
-          return new Response('Invalid JSON', { status: 400 });
+          return new Response("Invalid JSON", { status: 400 });
         }
 
-        const event = (payload?.event || '').toUpperCase().replace(/\./g, '_');
+        const event = (payload?.event || "").toUpperCase().replace(/\./g, "_");
         const instanceName = payload?.instance || payload?.instanceName;
 
         try {
-          const { supabaseAdmin } = await import('@/integrations/supabase/client.server');
-          const { jidToPhone, normalizeStatus } = await import('@/lib/whatsapp.server');
+          const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+          const { jidToPhone, normalizeStatus } = await import("@/lib/whatsapp.server");
 
-          if (event === 'CONNECTION_UPDATE') {
+          if (event === "CONNECTION_UPDATE") {
             const status = normalizeStatus(payload?.data?.state);
             const update: any = {
               status,
               updated_at: new Date().toISOString(),
               last_seen: new Date().toISOString(),
             };
-            if (status === 'connected') update.qr_code = null;
+            if (status === "connected") update.qr_code = null;
             if (instanceName) {
-              await supabaseAdmin.from('whatsapp_instances').update(update).eq('name', instanceName);
+              await supabaseAdmin
+                .from("whatsapp_instances")
+                .update(update)
+                .eq("name", instanceName);
             }
             return Response.json({ ok: true });
           }
 
-          if (event === 'QRCODE_UPDATED') {
-            const qr = payload?.data?.qrcode?.base64 || payload?.data?.base64 || payload?.data?.qrcode || null;
+          if (event === "QRCODE_UPDATED") {
+            const qr =
+              payload?.data?.qrcode?.base64 ||
+              payload?.data?.base64 ||
+              payload?.data?.qrcode ||
+              null;
             if (instanceName && qr) {
               await supabaseAdmin
-                .from('whatsapp_instances')
-                .update({ qr_code: qr, status: 'connecting', updated_at: new Date().toISOString() })
-                .eq('name', instanceName);
+                .from("whatsapp_instances")
+                .update({ qr_code: qr, status: "connecting", updated_at: new Date().toISOString() })
+                .eq("name", instanceName);
             }
             return Response.json({ ok: true });
           }
 
-          if (event === 'MESSAGES_UPSERT') {
+          if (event === "MESSAGES_UPSERT") {
             const items = Array.isArray(payload?.data) ? payload.data : [payload?.data];
             for (const item of items) {
               if (!item?.key) continue;
               if (item.key.fromMe) continue; // ignore our own outgoing echoes
 
-              const remoteJid: string = item.key.remoteJid || '';
-              if (remoteJid.endsWith('@g.us')) continue; // skip groups
+              const remoteJid: string = item.key.remoteJid || "";
+              if (remoteJid.endsWith("@g.us")) continue; // skip groups
 
               const phone = jidToPhone(remoteJid);
-              const pushName: string = item.pushName || '';
+              const pushName: string = item.pushName || "";
               const waMsgId: string = item.key.id;
 
               const m = item.message || {};
-              let content = '';
-              let contentType: string = 'text';
+              let content = "";
+              let contentType: string = "text";
               let mediaUrl: string | null = null;
               let mediaMime: string | null = null;
 
@@ -85,60 +92,63 @@ export const Route = createFileRoute('/api/public/whatsapp/webhook')({
               } else if (m.extendedTextMessage?.text) {
                 content = m.extendedTextMessage.text;
               } else if (m.imageMessage) {
-                content = m.imageMessage.caption || '[Imagem]';
-                contentType = 'image';
-                mediaMime = m.imageMessage.mimetype || 'image/jpeg';
+                content = m.imageMessage.caption || "[Imagem]";
+                contentType = "image";
+                mediaMime = m.imageMessage.mimetype || "image/jpeg";
                 mediaUrl = m.imageMessage.url || null;
               } else if (m.videoMessage) {
-                content = m.videoMessage.caption || '[Vídeo]';
-                contentType = 'video';
-                mediaMime = m.videoMessage.mimetype || 'video/mp4';
+                content = m.videoMessage.caption || "[Vídeo]";
+                contentType = "video";
+                mediaMime = m.videoMessage.mimetype || "video/mp4";
                 mediaUrl = m.videoMessage.url || null;
               } else if (m.audioMessage) {
-                content = '[Áudio]';
-                contentType = 'audio';
-                mediaMime = m.audioMessage.mimetype || 'audio/ogg';
+                content = "[Áudio]";
+                contentType = "audio";
+                mediaMime = m.audioMessage.mimetype || "audio/ogg";
                 mediaUrl = m.audioMessage.url || null;
               } else if (m.documentMessage) {
-                content = m.documentMessage.fileName || '[Documento]';
-                contentType = 'document';
-                mediaMime = m.documentMessage.mimetype || 'application/octet-stream';
+                content = m.documentMessage.fileName || "[Documento]";
+                contentType = "document";
+                mediaMime = m.documentMessage.mimetype || "application/octet-stream";
                 mediaUrl = m.documentMessage.url || null;
               } else if (m.stickerMessage) {
-                content = '[Figurinha]';
-                contentType = 'sticker';
+                content = "[Figurinha]";
+                contentType = "sticker";
               } else if (m.locationMessage) {
                 content = `[Localização] ${m.locationMessage.degreesLatitude},${m.locationMessage.degreesLongitude}`;
-                contentType = 'location';
+                contentType = "location";
               } else {
-                content = '[Mensagem não suportada]';
+                content = "[Mensagem não suportada]";
               }
 
               // 1) Find / create the contact by phone
               // Try to link lead if there is a reference [Ref: web-...]
               let contactId: string | null = null;
               {
-                const { linkLeadToContact } = await import('@/lib/whatsapp.server');
+                const { linkLeadToContact } = await import("@/lib/whatsapp.server");
                 const linkedId = await linkLeadToContact(content, phone);
 
                 if (linkedId) {
                   contactId = linkedId;
                 } else {
                   const { data: existing } = await supabaseAdmin
-                    .from('contacts')
-                    .select('id, name')
-                    .eq('phone', phone)
+                    .from("contacts")
+                    .select("id, name")
+                    .eq("phone", phone)
                     .maybeSingle();
                   if (existing?.id) {
                     contactId = existing.id;
                     if (!existing.name && pushName) {
-                      await supabaseAdmin.from('contacts').update({ name: pushName }).eq('id', existing.id);
+                      await supabaseAdmin
+                        .from("contacts")
+                        .update({ name: pushName })
+                        .eq("id", existing.id);
                     }
                   } else {
                     const { data: created } = await supabaseAdmin
-                      .from('contacts')
+                      .from("contacts")
                       .insert({ phone, name: pushName || null })
-                      .select('id')
+                      .select("id")
                       .single();
                     contactId = created?.id || null;
                   }
@@ -149,9 +159,9 @@ export const Route = createFileRoute('/api/public/whatsapp/webhook')({
               let instanceId: string | null = null;
               if (instanceName) {
                 const { data: inst } = await supabaseAdmin
-                  .from('whatsapp_instances')
-                  .select('id')
-                  .eq('name', instanceName)
+                  .from("whatsapp_instances")
+                  .select("id")
+                  .eq("name", instanceName)
                   .maybeSingle();
                 instanceId = inst?.id || null;
               }
@@ -160,35 +170,38 @@ export const Route = createFileRoute('/api/public/whatsapp/webhook')({
               let conversationId: string | null = null;
               {
                 const { data: existing } = await supabaseAdmin
-                  .from('conversations')
-                  .select('id, status')
-                  .eq('whatsapp_chat_id', remoteJid)
+                  .from("conversations")
+                  .select("id, status")
+                  .eq("whatsapp_chat_id", remoteJid)
                   .maybeSingle();
                 if (existing?.id) {
                   conversationId = existing.id;
                   await supabaseAdmin
-                    .from('conversations')
+                    .from("conversations")
                     .update({
                       last_message: content,
                       last_message_at: new Date().toISOString(),
-                      unread_count: (existing as any).unread_count != null ? (existing as any).unread_count + 1 : 1,
+                      unread_count:
+                        (existing as any).unread_count != null
+                          ? (existing as any).unread_count + 1
+                          : 1,
                       updated_at: new Date().toISOString(),
                     })
-                    .eq('id', existing.id);
+                    .eq("id", existing.id);
                 } else {
                   const { data: created } = await supabaseAdmin
-                    .from('conversations')
+                    .from("conversations")
                     .insert({
                       contact_id: contactId,
                       instance_id: instanceId,
                       whatsapp_chat_id: remoteJid,
-                      status: 'bot',
-                      channel: 'whatsapp',
+                      status: "bot",
+                      channel: "whatsapp",
                       last_message: content,
                       last_message_at: new Date().toISOString(),
                       unread_count: 1,
                     })
-                    .select('id')
+                    .select("id")
                     .single();
                   conversationId = created?.id || null;
                 }
@@ -198,21 +211,21 @@ export const Route = createFileRoute('/api/public/whatsapp/webhook')({
 
               // 4) Insert message (idempotent on wa_message_id)
               const { data: dup } = await supabaseAdmin
-                .from('messages')
-                .select('id')
-                .eq('wa_message_id', waMsgId)
+                .from("messages")
+                .select("id")
+                .eq("wa_message_id", waMsgId)
                 .maybeSingle();
               if (dup?.id) continue;
 
-              await supabaseAdmin.from('messages').insert({
+              await supabaseAdmin.from("messages").insert({
                 conversation_id: conversationId,
                 wa_message_id: waMsgId,
-                sender_type: 'contact',
+                sender_type: "contact",
                 content,
                 content_type: contentType as any,
                 media_url: mediaUrl,
                 media_mime: mediaMime,
-                status: 'delivered',
+                status: "delivered",
               });
             }
 
@@ -221,10 +234,10 @@ export const Route = createFileRoute('/api/public/whatsapp/webhook')({
 
           return Response.json({ ok: true, ignored: event });
         } catch (err: any) {
-          console.error('WhatsApp webhook error:', err);
+          console.error("WhatsApp webhook error:", err);
           return new Response(JSON.stringify({ ok: false, error: err.message }), {
             status: 500,
-            headers: { 'Content-Type': 'application/json' },
+            headers: { "Content-Type": "application/json" },
           });
         }
       },

@@ -17,10 +17,14 @@ export default defineConfig({
       rollupOptions: {
         output: {
           manualChunks: {
-            'vendor-react': ['react', 'react-dom'],
-            'vendor-tanstack': ['@tanstack/react-query', '@tanstack/react-router', '@tanstack/react-start'],
-            'vendor-framer': ['framer-motion'],
-            'vendor-lucide': ['lucide-react'],
+            "vendor-react": ["react", "react-dom"],
+            "vendor-tanstack": [
+              "@tanstack/react-query",
+              "@tanstack/react-router",
+              "@tanstack/react-start",
+            ],
+            "vendor-framer": ["framer-motion"],
+            "vendor-lucide": ["lucide-react"],
           },
         },
       },

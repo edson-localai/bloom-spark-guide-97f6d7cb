@@ -9,7 +9,7 @@
 export async function compressImage(
   file: File,
   maxWidth: number = 400,
-  maxHeight: number = 400
+  maxHeight: number = 400,
 ): Promise<{ blob: Blob; contentType: string; extension: string }> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -77,7 +77,7 @@ export async function compressImage(
             }
           },
           contentType,
-          isPng ? undefined : quality
+          isPng ? undefined : quality,
         );
       };
       img.onerror = () => reject(new Error("Image load error"));

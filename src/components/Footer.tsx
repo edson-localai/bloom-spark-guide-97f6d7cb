@@ -1,9 +1,7 @@
-import { MapPin, Phone, Camera, Clock } from 'lucide-react';
-import hcbLogo from '@/assets/hcb-logo.png';
-import Logo from './Logo';
-import { SCROLL_OFFSET } from '@/constants/scroll';
-
-
+import { MapPin, Phone, Camera, Clock } from "lucide-react";
+import hcbLogo from "@/assets/hcb-logo.png";
+import Logo from "./Logo";
+import { SCROLL_OFFSET } from "@/constants/scroll";
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
@@ -20,7 +18,7 @@ const Footer = () => {
 
       window.scrollTo({
         top: offsetPosition,
-        behavior: 'smooth',
+        behavior: "smooth",
       });
     }
   };
@@ -31,17 +29,24 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 mb-16">
           {/* Column 1 - Brand */}
           <div className="space-y-6">
-            <div className="flex items-center group cursor-pointer" onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); }}>
+            <div
+              className="flex items-center group cursor-pointer"
+              onClick={(e) => {
+                e.preventDefault();
+                window.scrollTo({ top: 0, behavior: "smooth" });
+              }}
+            >
               <Logo size="lg" />
             </div>
             <p className="font-['Inter'] text-[15px] text-muted-foreground leading-relaxed max-w-sm">
-              Especialistas em refrigeração automotiva em Castanhal, Pará. <br className="hidden sm:block" />
+              Especialistas em refrigeração automotiva em Castanhal, Pará.{" "}
+              <br className="hidden sm:block" />
               Parceiro das melhores oficinas da região.
             </p>
             <div className="flex items-center gap-4">
-              <a 
-                href="https://www.instagram.com/hcb.automotivo/" 
-                target="_blank" 
+              <a
+                href="https://www.instagram.com/hcb.automotivo/"
+                target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Siga a HCB no Instagram"
                 className="w-12 h-12 rounded-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 flex items-center justify-center text-slate-600 dark:text-hcb-gray hover:text-white hover:border-hcb-blue hover:bg-hcb-blue dark:hover:bg-hcb-blue/10 hover:scale-110 transition-all duration-300"
@@ -54,20 +59,18 @@ const Footer = () => {
           {/* Column 2 - Quick Links */}
           <div className="space-y-6">
             <h3 className="font-['Rajdhani'] text-[13px] font-bold tracking-[0.15em] text-slate-600 dark:text-hcb-gray uppercase">
-
-
               Navegação
             </h3>
             <ul className="grid grid-cols-1 gap-3">
               {[
-                { name: 'Estatísticas', id: 'estatisticas' },
-                { name: 'Diferenciais', id: 'diferenciais' },
-                { name: 'Produtos', id: 'produtos' },
-                { name: 'Segmentos', id: 'segmentos' },
-                { name: 'Contato', id: 'contatosection' }
+                { name: "Estatísticas", id: "estatisticas" },
+                { name: "Diferenciais", id: "diferenciais" },
+                { name: "Produtos", id: "produtos" },
+                { name: "Segmentos", id: "segmentos" },
+                { name: "Contato", id: "contatosection" },
               ].map((link) => (
                 <li key={link.id}>
-                  <a 
+                  <a
                     href={`#${link.id}`}
                     onClick={(e) => handleScrollTo(e, link.id)}
                     className="font-['Rajdhani'] text-[15px] text-slate-700 dark:text-hcb-gray-light hover:text-hcb-blue dark:hover:text-hcb-white transition-colors"
@@ -88,16 +91,12 @@ const Footer = () => {
               <li className="flex gap-3">
                 <MapPin className="w-5 h-5 text-hcb-blue shrink-0" />
                 <span className="font-['Rajdhani'] text-[15px] text-slate-700 dark:text-hcb-gray-light">
-
-
                   Tv. Primeiro de Maio, 1.719 — Centro, Castanhal - PA
                 </span>
               </li>
               <li className="flex gap-3">
                 <Phone className="w-5 h-5 text-hcb-blue shrink-0" />
                 <div className="flex flex-col font-['Rajdhani'] text-[15px] text-slate-700 dark:text-hcb-gray-light">
-
-
                   <span>(91) 98516-1991</span>
                   <span>(91) 2122-2481</span>
                 </div>
@@ -119,17 +118,25 @@ const Footer = () => {
           </div>
         </div>
 
-
         {/* Bottom Line */}
 
         <div className="pt-8 border-t border-border text-center">
           <div className="hcb-divider w-full mb-8 opacity-30" />
           <p className="font-['Inter'] text-[13px] text-slate-500 dark:text-hcb-gray/60">
-            © {currentYear} HCB Ar Condicionado Automotivo. Todos os direitos reservados. <br className="sm:hidden" />
+            © {currentYear} HCB Ar Condicionado Automotivo. Todos os direitos reservados.{" "}
+            <br className="sm:hidden" />
             CNPJ 59.493.129/0001-21
           </p>
           <p className="font-['Inter'] text-[12px] text-slate-500 dark:text-hcb-gray/40 mt-4">
-            Desenvolvimento <a href="https://pno.com.br" target="_blank" rel="noopener noreferrer" className="hover:text-hcb-blue transition-colors">PNO Marketing</a>
+            Desenvolvimento{" "}
+            <a
+              href="https://pno.com.br"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-hcb-blue transition-colors"
+            >
+              PNO Marketing
+            </a>
           </p>
         </div>
       </div>

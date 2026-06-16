@@ -1,35 +1,34 @@
-import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { MessageCircle, Menu, X } from 'lucide-react';
-import hcbLogo from '@/assets/hcb-logo.png';
-import Logo from './Logo';
-import { SCROLL_OFFSET } from '@/constants/scroll';
-import { ThemeToggle } from './ThemeToggle';
-
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { MessageCircle, Menu, X } from "lucide-react";
+import hcbLogo from "@/assets/hcb-logo.png";
+import Logo from "./Logo";
+import { SCROLL_OFFSET } from "@/constants/scroll";
+import { ThemeToggle } from "./ThemeToggle";
 
 const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  const [activeSection, setActiveSection] = useState('');
+  const [activeSection, setActiveSection] = useState("");
 
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 20);
     };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   useEffect(() => {
     const observerOptions = {
       root: null,
-      rootMargin: '-20% 0px -70% 0px',
-      threshold: 0
+      rootMargin: "-20% 0px -70% 0px",
+      threshold: 0,
     };
 
     const observerCallback = (entries: IntersectionObserverEntry[]) => {
-      entries.forEach(entry => {
+      entries.forEach((entry) => {
         if (entry.isIntersecting) {
           setActiveSection(entry.target.id);
         }
@@ -37,9 +36,9 @@ const Header = () => {
     };
 
     const observer = new IntersectionObserver(observerCallback, observerOptions);
-    
-    navLinks.forEach(link => {
-      const id = link.href.replace('#', '');
+
+    navLinks.forEach((link) => {
+      const id = link.href.replace("#", "");
       const element = document.getElementById(id);
       if (element) observer.observe(element);
     });
@@ -48,17 +47,17 @@ const Header = () => {
   }, []);
 
   const navLinks = [
-    { name: 'Estatísticas', href: '#estatisticas' },
-    { name: 'Diferenciais', href: '#diferenciais' },
-    { name: 'Produtos', href: '#produtos' },
-    { name: 'Segmentos', href: '#segmentos' },
-    { name: 'Depoimentos', href: '#depoimentos' },
-    { name: 'Contato', href: '#contatosection' },
+    { name: "Estatísticas", href: "#estatisticas" },
+    { name: "Diferenciais", href: "#diferenciais" },
+    { name: "Produtos", href: "#produtos" },
+    { name: "Segmentos", href: "#segmentos" },
+    { name: "Depoimentos", href: "#depoimentos" },
+    { name: "Contato", href: "#contatosection" },
   ];
 
   const handleScrollTo = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
     e.preventDefault();
-    const id = href.replace('#', '');
+    const id = href.replace("#", "");
     const element = document.getElementById(id);
     if (element) {
       const offset = SCROLL_OFFSET;
@@ -69,48 +68,59 @@ const Header = () => {
 
       window.scrollTo({
         top: offsetPosition,
-        behavior: 'smooth',
+        behavior: "smooth",
       });
     }
     setIsMobileMenuOpen(false);
   };
 
   return (
-    <header 
+    <header
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 h-[72px] px-[max(24px,5vw)] flex items-center justify-between border-b ${
-        isScrolled 
-          ? 'bg-white/90 dark:bg-[#0A0A0A]/90 backdrop-blur-[16px] border-slate-200 dark:border-[#0066CC]/20 shadow-lg dark:shadow-[0_4px_30px_rgba(0,0,0,0.5)]' 
-          : 'bg-transparent border-transparent'
+        isScrolled
+          ? "bg-white/90 dark:bg-[#0A0A0A]/90 backdrop-blur-[16px] border-slate-200 dark:border-[#0066CC]/20 shadow-lg dark:shadow-[0_4px_30px_rgba(0,0,0,0.5)]"
+          : "bg-transparent border-transparent"
       }`}
-
     >
       {/* Skip to content for accessibility */}
-      <a href="#hero" className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 bg-[#0066CC] text-white px-4 py-2 rounded-md z-[60]">
+      <a
+        href="#hero"
+        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 bg-[#0066CC] text-white px-4 py-2 rounded-md z-[60]"
+      >
         Pular para o conteúdo
       </a>
 
       {/* Logo */}
-      <a href="/" className="flex items-center group transition-transform duration-300 hover:scale-[1.02]" aria-label="HCB Ar Condicionado - Início">
+      <a
+        href="/"
+        className="flex items-center group transition-transform duration-300 hover:scale-[1.02]"
+        aria-label="HCB Ar Condicionado - Início"
+      >
         <Logo size="lg" />
       </a>
 
       {/* Desktop Nav */}
       <nav className="hidden md:flex items-center gap-1">
         {navLinks.map((link) => {
-          const isActive = activeSection === link.href.replace('#', '');
+          const isActive = activeSection === link.href.replace("#", "");
           return (
             <a
               key={link.name}
               href={link.href}
               onClick={(e) => handleScrollTo(e, link.href)}
               className={`px-4 py-2 font-['Rajdhani'] text-[15px] font-semibold transition-all relative group ${
-                isActive ? 'text-[#0066CC] dark:text-[#F5F8FF]' : 'text-slate-700 dark:text-[#8A9BB5] hover:text-[#0066CC] dark:hover:text-[#F5F8FF]'
+                isActive
+                  ? "text-[#0066CC] dark:text-[#F5F8FF]"
+                  : "text-slate-700 dark:text-[#8A9BB5] hover:text-[#0066CC] dark:hover:text-[#F5F8FF]"
               }`}
-
             >
               <span className="relative z-10">{link.name}</span>
-              <span className={`absolute inset-0 bg-[#0066CC]/5 rounded-lg transition-colors ${isActive ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`} />
-              <span className={`absolute -bottom-1 left-4 right-4 h-[2px] bg-[#0066CC] transition-transform duration-300 origin-center ${isActive ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'}`} />
+              <span
+                className={`absolute inset-0 bg-[#0066CC]/5 rounded-lg transition-colors ${isActive ? "opacity-100" : "opacity-0 group-hover:opacity-100"}`}
+              />
+              <span
+                className={`absolute -bottom-1 left-4 right-4 h-[2px] bg-[#0066CC] transition-transform duration-300 origin-center ${isActive ? "scale-x-100" : "scale-x-0 group-hover:scale-x-100"}`}
+              />
             </a>
           );
         })}
@@ -132,7 +142,7 @@ const Header = () => {
         </a>
 
         {/* Hamburger */}
-        <button 
+        <button
           className="md:hidden text-slate-800 dark:text-[#F5F8FF] p-2 hover:bg-black/5 dark:hover:bg-white/5 rounded-full transition-colors"
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           aria-expanded={isMobileMenuOpen}
@@ -155,7 +165,7 @@ const Header = () => {
             className="fixed inset-0 z-40 bg-white/98 dark:bg-[#0A0A0A]/95 backdrop-blur-xl md:hidden flex flex-col items-center justify-center p-8 gap-8"
           >
             {navLinks.map((link, i) => {
-              const isActive = activeSection === link.href.replace('#', '');
+              const isActive = activeSection === link.href.replace("#", "");
               return (
                 <motion.a
                   key={link.name}
@@ -165,9 +175,10 @@ const Header = () => {
                   transition={{ delay: i * 0.1 }}
                   onClick={(e) => handleScrollTo(e, link.href)}
                   className={`font-['Bebas_Neue'] text-4xl tracking-wider transition-colors ${
-                    isActive ? 'text-[#0066CC]' : 'text-slate-800 dark:text-[#F5F8FF] hover:text-[#0066CC]'
+                    isActive
+                      ? "text-[#0066CC]"
+                      : "text-slate-800 dark:text-[#F5F8FF] hover:text-[#0066CC]"
                   }`}
-
                 >
                   {link.name}
                 </motion.a>
@@ -185,8 +196,8 @@ const Header = () => {
               <MessageCircle className="w-6 h-6" />
               WhatsApp
             </motion.a>
-            
-            <button 
+
+            <button
               onClick={() => setIsMobileMenuOpen(false)}
               className="absolute top-6 right-6 p-2 text-slate-500 dark:text-[#8A9BB5] hover:text-[#0066CC] dark:hover:text-[#F5F8FF]"
               aria-label="Fechar menu"
