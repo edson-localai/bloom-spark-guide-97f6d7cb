@@ -284,7 +284,7 @@ export const sendWhatsAppMessage = createServerFn({ method: "POST" })
       .eq("id", data.conversationId)
       .single();
 
-    if (convErr || !conv) throw new Error("Conversation not found");
+    if (convErr || !conv) throw AppError.validation("Conversa não encontrada");
     if (!conv.whatsapp_chat_id) return { skipped: true, reason: "no_chat_id" };
 
     let inst: any = null;
