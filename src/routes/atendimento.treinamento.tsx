@@ -17,6 +17,7 @@ import {
   GraduationCap,
   Trophy,
   AlertCircle,
+  Download,
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useCrmAuth } from "@/hooks/useCrmAuth";
