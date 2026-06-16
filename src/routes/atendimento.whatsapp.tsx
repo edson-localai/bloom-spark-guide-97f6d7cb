@@ -40,7 +40,7 @@ function WhatsAppPage() {
   const { instances, loading, fetchInstances } = useWhatsApp();
 
   const [showCreate, setShowCreate] = useState(false);
-  // Configuração global removida, pois W-API usa credenciais por instância
+  // Configuração global removida, pois Stevo usa credenciais por instância
   const [qrModal, setQrModal] = useState<{ name: string; qr: string | null } | null>(null);
   const [busy, setBusy] = useState<string | null>(null);
 
@@ -86,7 +86,7 @@ function WhatsAppPage() {
           </p>
         </div>
         <div className="flex gap-3">
-          {/* Configuração global removida, pois W-API usa credenciais por instância */}
+          {/* Configuração global removida, pois Stevo usa credenciais por instância */}
           <button
             onClick={() => fetchInstances()}
             className="p-2.5 bg-[#151821] border border-[#1F232E] text-zinc-400 hover:text-white rounded-lg transition-colors"
