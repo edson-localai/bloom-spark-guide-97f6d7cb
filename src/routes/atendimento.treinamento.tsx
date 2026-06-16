@@ -477,9 +477,20 @@ function TreinamentoPage() {
                   </div>
                   <div className="p-6">
                     <h3 className="text-xl font-bold text-white mb-3">{selectedLesson.title}</h3>
-                    <p className="text-sm text-zinc-400 leading-relaxed mb-6">
+                    <p className="text-sm text-zinc-400 leading-relaxed mb-4">
                       {selectedLesson.description}
                     </p>
+
+                    <a
+                      href={`/treinamento/${selectedLesson.id}.pdf`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center justify-center gap-2 w-full mb-6 bg-white/5 hover:bg-white/10 border border-[#1F232E] text-white font-semibold py-2.5 rounded-xl transition-all text-sm"
+                    >
+                      <Download className="h-4 w-4" />
+                      Baixar PDF Explicativo
+                    </a>
+
 
                     <div className="space-y-4">
                       {selectedLesson.quiz && !activeQuiz && (
