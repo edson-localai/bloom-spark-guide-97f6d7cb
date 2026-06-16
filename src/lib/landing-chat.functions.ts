@@ -2,7 +2,9 @@
 
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
-import { supabaseAdmin } from "@/integrations/supabase/client.server";
+// NOTE: supabaseAdmin is loaded dynamically inside handlers to keep
+// service-role credentials out of any client bundle that might transitively
+// import this module.
 
 const messageSchema = z.object({
   role: z.enum(["user", "assistant"]),
