@@ -94,10 +94,11 @@ export class RouterService {
     // Adicionar à fila de espera
     await supabaseAdmin.from("waiting_queue").insert({
       conversation_id: conversationId,
-      reason: classification.reasoning,
       priority: "normal",
-      status: "pending",
-      created_at: new Date().toISOString(),
+      metadata: {
+        reason: classification.reasoning,
+        status: "pending",
+      },
     });
 
     return {
