@@ -47,7 +47,9 @@ export function handleServerError(error: unknown): never {
     if (error.message.includes("JSON")) {
       throw AppError.validation("Dados inválidos recebidos");
     }
-    throw new AppError(error.message, ErrorCode.INTERNAL_ERROR, 500);
+    // Never leak raw error.message (may include Supabase table/column names,
+    // PostgreSQL error codes, internal stack details). Keep details in logs only.
+    throw AppError.internal();
   }
 
   throw AppError.internal();
