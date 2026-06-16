@@ -9,17 +9,20 @@ export const Route = createFileRoute("/api/public/whatsapp/webhook")({
   server: {
     handlers: {
       POST: async ({ request }: { request: Request }) => {
-        // Optional shared-secret check. Configure EVOLUTION_WEBHOOK_SECRET
+        // Mandatory shared-secret check. Configure EVOLUTION_WEBHOOK_SECRET
         // and set the same value as the `apikey` header in the Evolution panel.
         const secret = process.env.EVOLUTION_WEBHOOK_SECRET;
-        if (secret) {
-          const provided =
-            request.headers.get("apikey") ||
-            request.headers.get("x-webhook-secret") ||
-            request.headers.get("authorization")?.replace(/^Bearer\s+/i, "");
-          if (provided !== secret) {
-            return new Response("Unauthorized", { status: 401 });
-          }
+        if (!secret) {
+          console.error("EVOLUTION_WEBHOOK_SECRET not configured");
+          return new Response("Webhook secret not configured", { status: 500 });
+        }
+        const provided =
+          request.headers.get("apikey") ||
+          request.headers.get("x-webhook-secret") ||
+          request.headers.get("authorization")?.replace(/^Bearer\s+/i, "") ||
+          "";
+        if (provided.length !== secret.length || provided !== secret) {
+          return new Response("Unauthorized", { status: 401 });
         }
 
         let payload: any;
@@ -235,7 +238,7 @@ export const Route = createFileRoute("/api/public/whatsapp/webhook")({
           return Response.json({ ok: true, ignored: event });
         } catch (err: any) {
           console.error("WhatsApp webhook error:", err);
-          return new Response(JSON.stringify({ ok: false, error: err.message }), {
+          return new Response(JSON.stringify({ ok: false, error: "Internal server error" }), {
             status: 500,
             headers: { "Content-Type": "application/json" },
           });
