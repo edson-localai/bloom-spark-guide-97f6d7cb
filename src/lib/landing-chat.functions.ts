@@ -109,7 +109,9 @@ Regras:
               lead,
             };
           }
-        } catch {}
+        } catch (parseErr) {
+          console.warn("[landing-chat] Failed to parse AI JSON response:", parseErr);
+        }
       }
 
       return {
@@ -154,6 +156,7 @@ const leadSchema = z.object({
 export const saveLandingLead = createServerFn({ method: "POST" })
   .inputValidator((data) => leadSchema.parse(data))
   .handler(async ({ data }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     // Deduplicação: busca lead existente com mesmos dados básicos
     let query = supabaseAdmin
       .from("contacts")

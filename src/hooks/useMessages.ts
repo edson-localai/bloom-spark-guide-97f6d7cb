@@ -16,6 +16,26 @@ export function useMessages(conversationId: string | null) {
       return;
     }
 
+    let cancelled = false;
+
+    const fetchMessages = async (id: string) => {
+      setLoading(true);
+      try {
+        const { data, error } = await supabase
+          .from("messages")
+          .select("*")
+          .eq("conversation_id", id)
+          .order("created_at", { ascending: true });
+        if (error) throw error;
+        if (cancelled) return;
+        setMessages((data as Message[]) ?? []);
+      } catch (err) {
+        if (!cancelled) console.error("Error fetching messages:", err);
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    };
+
     fetchMessages(conversationId);
 
     const channel = supabase
@@ -29,6 +49,7 @@ export function useMessages(conversationId: string | null) {
           filter: `conversation_id=eq.${conversationId}`,
         },
         (payload) => {
+          if (cancelled) return;
           const newMsg = payload.new as Message;
           setMessages((prev) => {
             if (prev.find((m) => m.id === newMsg.id)) return prev;
@@ -42,33 +63,17 @@ export function useMessages(conversationId: string | null) {
                 conversationId: conversationId,
                 content: newMsg.content || "",
               },
-            });
+            }).catch((err) => console.error("AutoReply error:", err));
           }
         },
       )
       .subscribe();
 
     return () => {
+      cancelled = true;
       supabase.removeChannel(channel);
     };
   }, [conversationId]);
-
-  async function fetchMessages(id: string) {
-    setLoading(true);
-    try {
-      const { data, error } = await supabase
-        .from("messages")
-        .select("*")
-        .eq("conversation_id", id)
-        .order("created_at", { ascending: true });
-      if (error) throw error;
-      setMessages(data as Message[]);
-    } catch (err) {
-      console.error("Error fetching messages:", err);
-    } finally {
-      setLoading(false);
-    }
-  }
 
   async function sendMessage(content: string, type: any = "text", isInternal: boolean = false) {
     if (!conversationId) return;
