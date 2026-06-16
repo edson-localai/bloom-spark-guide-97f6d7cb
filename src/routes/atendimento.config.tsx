@@ -12,6 +12,9 @@ import {
   ShieldAlert,
   Users,
   ChevronRight,
+  MessageCircle,
+  QrCode,
+  Link2,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useCrmAuth } from "@/hooks/useCrmAuth";
