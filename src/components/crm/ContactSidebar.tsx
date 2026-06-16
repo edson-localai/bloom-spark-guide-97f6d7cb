@@ -55,6 +55,7 @@ export function ContactSidebar({
   const [agents, setAgents] = useState<any[]>([]);
   const [loadingAgents, setLoadingAgents] = useState(false);
   const [updatingAssignment, setUpdatingAssignment] = useState(false);
+  const [currentAgentId, setCurrentAgentId] = useState<string>("");
 
   useEffect(() => {
     const fetchAgents = async () => {
@@ -65,6 +66,27 @@ export function ContactSidebar({
     };
     fetchAgents();
   }, []);
+
+  // Mantém o select de agente sincronizado com o agent_id atual da conversa,
+  // evitando que o componente apareça como "Não atribuído" para conversas já atribuídas.
+  useEffect(() => {
+    if (!conversationId) {
+      setCurrentAgentId("");
+      return;
+    }
+    let cancelled = false;
+    (async () => {
+      const { data } = await supabase
+        .from("conversations")
+        .select("agent_id")
+        .eq("id", conversationId)
+        .maybeSingle();
+      if (!cancelled) setCurrentAgentId((data as any)?.agent_id ?? "");
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [conversationId]);
 
   const departments = ["vendas", "financeiro", "atendimento"];
 
@@ -77,7 +99,10 @@ export function ContactSidebar({
       .eq("id", conversationId);
 
     if (error) toast.error("Erro ao atribuir agente");
-    else toast.success("Agente atribuído com sucesso");
+    else {
+      setCurrentAgentId(agentId ?? "");
+      toast.success("Agente atribuído com sucesso");
+    }
     setUpdatingAssignment(false);
   };
 
@@ -163,7 +188,7 @@ export function ContactSidebar({
                   className="w-full bg-[#151821] border border-[#1F232E] rounded-lg p-2 text-xs text-zinc-200 outline-none focus:border-cyan-500/50"
                   onChange={(e) => handleAssign(e.target.value || null)}
                   disabled={updatingAssignment}
-                  defaultValue="" // We don't have the current conversation agent_id here easily without passing it, but let's assume it works for selection
+                  value={currentAgentId}
                 >
                   <option value="">Não atribuído</option>
                   {agents.map((a) => (
