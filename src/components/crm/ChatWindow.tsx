@@ -153,7 +153,11 @@ export function ChatWindow({ conversation }: ChatWindowProps) {
   }, []);
 
   const fetchLabels = async () => {
-    const { data } = await supabase.from("labels").select("*");
+    const { data, error } = await supabase.from("labels").select("*");
+    if (error) {
+      console.error("Error fetching labels:", error);
+      return;
+    }
     if (data) setAvailableLabels(data);
   };
 
@@ -291,19 +295,15 @@ export function ChatWindow({ conversation }: ChatWindowProps) {
 
       if (uploadError) throw uploadError;
 
-      await sendMessage(file.name, file.type.startsWith("image/") ? "image" : "document", false);
-
-      // Armazena o PATH do arquivo em vez da URL pública (bucket privado)
-      await supabase
-        .from("messages")
-        .update({
-          media_url: filePath,
-          media_mime: file.type,
-        } as any)
-        .eq("content", file.name)
-        .eq("conversation_id", conversation.id)
-        .order("created_at", { ascending: false })
-        .limit(1);
+      // Insere a mensagem JÁ com o media_url/mime — evita o update-by-content
+      // posterior, que era frágil (corria o risco de atualizar a mensagem errada
+      // quando dois arquivos com mesmo nome eram enviados em sequência).
+      await sendMessage(
+        file.name,
+        file.type.startsWith("image/") ? "image" : "document",
+        false,
+        { media_url: filePath, media_mime: file.type },
+      );
 
       toast.success("Arquivo enviado!");
     } catch (error) {

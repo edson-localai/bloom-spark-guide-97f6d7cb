@@ -32,8 +32,9 @@ export function ContactEditor({ contact, onClose, onSaved }: Props) {
     if (cep.length !== 8) return;
     try {
       const res = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+      if (!res.ok) return;
       const data = await res.json();
-      if (data.erro) return;
+      if (!data || data.erro) return;
       setForm((f) => ({
         ...f,
         street: f.street || data.logradouro || "",
@@ -41,7 +42,9 @@ export function ContactEditor({ contact, onClose, onSaved }: Props) {
         city: f.city || data.localidade || "",
         state: f.state || data.uf || "",
       }));
-    } catch {}
+    } catch (err) {
+      console.warn("ViaCEP lookup failed:", err);
+    }
   };
 
   const save = async () => {

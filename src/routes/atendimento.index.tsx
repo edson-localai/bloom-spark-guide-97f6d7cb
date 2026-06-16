@@ -56,7 +56,7 @@ function InboxPage() {
     } else {
       setPane(selectedId ? "chat" : "list");
     }
-  }, [filter]);
+  }, [filter, selectedId]);
 
   const navItems = [
     { id: "all", label: "Todas", icon: Inbox },

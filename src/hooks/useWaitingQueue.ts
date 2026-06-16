@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAgents } from "./useAgents";
 import { toast } from "sonner";
@@ -15,6 +15,7 @@ export function useWaitingQueue() {
   const [queue, setQueue] = useState<QueueEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const { onlineAgents } = useAgents();
+  const isAssigningRef = useRef(false);
 
   useEffect(() => {
     fetchQueue();
@@ -31,10 +32,18 @@ export function useWaitingQueue() {
     };
   }, []);
 
-  // Auto-reatribuição: quando um agente fica online e há fila, atribui o mais antigo
+  // Auto-reatribuição: quando um agente fica online e há fila, atribui o mais antigo.
+  // Usa um ref como guard para impedir loop quando o update dispara o realtime
+  // e re-executa este effect antes do item sair da fila.
   useEffect(() => {
-    if (onlineAgents.length > 0 && queue.length > 0) {
-      autoAssign();
+    if (onlineAgents.length > 0 && queue.length > 0 && !isAssigningRef.current) {
+      isAssigningRef.current = true;
+      autoAssign().finally(() => {
+        // Libera o lock após um pequeno cooldown para o realtime atualizar
+        setTimeout(() => {
+          isAssigningRef.current = false;
+        }, 1500);
+      });
     }
   }, [onlineAgents, queue]);
 

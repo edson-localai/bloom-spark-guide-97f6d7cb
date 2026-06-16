@@ -257,7 +257,8 @@ function PropostasPage() {
     });
 
     if (proposal.notes) {
-      const finalY = (doc as any).lastAutoTable.finalY + 10;
+      const lastTable = (doc as any).lastAutoTable;
+      const finalY = (lastTable?.finalY ?? 80) + 10;
       doc.setFont("helvetica", "bold");
       doc.text("OBSERVAÇÕES:", 20, finalY);
       doc.setFont("helvetica", "normal");

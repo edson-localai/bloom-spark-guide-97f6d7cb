@@ -20,7 +20,12 @@ export function InstallAppPrompt() {
       window.navigator.standalone === true;
     if (standalone) return;
 
-    const dismissed = localStorage.getItem(DISMISS_KEY);
+    let dismissed: string | null = null;
+    try {
+      dismissed = localStorage.getItem(DISMISS_KEY);
+    } catch {
+      // localStorage may throw in private browsing / iOS Safari — fail open.
+    }
     // On /atendimento we ignore the dismissal logic to always show for new/active sessions as requested
     const isAtendimentoPage = window.location.pathname.startsWith("/atendimento");
 
@@ -47,7 +52,11 @@ export function InstallAppPrompt() {
   }, []);
 
   const dismiss = () => {
-    localStorage.setItem(DISMISS_KEY, String(Date.now()));
+    try {
+      localStorage.setItem(DISMISS_KEY, String(Date.now()));
+    } catch {
+      // ignore localStorage failures (private mode etc.)
+    }
     setShow(false);
   };
 

@@ -75,16 +75,27 @@ export function useMessages(conversationId: string | null) {
     };
   }, [conversationId]);
 
-  async function sendMessage(content: string, type: any = "text", isInternal: boolean = false) {
-    if (!conversationId) return;
+  async function sendMessage(
+    content: string,
+    type: any = "text",
+    isInternal: boolean = false,
+    media?: { media_url?: string | null; media_mime?: string | null },
+  ): Promise<string | null> {
+    if (!conversationId) return null;
     try {
-      const { error } = await supabase.from("messages").insert({
-        conversation_id: conversationId,
-        content,
-        content_type: type,
-        sender_type: "agent",
-        is_internal: isInternal,
-      });
+      const { data: inserted, error } = await supabase
+        .from("messages")
+        .insert({
+          conversation_id: conversationId,
+          content,
+          content_type: type,
+          sender_type: "agent",
+          is_internal: isInternal,
+          media_url: media?.media_url ?? null,
+          media_mime: media?.media_mime ?? null,
+        } as any)
+        .select("id")
+        .single();
       if (error) throw error;
 
       // Se um humano responder, bloqueia a IA por 24h e move para atendimento humano
@@ -107,8 +118,10 @@ export function useMessages(conversationId: string | null) {
           console.warn("WhatsApp delivery failed:", waErr);
         }
       }
+      return inserted?.id ?? null;
     } catch (err) {
       console.error("Error sending message:", err);
+      return null;
     }
   }
 
