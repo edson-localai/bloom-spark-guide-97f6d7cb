@@ -1,10 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
-  BarChart3,
   Users,
   MessageSquare,
-  Clock,
   TrendingUp,
   ArrowUpRight,
   ArrowDownRight,
@@ -15,68 +13,208 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useCrmAuth } from "@/hooks/useCrmAuth";
+import { toastError } from "@/lib/error-handler";
 
 export const Route = createFileRoute("/atendimento/dashboard")({
   component: DashboardPage,
 });
 
+type Period = 7 | 30;
+
+interface DashboardMetrics {
+  totalConversations: number;
+  totalConversationsPrev: number;
+  newContacts: number;
+  newContactsPrev: number;
+  avgWaitLabel: string;
+  waitingNow: number;
+  conversionRate: number | null;
+  perDay: { date: string; count: number }[];
+  topAgents: { id: string; name: string; role: string | null; chats: number }[];
+}
+
+const EMPTY_METRICS: DashboardMetrics = {
+  totalConversations: 0,
+  totalConversationsPrev: 0,
+  newContacts: 0,
+  newContactsPrev: 0,
+  avgWaitLabel: "--",
+  waitingNow: 0,
+  conversionRate: null,
+  perDay: [],
+  topAgents: [],
+};
+
+function formatPct(curr: number, prev: number): { label: string; trend: "up" | "down" } {
+  if (prev === 0) {
+    return { label: curr === 0 ? "Sem dados" : "+100%", trend: curr === 0 ? "down" : "up" };
+  }
+  const diff = ((curr - prev) / prev) * 100;
+  const trend: "up" | "down" = diff >= 0 ? "up" : "down";
+  return { label: `${diff >= 0 ? "+" : ""}${diff.toFixed(1)}%`, trend };
+}
+
 function DashboardPage() {
   const { roles, loading: authLoading } = useCrmAuth();
   const isSupervisor = roles.includes("admin") || roles.includes("supervisor");
-  const [avgWaitTime, setAvgWaitTime] = useState<string>("--");
-  const [waitingNow, setWaitingNow] = useState<number>(0);
+  const [period, setPeriod] = useState<Period>(7);
+  const [metrics, setMetrics] = useState<DashboardMetrics>(EMPTY_METRICS);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchWaitMetrics();
-    const interval = setInterval(fetchWaitMetrics, 30000);
-    return () => clearInterval(interval);
-  }, []);
+    if (!isSupervisor) return;
+    let cancelled = false;
+    async function load() {
+      setLoading(true);
+      try {
+        const now = Date.now();
+        const periodMs = period * 24 * 60 * 60 * 1000;
+        const startCurr = new Date(now - periodMs).toISOString();
+        const startPrev = new Date(now - 2 * periodMs).toISOString();
+        const endPrev = startCurr;
 
-  async function fetchWaitMetrics() {
-    try {
-      const { count } = await supabase
-        .from("waiting_queue")
-        .select("*", { count: "exact", head: true });
-      setWaitingNow(count || 0);
+        const [
+          waitingQ,
+          convsCurr,
+          convsPrev,
+          contactsCurr,
+          contactsPrev,
+          assigned,
+          agents,
+          msgCounts,
+        ] = await Promise.all([
+          supabase.from("waiting_queue").select("*", { count: "exact", head: true }),
+          supabase
+            .from("conversations")
+            .select("id, created_at", { count: "exact" })
+            .gte("created_at", startCurr),
+          supabase
+            .from("conversations")
+            .select("id", { count: "exact", head: true })
+            .gte("created_at", startPrev)
+            .lt("created_at", endPrev),
+          supabase
+            .from("contacts")
+            .select("id", { count: "exact", head: true })
+            .gte("created_at", startCurr),
+          supabase
+            .from("contacts")
+            .select("id", { count: "exact", head: true })
+            .gte("created_at", startPrev)
+            .lt("created_at", endPrev),
+          supabase
+            .from("conversations")
+            .select("created_at, updated_at")
+            .not("agent_id", "is", null)
+            .gte("created_at", startCurr)
+            .limit(200),
+          supabase.from("agents").select("id, name, role").limit(20),
+          supabase
+            .from("messages")
+            .select("sender_id")
+            .eq("sender_type", "agent")
+            .gte("created_at", startCurr)
+            .limit(5000),
+        ]);
 
-      const { data } = await supabase
-        .from("conversations")
-        .select("created_at, updated_at, agent_id")
-        .not("agent_id", "is", null)
-        .gte("created_at", new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString())
-        .limit(100);
+        if (cancelled) return;
 
-      if (data && data.length > 0) {
-        const totalMs = data.reduce((acc, c) => {
-          const created = new Date(c.created_at!).getTime();
-          const assigned = new Date(c.updated_at!).getTime();
-          return acc + Math.max(0, assigned - created);
-        }, 0);
+        // Avg wait time
+        let avgWaitLabel = "--";
+        if (assigned.data && assigned.data.length > 0) {
+          const totalMs = assigned.data.reduce((acc, c) => {
+            const created = new Date(c.created_at!).getTime();
+            const updated = new Date(c.updated_at!).getTime();
+            return acc + Math.max(0, updated - created);
+          }, 0);
+          const avgSec = Math.floor(totalMs / assigned.data.length / 1000);
+          const m = Math.floor(avgSec / 60);
+          const s = avgSec % 60;
+          avgWaitLabel = `${m}m ${s}s`;
+        }
 
-        const avgSec = Math.floor(totalMs / data.length / 1000);
-        const min = Math.floor(avgSec / 60);
-        const sec = avgSec % 60;
-        setAvgWaitTime(`${min}m ${sec}s`);
+        // Per-day conversation volume
+        const perDayMap = new Map<string, number>();
+        for (let i = period - 1; i >= 0; i--) {
+          const d = new Date(now - i * 24 * 60 * 60 * 1000);
+          perDayMap.set(d.toISOString().slice(0, 10), 0);
+        }
+        (convsCurr.data ?? []).forEach((c) => {
+          const day = (c.created_at ?? "").slice(0, 10);
+          if (perDayMap.has(day)) perDayMap.set(day, (perDayMap.get(day) ?? 0) + 1);
+        });
+        const perDay = Array.from(perDayMap.entries()).map(([date, count]) => ({ date, count }));
+
+        // Top agents by outbound messages sent
+        const counts = new Map<string, number>();
+        (msgCounts.data ?? []).forEach((m: any) => {
+          if (!m.sender_id) return;
+          counts.set(m.sender_id, (counts.get(m.sender_id) ?? 0) + 1);
+        });
+        const topAgents = (agents.data ?? [])
+          .map((a: any) => ({
+            id: a.id,
+            name: a.name ?? "Agente",
+            role: a.role ?? null,
+            chats: counts.get(a.id) ?? 0,
+          }))
+          .sort((a, b) => b.chats - a.chats)
+          .slice(0, 5);
+
+        setMetrics({
+          totalConversations: convsCurr.count ?? 0,
+          totalConversationsPrev: convsPrev.count ?? 0,
+          newContacts: contactsCurr.count ?? 0,
+          newContactsPrev: contactsPrev.count ?? 0,
+          avgWaitLabel,
+          waitingNow: waitingQ.count ?? 0,
+          conversionRate: null, // requires lead→sale tracking; mostrado como "--"
+          perDay,
+          topAgents,
+        });
+      } catch (err) {
+        if (!cancelled) {
+          toastError(err, "Não foi possível carregar as métricas.");
+          setMetrics(EMPTY_METRICS);
+        }
+      } finally {
+        if (!cancelled) setLoading(false);
       }
-    } catch (err) {
-      console.error("Failed to fetch wait metrics:", err);
     }
-  }
+    load();
+    const interval = setInterval(load, 60_000);
+    return () => {
+      cancelled = true;
+      clearInterval(interval);
+    };
+  }, [isSupervisor, period]);
+
+  const convPct = useMemo(
+    () => formatPct(metrics.totalConversations, metrics.totalConversationsPrev),
+    [metrics.totalConversations, metrics.totalConversationsPrev],
+  );
+  const contactsPct = useMemo(
+    () => formatPct(metrics.newContacts, metrics.newContactsPrev),
+    [metrics.newContacts, metrics.newContactsPrev],
+  );
+
+  const maxDay = Math.max(1, ...metrics.perDay.map((d) => d.count));
 
   const exportContacts = async () => {
     try {
       const { data } = await supabase.from("contacts").select("*");
-      if (!data) return;
-
+      if (!data || data.length === 0) {
+        toast("Nenhum contato para exportar.");
+        return;
+      }
       const headers = ["Nome", "Telefone", "Veículo", "Ano", "Tags"];
       const rows = data.map((c) => [
         c.name || "",
         c.phone,
-        `${c.vehicle_brand || ""} ${c.vehicle_model || ""}`,
+        `${c.vehicle_brand || ""} ${c.vehicle_model || ""}`.trim(),
         c.vehicle_year || "",
         c.tags?.join(", ") || "",
       ]);
-
       const csvContent = [headers, ...rows].map((e) => e.join(",")).join("\n");
       const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
       const url = URL.createObjectURL(blob);
@@ -87,10 +225,11 @@ function DashboardPage() {
       link.click();
       document.body.removeChild(link);
       toast.success("Relatório de contatos exportado!");
-    } catch (error) {
-      toast.error("Erro ao exportar relatório.");
+    } catch (err) {
+      toastError(err, "Erro ao exportar relatório.");
     }
   };
+
   if (authLoading) return null;
 
   if (!isSupervisor) {
@@ -111,10 +250,7 @@ function DashboardPage() {
   }
 
   return (
-    <div
-      className="h-full flex flex-col overflow-auto custom-scrollbar"
-      style={{ background: "#0A0A0F" }}
-    >
+    <div className="h-full flex flex-col overflow-auto custom-scrollbar" style={{ background: "#0A0A0F" }}>
       <div className="p-8 pb-4 flex justify-between items-center">
         <div>
           <h1 className="text-2xl font-bold text-white">Dashboard de Performance</h1>
@@ -133,33 +269,33 @@ function DashboardPage() {
 
       <div className="p-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <StatCard
-          title="Total de Atendimentos"
-          value="1.284"
-          change="+12.5%"
-          trend="up"
+          title={`Conversas (${period}d)`}
+          value={loading ? "…" : metrics.totalConversations.toLocaleString("pt-BR")}
+          change={convPct.label}
+          trend={convPct.trend}
           icon={MessageSquare}
           color="#00CCEE"
         />
         <StatCard
-          title="Novos Contatos"
-          value="84"
-          change="+5.2%"
-          trend="up"
+          title={`Novos Contatos (${period}d)`}
+          value={loading ? "…" : metrics.newContacts.toLocaleString("pt-BR")}
+          change={contactsPct.label}
+          trend={contactsPct.trend}
           icon={Users}
           color="#8B5CF6"
         />
         <StatCard
           title="Tempo Médio de Espera"
-          value={avgWaitTime}
-          change={waitingNow > 0 ? `${waitingNow} na fila` : "Fila vazia"}
-          trend={waitingNow > 0 ? "up" : "down"}
+          value={loading ? "…" : metrics.avgWaitLabel}
+          change={metrics.waitingNow > 0 ? `${metrics.waitingNow} na fila` : "Fila vazia"}
+          trend={metrics.waitingNow > 0 ? "up" : "down"}
           icon={Hourglass}
           color="#F59E0B"
         />
         <StatCard
           title="Taxa de Conversão"
-          value="24.8%"
-          change="+2.4%"
+          value={metrics.conversionRate !== null ? `${metrics.conversionRate.toFixed(1)}%` : "--"}
+          change="Em breve"
           trend="up"
           icon={TrendingUp}
           color="#10B981"
@@ -167,51 +303,87 @@ function DashboardPage() {
       </div>
 
       <div className="px-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Gráfico Principal (Placeholder) */}
+        {/* Volume de Conversas */}
         <div className="lg:col-span-2 bg-[#0F1117] rounded-3xl border border-[#1F232E] p-8 min-h-[400px] flex flex-col">
           <div className="flex justify-between items-center mb-8">
             <h3 className="font-bold text-white">Volume de Conversas</h3>
             <div className="flex gap-2">
-              <button className="text-[10px] px-3 py-1 rounded bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 font-bold uppercase">
+              <button
+                onClick={() => setPeriod(7)}
+                className={`text-[10px] px-3 py-1 rounded font-bold uppercase transition-colors ${
+                  period === 7
+                    ? "bg-cyan-500/10 text-cyan-400 border border-cyan-500/20"
+                    : "text-zinc-600 hover:text-zinc-400"
+                }`}
+              >
                 7 dias
               </button>
-              <button className="text-[10px] px-3 py-1 rounded text-zinc-600 hover:text-zinc-400 font-bold uppercase transition-colors">
+              <button
+                onClick={() => setPeriod(30)}
+                className={`text-[10px] px-3 py-1 rounded font-bold uppercase transition-colors ${
+                  period === 30
+                    ? "bg-cyan-500/10 text-cyan-400 border border-cyan-500/20"
+                    : "text-zinc-600 hover:text-zinc-400"
+                }`}
+              >
                 30 dias
               </button>
             </div>
           </div>
-          <div className="flex-1 flex items-end gap-2 pb-4">
-            {[45, 78, 56, 92, 67, 84, 110, 89, 120, 105, 95, 130].map((h, i) => (
-              <div
-                key={i}
-                className="flex-1 bg-gradient-to-t from-cyan-500/5 to-cyan-500/40 rounded-t-lg group relative"
-                style={{ height: `${h}%` }}
-              >
-                <div className="absolute -top-10 left-1/2 -translate-x-1/2 bg-[#1F232E] text-white text-[10px] px-2 py-1 rounded border border-[#1F232E] opacity-0 group-hover:opacity-100 transition-opacity">
-                  {h * 2}
-                </div>
+          {metrics.perDay.length === 0 || metrics.perDay.every((d) => d.count === 0) ? (
+            <div className="flex-1 flex items-center justify-center text-zinc-600 text-sm">
+              {loading ? "Carregando…" : "Sem conversas no período."}
+            </div>
+          ) : (
+            <>
+              <div className="flex-1 flex items-end gap-2 pb-4">
+                {metrics.perDay.map((d) => (
+                  <div
+                    key={d.date}
+                    className="flex-1 bg-gradient-to-t from-cyan-500/5 to-cyan-500/40 rounded-t-lg group relative"
+                    style={{ height: `${Math.max(2, (d.count / maxDay) * 100)}%` }}
+                  >
+                    <div className="absolute -top-10 left-1/2 -translate-x-1/2 bg-[#1F232E] text-white text-[10px] px-2 py-1 rounded border border-[#1F232E] opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                      {d.date.slice(5)} · {d.count}
+                    </div>
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
-          <div className="flex justify-between text-[10px] text-zinc-600 font-bold uppercase tracking-wider pt-4 border-t border-[#1F232E]">
-            <span>Seg</span>
-            <span>Ter</span>
-            <span>Qua</span>
-            <span>Qui</span>
-            <span>Sex</span>
-            <span>Sáb</span>
-            <span>Dom</span>
-          </div>
+              <div className="flex justify-between text-[10px] text-zinc-600 font-bold uppercase tracking-wider pt-4 border-t border-[#1F232E]">
+                {metrics.perDay.length <= 7 ? (
+                  metrics.perDay.map((d) => (
+                    <span key={d.date}>
+                      {new Date(d.date).toLocaleDateString("pt-BR", { weekday: "short" }).replace(".", "")}
+                    </span>
+                  ))
+                ) : (
+                  <>
+                    <span>{metrics.perDay[0]?.date.slice(5)}</span>
+                    <span>{metrics.perDay[Math.floor(metrics.perDay.length / 2)]?.date.slice(5)}</span>
+                    <span>{metrics.perDay[metrics.perDay.length - 1]?.date.slice(5)}</span>
+                  </>
+                )}
+              </div>
+            </>
+          )}
         </div>
 
         {/* Top Agentes */}
         <div className="bg-[#0F1117] rounded-3xl border border-[#1F232E] p-8 flex flex-col">
           <h3 className="font-bold text-white mb-8">Top Agentes</h3>
-          <div className="space-y-6">
-            <AgentRow name="Ana (IA)" role="Assistente" chats={842} score={98} />
-            <AgentRow name="Rodrigo Souza" role="Admin" chats={312} score={95} />
-            <AgentRow name="Márcia Lima" role="Agente" chats={130} score={92} />
-          </div>
+          {metrics.topAgents.length === 0 || metrics.topAgents.every((a) => a.chats === 0) ? (
+            <div className="flex-1 flex items-center justify-center text-zinc-600 text-sm text-center">
+              {loading ? "Carregando…" : "Sem atividade de agentes no período."}
+            </div>
+          ) : (
+            <div className="space-y-6">
+              {metrics.topAgents
+                .filter((a) => a.chats > 0)
+                .map((a) => (
+                  <AgentRow key={a.id} name={a.name} role={a.role ?? "Agente"} chats={a.chats} />
+                ))}
+            </div>
+          )}
         </div>
       </div>
 
@@ -249,12 +421,12 @@ function StatCard({ title, value, change, trend, icon: Icon, color }: any) {
   );
 }
 
-function AgentRow({ name, role, chats, score }: any) {
+function AgentRow({ name, role, chats }: { name: string; role: string; chats: number }) {
   return (
     <div className="flex items-center justify-between">
       <div className="flex items-center gap-3">
         <div className="h-10 w-10 rounded-xl bg-[#1F232E] flex items-center justify-center font-bold text-cyan-500">
-          {name.charAt(0)}
+          {name.charAt(0).toUpperCase()}
         </div>
         <div>
           <p className="text-sm font-semibold text-white">{name}</p>
@@ -263,7 +435,7 @@ function AgentRow({ name, role, chats, score }: any) {
       </div>
       <div className="text-right">
         <p className="text-sm font-bold text-white">{chats}</p>
-        <p className="text-[10px] text-emerald-500 font-bold">{score}% satisfação</p>
+        <p className="text-[10px] text-zinc-500 font-bold">mensagens</p>
       </div>
     </div>
   );
