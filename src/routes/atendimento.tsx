@@ -63,8 +63,48 @@ export const Route = createFileRoute("/atendimento")({
     }
   },
   component: AtendimentoLayout,
+  errorComponent: AtendimentoErrorComponent,
   head: () => ({ meta: [{ title: "HCB CRM — Atendimento" }] }),
 });
+
+function AtendimentoErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
+  console.error("[atendimento]", error);
+  return (
+    <div
+      className="min-h-screen flex items-center justify-center px-4"
+      style={{ background: "#0A0A0F" }}
+    >
+      <div
+        className="max-w-md text-center rounded-2xl p-8"
+        style={{ background: "#151821", border: "1px solid #1F232E" }}
+      >
+        <h2 className="text-lg font-semibold text-white mb-2">Erro ao carregar esta tela</h2>
+        <p className="text-sm text-zinc-400 mb-6">
+          Ocorreu um problema inesperado. Tente novamente ou volte para o início do atendimento.
+        </p>
+        <div className="flex justify-center gap-2">
+          <button
+            onClick={() => {
+              reset();
+              window.location.reload();
+            }}
+            className="text-sm px-4 py-2 rounded-md"
+            style={{ background: "#00CCEE", color: "#0A0A0F", fontWeight: 600 }}
+          >
+            Tentar novamente
+          </button>
+          <a
+            href="/atendimento"
+            className="text-sm px-4 py-2 rounded-md"
+            style={{ background: "#1F232E", color: "#A1A1AA" }}
+          >
+            Voltar ao Inbox
+          </a>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 function AtendimentoLayout() {
   const { loading, isAuthenticated, hasAnyRole, user, roles } = useCrmAuth();
