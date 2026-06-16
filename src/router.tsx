@@ -1,6 +1,7 @@
-import { QueryClient } from "@tanstack/react-query";
+import { MutationCache, QueryCache, QueryClient } from "@tanstack/react-query";
 import { createRouter } from "@tanstack/react-router";
 import { routeTree } from "./routeTree.gen";
+import { toastError } from "./lib/error-handler";
 
 // Browser-only: inject the Supabase bearer token into all server function calls
 // so that `requireSupabaseAuth` middleware can authenticate the request.
