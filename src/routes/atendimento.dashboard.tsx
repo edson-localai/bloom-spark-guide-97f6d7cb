@@ -252,18 +252,23 @@ function DashboardPage() {
           .sort((a, b) => b.chats - a.chats)
           .slice(0, 5);
 
-        // Conversion rate = conversations with at least one accepted proposal / total conversations
+        // Conversão = vendas / leads
+        // LEAD = contato distinto com 1ª mensagem recebida no período
+        const leadsCurrSet = new Set(
+          (leadMsgsCurr.data ?? []).map((m: any) => m.sender_id).filter(Boolean),
+        );
+        const leadsPrevSet = new Set(
+          (leadMsgsPrev.data ?? []).map((m: any) => m.sender_id).filter(Boolean),
+        );
+        // VENDA = proposta aceita (updated_at) no período
+        const salesCurrCount = salesCurr.data?.length ?? 0;
+        const salesPrevCount = salesPrev.data?.length ?? 0;
+
         const totalConv = convsCurr.count ?? 0;
         const totalConvPrev = convsPrev.count ?? 0;
-        const convertedCurrSet = new Set(
-          (acceptedCurr.data ?? []).map((p: any) => p.conversation_id).filter(Boolean),
-        );
-        const convertedPrevSet = new Set(
-          (acceptedPrev.data ?? []).map((p: any) => p.conversation_id).filter(Boolean),
-        );
-        const conversionRate = totalConv > 0 ? (convertedCurrSet.size / totalConv) * 100 : null;
+        const conversionRate = leadsCurrSet.size > 0 ? (salesCurrCount / leadsCurrSet.size) * 100 : null;
         const conversionRatePrev =
-          totalConvPrev > 0 ? (convertedPrevSet.size / totalConvPrev) * 100 : null;
+          leadsPrevSet.size > 0 ? (salesPrevCount / leadsPrevSet.size) * 100 : null;
 
         setMetrics({
           totalConversations: totalConv,
