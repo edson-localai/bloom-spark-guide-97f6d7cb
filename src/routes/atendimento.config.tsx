@@ -283,6 +283,101 @@ function ConfigPage() {
             </div>
           </div>
         </div>
+
+        {/* Stevo WhatsApp Connection */}
+        <div className="lg:col-span-2 space-y-6">
+          <div className="bg-[#0F1117] rounded-3xl border border-[#1F232E] overflow-hidden">
+            <div className="p-6 border-b border-[#1F232E] flex items-center gap-3">
+              <div className="h-10 w-10 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-400">
+                <MessageCircle className="h-5 w-5" />
+              </div>
+              <div>
+                <h3 className="font-bold text-white">Stevo WhatsApp</h3>
+                <p className="text-[10px] text-zinc-500 uppercase font-bold tracking-widest">
+                  Conexão da API & Pareamento
+                </p>
+              </div>
+            </div>
+            <div className="p-6 grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Credenciais */}
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <label className="text-xs font-bold text-zinc-400 uppercase tracking-wider flex items-center gap-2">
+                    <Link2 className="h-3 w-3" /> URL da API Stevo
+                  </label>
+                  <input
+                    type="text"
+                    value={getSetting("stevo_api_url")}
+                    onChange={(e) => updateSetting("stevo_api_url", e.target.value)}
+                    placeholder="https://api.seudominio.com"
+                    className="w-full bg-[#151821] border border-[#1F232E] rounded-xl p-2.5 text-sm text-zinc-300 focus:outline-none focus:border-emerald-500/50"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-xs font-bold text-zinc-400 uppercase tracking-wider">
+                    API Key
+                  </label>
+                  <input
+                    type="password"
+                    value={getSetting("stevo_api_key")}
+                    onChange={(e) => updateSetting("stevo_api_key", e.target.value)}
+                    placeholder="apikey fornecida pela Stevo"
+                    className="w-full bg-[#151821] border border-[#1F232E] rounded-xl p-2.5 text-sm text-zinc-300 focus:outline-none focus:border-emerald-500/50"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-xs font-bold text-zinc-400 uppercase tracking-wider">
+                    Nome da Instância
+                  </label>
+                  <input
+                    type="text"
+                    value={getSetting("stevo_instance_name")}
+                    onChange={(e) => updateSetting("stevo_instance_name", e.target.value)}
+                    placeholder="ex: hcb-principal"
+                    className="w-full bg-[#151821] border border-[#1F232E] rounded-xl p-2.5 text-sm text-zinc-300 focus:outline-none focus:border-emerald-500/50"
+                  />
+                </div>
+                <p className="text-[11px] text-zinc-500 leading-relaxed pt-2">
+                  Salve as credenciais antes de conectar. A URL deve apontar para o domínio da sua
+                  API Stevo (sem barra no final).
+                </p>
+              </div>
+
+              {/* QR Code area */}
+              <div className="space-y-4">
+                <div className="aspect-square bg-[#151821] border-2 border-dashed border-[#1F232E] rounded-2xl flex flex-col items-center justify-center text-center p-6">
+                  <QrCode className="h-16 w-16 text-zinc-700 mb-4" />
+                  <p className="text-sm font-semibold text-zinc-400">QR Code aparecerá aqui</p>
+                  <p className="text-xs text-zinc-600 mt-2 max-w-xs">
+                    Após salvar as credenciais, clique em "Conectar Número" para gerar o QR e
+                    parear o WhatsApp.
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() =>
+                    toast.info("Integração Stevo será habilitada após configurar o backend.")
+                  }
+                  disabled={
+                    !getSetting("stevo_api_url") ||
+                    !getSetting("stevo_api_key") ||
+                    !getSetting("stevo_instance_name")
+                  }
+                  className="w-full flex items-center justify-center gap-2 bg-emerald-500 hover:bg-emerald-400 disabled:opacity-40 disabled:cursor-not-allowed text-black px-6 py-3 rounded-xl font-bold text-sm transition-all"
+                >
+                  <QrCode className="h-4 w-4" />
+                  Conectar Número
+                </button>
+                <div className="flex items-center justify-between p-3 bg-[#151821] rounded-xl border border-[#1F232E]">
+                  <span className="text-xs text-zinc-500 uppercase font-bold tracking-widest">
+                    Status
+                  </span>
+                  <span className="text-xs text-zinc-400 font-mono">Desconectado</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
       <div className="p-8" />
