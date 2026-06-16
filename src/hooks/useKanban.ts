@@ -13,12 +13,18 @@ export function useKanban() {
 
   async function fetchKanban() {
     setLoading(true);
-    const { data } = await supabase
-      .from("conversations")
-      .select("*, contact:contact_id(*)")
-      .order("updated_at", { ascending: false });
-    if (data) setItems(data as any);
-    setLoading(false);
+    try {
+      const { data, error } = await supabase
+        .from("conversations")
+        .select("*, contact:contact_id(*)")
+        .order("updated_at", { ascending: false });
+      if (error) throw error;
+      if (data) setItems(data as any);
+    } catch (err) {
+      console.error("Error fetching kanban:", err);
+    } finally {
+      setLoading(false);
+    }
   }
 
   async function moveCard(id: string, newStatus: string) {

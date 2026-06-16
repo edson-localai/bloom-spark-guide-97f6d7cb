@@ -56,7 +56,12 @@ export const Route = createFileRoute("/api/public/process-scheduled")({
 
               results.push({ id: msg.id, status: "sent" });
             } catch (err) {
-              results.push({ id: msg.id, status: "failed", error: err });
+              console.error(`[process-scheduled] msg ${msg.id} failed:`, err);
+              results.push({
+                id: msg.id,
+                status: "failed",
+                error: err instanceof Error ? err.message : "unknown",
+              });
             }
           }
 
@@ -67,10 +72,14 @@ export const Route = createFileRoute("/api/public/process-scheduled")({
             },
           );
         } catch (error: any) {
-          return new Response(JSON.stringify({ success: false, error: error.message }), {
-            status: 500,
-            headers: { "Content-Type": "application/json" },
-          });
+          console.error("[process-scheduled] fatal:", error);
+          return new Response(
+            JSON.stringify({ success: false, error: "Internal server error" }),
+            {
+              status: 500,
+              headers: { "Content-Type": "application/json" },
+            },
+          );
         }
       },
     },

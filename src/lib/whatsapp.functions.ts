@@ -94,7 +94,7 @@ export const createWhatsAppInstance = createServerFn({ method: "POST" })
         .select()
         .single();
 
-      if (error) throw new Error(error.message);
+      if (error) throw AppError.internal("Falha ao registrar instância.");
 
       // Register webhook event URLs at W-API (best-effort).
       try {
@@ -229,6 +229,7 @@ export const deleteWhatsAppInstance = createServerFn({ method: "POST" })
       .parse(data),
   )
   .handler(async ({ data, context }) => {
+    await requireAdminOrSupervisor(context.supabase, context.userId);
     const sb = context.supabase;
 
     try {
@@ -245,7 +246,7 @@ export const deleteWhatsAppInstance = createServerFn({ method: "POST" })
 
     if (error) {
       console.error("[deleteWhatsAppInstance] RPC failed:", error);
-      throw AppError.internal(`Falha ao excluir instância: ${error.message}`);
+      throw AppError.internal("Falha ao excluir instância.");
     }
     return result ?? { ok: true };
   });
@@ -266,7 +267,14 @@ export const sendWhatsAppMessage = createServerFn({ method: "POST" })
       .from("user_roles")
       .select("role")
       .eq("user_id", context.userId);
-    if (!roles || roles.length === 0) throw new Error("Forbidden");
+    const roleList = (roles || []).map((r: any) => r.role);
+    if (
+      !roleList.includes("admin") &&
+      !roleList.includes("supervisor") &&
+      !roleList.includes("agent")
+    ) {
+      throw AppError.forbidden();
+    }
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { jidToPhone } = await import("./whatsapp.server");
 
@@ -319,7 +327,7 @@ export const sendWhatsAppMessage = createServerFn({ method: "POST" })
       throw new Error("Provedor não suportado para envio de mensagens");
     } catch (err: any) {
       console.error("WhatsApp send failed:", err);
-      return { ok: false, error: err.message };
+      return { ok: false, error: "Falha ao enviar mensagem. Tente novamente." };
     }
   });
 

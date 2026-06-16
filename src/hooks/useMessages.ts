@@ -16,6 +16,26 @@ export function useMessages(conversationId: string | null) {
       return;
     }
 
+    let cancelled = false;
+
+    const fetchMessages = async (id: string) => {
+      setLoading(true);
+      try {
+        const { data, error } = await supabase
+          .from("messages")
+          .select("*")
+          .eq("conversation_id", id)
+          .order("created_at", { ascending: true });
+        if (error) throw error;
+        if (cancelled) return;
+        setMessages((data as Message[]) ?? []);
+      } catch (err) {
+        if (!cancelled) console.error("Error fetching messages:", err);
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    };
+
     fetchMessages(conversationId);
 
     const channel = supabase
@@ -29,6 +49,7 @@ export function useMessages(conversationId: string | null) {
           filter: `conversation_id=eq.${conversationId}`,
         },
         (payload) => {
+          if (cancelled) return;
           const newMsg = payload.new as Message;
           setMessages((prev) => {
             if (prev.find((m) => m.id === newMsg.id)) return prev;
@@ -42,44 +63,39 @@ export function useMessages(conversationId: string | null) {
                 conversationId: conversationId,
                 content: newMsg.content || "",
               },
-            });
+            }).catch((err) => console.error("AutoReply error:", err));
           }
         },
       )
       .subscribe();
 
     return () => {
+      cancelled = true;
       supabase.removeChannel(channel);
     };
   }, [conversationId]);
 
-  async function fetchMessages(id: string) {
-    setLoading(true);
+  async function sendMessage(
+    content: string,
+    type: any = "text",
+    isInternal: boolean = false,
+    media?: { media_url?: string | null; media_mime?: string | null },
+  ): Promise<string | null> {
+    if (!conversationId) return null;
     try {
-      const { data, error } = await supabase
+      const { data: inserted, error } = await supabase
         .from("messages")
-        .select("*")
-        .eq("conversation_id", id)
-        .order("created_at", { ascending: true });
-      if (error) throw error;
-      setMessages(data as Message[]);
-    } catch (err) {
-      console.error("Error fetching messages:", err);
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  async function sendMessage(content: string, type: any = "text", isInternal: boolean = false) {
-    if (!conversationId) return;
-    try {
-      const { error } = await supabase.from("messages").insert({
-        conversation_id: conversationId,
-        content,
-        content_type: type,
-        sender_type: "agent",
-        is_internal: isInternal,
-      });
+        .insert({
+          conversation_id: conversationId,
+          content,
+          content_type: type,
+          sender_type: "agent",
+          is_internal: isInternal,
+          media_url: media?.media_url ?? null,
+          media_mime: media?.media_mime ?? null,
+        } as any)
+        .select("id")
+        .single();
       if (error) throw error;
 
       // Se um humano responder, bloqueia a IA por 24h e move para atendimento humano
@@ -102,8 +118,10 @@ export function useMessages(conversationId: string | null) {
           console.warn("WhatsApp delivery failed:", waErr);
         }
       }
+      return inserted?.id ?? null;
     } catch (err) {
       console.error("Error sending message:", err);
+      return null;
     }
   }
 

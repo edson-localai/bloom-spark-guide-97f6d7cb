@@ -2,7 +2,9 @@
 
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
-import { supabaseAdmin } from "@/integrations/supabase/client.server";
+// NOTE: supabaseAdmin is loaded dynamically inside handlers to keep
+// service-role credentials out of any client bundle that might transitively
+// import this module.
 
 const messageSchema = z.object({
   role: z.enum(["user", "assistant"]),
@@ -107,7 +109,9 @@ Regras:
               lead,
             };
           }
-        } catch {}
+        } catch (parseErr) {
+          console.warn("[landing-chat] Failed to parse AI JSON response:", parseErr);
+        }
       }
 
       return {
@@ -152,6 +156,7 @@ const leadSchema = z.object({
 export const saveLandingLead = createServerFn({ method: "POST" })
   .inputValidator((data) => leadSchema.parse(data))
   .handler(async ({ data }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     // Deduplicação: busca lead existente com mesmos dados básicos
     let query = supabaseAdmin
       .from("contacts")
