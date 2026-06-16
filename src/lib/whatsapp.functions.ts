@@ -324,7 +324,7 @@ export const sendWhatsAppMessage = createServerFn({ method: "POST" })
         console.log("[sendWhatsAppMessage] wapi send-text →", { phone: wapiPhone, response: res });
         return { ok: true, id: res?.messageId || res?.insertedId || null };
       }
-      throw new Error("Provedor não suportado para envio de mensagens");
+      throw AppError.validation("Provedor não suportado para envio de mensagens.");
     } catch (err: any) {
       console.error("WhatsApp send failed:", err);
       return { ok: false, error: "Falha ao enviar mensagem. Tente novamente." };
