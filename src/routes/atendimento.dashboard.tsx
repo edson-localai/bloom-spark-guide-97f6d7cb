@@ -134,8 +134,10 @@ function DashboardPage() {
           assigned,
           agents,
           msgCounts,
-          acceptedCurr,
-          acceptedPrev,
+          leadMsgsCurr,
+          leadMsgsPrev,
+          salesCurr,
+          salesPrev,
         ] = await Promise.all([
           supabase.from("waiting_queue").select("*", { count: "exact", head: true }),
           supabase
@@ -173,19 +175,35 @@ function DashboardPage() {
             .gte("created_at", startCurr)
             .lte("created_at", endCurr)
             .limit(5000),
+          // LEADS = contatos distintos com 1ª mensagem recebida no período (created_at)
           supabase
-            .from("proposals")
-            .select("conversation_id")
-            .eq("status", "accepted")
+            .from("messages")
+            .select("sender_id, conversation_id, created_at")
+            .eq("sender_type", "contact")
             .gte("created_at", startCurr)
             .lte("created_at", endCurr)
+            .limit(10000),
+          supabase
+            .from("messages")
+            .select("sender_id, conversation_id, created_at")
+            .eq("sender_type", "contact")
+            .gte("created_at", startPrev)
+            .lte("created_at", endPrev)
+            .limit(10000),
+          // VENDAS = propostas aceitas no período (updated_at)
+          supabase
+            .from("proposals")
+            .select("id, contact_id, conversation_id, updated_at")
+            .eq("status", "accepted")
+            .gte("updated_at", startCurr)
+            .lte("updated_at", endCurr)
             .limit(5000),
           supabase
             .from("proposals")
-            .select("conversation_id")
+            .select("id, contact_id, conversation_id, updated_at")
             .eq("status", "accepted")
-            .gte("created_at", startPrev)
-            .lte("created_at", endPrev)
+            .gte("updated_at", startPrev)
+            .lte("updated_at", endPrev)
             .limit(5000),
         ]);
 
@@ -234,18 +252,23 @@ function DashboardPage() {
           .sort((a, b) => b.chats - a.chats)
           .slice(0, 5);
 
-        // Conversion rate = conversations with at least one accepted proposal / total conversations
+        // Conversão = vendas / leads
+        // LEAD = contato distinto com 1ª mensagem recebida no período
+        const leadsCurrSet = new Set(
+          (leadMsgsCurr.data ?? []).map((m: any) => m.sender_id).filter(Boolean),
+        );
+        const leadsPrevSet = new Set(
+          (leadMsgsPrev.data ?? []).map((m: any) => m.sender_id).filter(Boolean),
+        );
+        // VENDA = proposta aceita (updated_at) no período
+        const salesCurrCount = salesCurr.data?.length ?? 0;
+        const salesPrevCount = salesPrev.data?.length ?? 0;
+
         const totalConv = convsCurr.count ?? 0;
         const totalConvPrev = convsPrev.count ?? 0;
-        const convertedCurrSet = new Set(
-          (acceptedCurr.data ?? []).map((p: any) => p.conversation_id).filter(Boolean),
-        );
-        const convertedPrevSet = new Set(
-          (acceptedPrev.data ?? []).map((p: any) => p.conversation_id).filter(Boolean),
-        );
-        const conversionRate = totalConv > 0 ? (convertedCurrSet.size / totalConv) * 100 : null;
+        const conversionRate = leadsCurrSet.size > 0 ? (salesCurrCount / leadsCurrSet.size) * 100 : null;
         const conversionRatePrev =
-          totalConvPrev > 0 ? (convertedPrevSet.size / totalConvPrev) * 100 : null;
+          leadsPrevSet.size > 0 ? (salesPrevCount / leadsPrevSet.size) * 100 : null;
 
         setMetrics({
           totalConversations: totalConv,
