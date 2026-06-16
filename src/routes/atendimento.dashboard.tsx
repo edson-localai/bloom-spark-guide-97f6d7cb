@@ -134,8 +134,10 @@ function DashboardPage() {
           assigned,
           agents,
           msgCounts,
-          acceptedCurr,
-          acceptedPrev,
+          leadMsgsCurr,
+          leadMsgsPrev,
+          salesCurr,
+          salesPrev,
         ] = await Promise.all([
           supabase.from("waiting_queue").select("*", { count: "exact", head: true }),
           supabase
@@ -173,19 +175,35 @@ function DashboardPage() {
             .gte("created_at", startCurr)
             .lte("created_at", endCurr)
             .limit(5000),
+          // LEADS = contatos distintos com 1ª mensagem recebida no período (created_at)
           supabase
-            .from("proposals")
-            .select("conversation_id")
-            .eq("status", "accepted")
+            .from("messages")
+            .select("sender_id, conversation_id, created_at")
+            .eq("sender_type", "contact")
             .gte("created_at", startCurr)
             .lte("created_at", endCurr)
+            .limit(10000),
+          supabase
+            .from("messages")
+            .select("sender_id, conversation_id, created_at")
+            .eq("sender_type", "contact")
+            .gte("created_at", startPrev)
+            .lte("created_at", endPrev)
+            .limit(10000),
+          // VENDAS = propostas aceitas no período (updated_at)
+          supabase
+            .from("proposals")
+            .select("id, contact_id, conversation_id, updated_at")
+            .eq("status", "accepted")
+            .gte("updated_at", startCurr)
+            .lte("updated_at", endCurr)
             .limit(5000),
           supabase
             .from("proposals")
-            .select("conversation_id")
+            .select("id, contact_id, conversation_id, updated_at")
             .eq("status", "accepted")
-            .gte("created_at", startPrev)
-            .lte("created_at", endPrev)
+            .gte("updated_at", startPrev)
+            .lte("updated_at", endPrev)
             .limit(5000),
         ]);
 
